@@ -1,1 +1,186 @@
-<p>renter-dashboard works!</p>
+<div class="d-flex flex-column vh-100">
+  <!-- Header -->
+  <nav class="navbar navbar-expand-lg navbar-light bg-light shadow-sm">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="#">AssetLoop</a>
+      <button
+        class="navbar-toggler"
+        type="button"
+        data-bs-toggle="collapse"
+        data-bs-target="#navbarNav"
+        aria-controls="navbarNav"
+        aria-expanded="false"
+        aria-label="Toggle navigation"
+      >
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item dropdown">
+            <a
+              class="nav-link dropdown-toggle"
+              href="#"
+              id="userDropdown"
+              role="button"
+              data-bs-toggle="dropdown"
+              aria-expanded="false"
+            >
+              <i class="bi bi-person-circle"></i> John Doe
+            </a>
+            <ul
+              class="dropdown-menu dropdown-menu-end"
+              aria-labelledby="userDropdown"
+            >
+              <li><a class="dropdown-item" href="#">Profile</a></li>
+              <li>
+                <a class="dropdown-item" href="#" (click)="logout()">Logout</a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <div class="d-flex flex-grow-1">
+    <!-- Sidebar -->
+    <div
+      class="d-flex flex-column flex-shrink-0 p-3 bg-dark text-white"
+      style="width: 280px"
+    >
+      <ul class="nav nav-pills flex-column mb-auto">
+        <li class="nav-item">
+          <a
+            class="nav-link text-white"
+            href="#"
+            [routerLink]="['/renter-dashboard']"
+            [routerLinkActive]="'active'"
+          >
+            <i class="bi bi-house-door-fill"></i> Dashboard
+          </a>
+        </li>
+        <li class="nav-item">
+          <a
+            class="nav-link text-white"
+            href="#"
+            [routerLink]="['/rented-items']"
+            [routerLinkActive]="'active'"
+          >
+            <i class="bi bi-box-seam-fill"></i> Rented Items
+          </a>
+        </li>
+        <li class="nav-item">
+          <a
+            class="nav-link text-white"
+            href="#"
+            [routerLink]="['/bookings']"
+            [routerLinkActive]="'active'"
+          >
+            <i class="bi bi-calendar-check-fill"></i> Bookings
+          </a>
+        </li>
+        <li class="nav-item">
+          <a
+            class="nav-link text-white"
+            href="#"
+            [routerLink]="['/account']"
+            [routerLinkActive]="'active'"
+          >
+            <i class="bi bi-person-fill"></i> Account
+          </a>
+        </li>
+      </ul>
+    </div>
+
+    <!-- Main Content Area -->
+    <main class="flex-grow-1 p-4 bg-light">
+      <h2 class="mb-4">Renter Dashboard</h2>
+
+      <div class="row g-4">
+        <!-- Rented Items Card -->
+        <div class="col-md-6">
+          <div class="card h-100 shadow-sm">
+            <div class="card-header bg-primary text-white">
+              <h5 class="mb-0">Rented Items</h5>
+            </div>
+            <div class="card-body">
+              <ul class="list-group list-group-flush">
+                <li *ngFor="let item of rentedItems" class="list-group-item">
+                  <div class="d-flex justify-content-between">
+                    <span>{{ item.name }}</span>
+                    <span>{{ item.price }}</span>
+                  </div>
+                  <small class="text-muted"
+                    >{{ item.daysLeft }} days left</small
+                  >
+                </li>
+              </ul>
+              <a
+                href="#"
+                class="btn btn-outline-primary mt-3"
+                [routerLink]="['/rented-items']"
+                >View All</a
+              >
+            </div>
+          </div>
+        </div>
+
+        <!-- Upcoming Bookings Card -->
+        <div class="col-md-6">
+          <div class="card h-100 shadow-sm">
+            <div class="card-header bg-success text-white">
+              <h5 class="mb-0">Upcoming Bookings</h5>
+            </div>
+            <div class="card-body">
+              <ul class="list-group list-group-flush">
+                <li
+                  *ngFor="let booking of upcomingBookings"
+                  class="list-group-item"
+                >
+                  <div class="d-flex justify-content-between">
+                    <span>{{ booking.item }}</span>
+                    <span
+                      class="text-{{
+                        booking.status === 'Confirmed' ? 'success' : 'warning'
+                      }}"
+                    >
+                      {{ booking.status }}
+                    </span>
+                  </div>
+                  <small class="text-muted">{{ booking.date }}</small>
+                </li>
+              </ul>
+              <a
+                href="#"
+                class="btn btn-outline-success mt-3"
+                [routerLink]="['/bookings']"
+                >View All</a
+              >
+            </div>
+          </div>
+        </div>
+
+        <!-- Account Overview Card -->
+        <div class="col-12">
+          <div class="card shadow-sm">
+            <div class="card-header bg-info text-white">
+              <h5 class="mb-0">Account Overview</h5>
+            </div>
+            <div class="card-body">
+              <p><strong>Email:</strong> john.doeexample.com</p>
+              <p><strong>Joined:</strong> Jan 15, 2025</p>
+              <p><strong>Total Spend:</strong> $250</p>
+              <a
+                href="#"
+                class="btn btn-outline-info mt-3"
+                [routerLink]="['/account']"
+                >Manage Account</a
+              >
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
