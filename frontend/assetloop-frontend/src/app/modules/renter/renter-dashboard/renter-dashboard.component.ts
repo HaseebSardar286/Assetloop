@@ -1,11 +1,12 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
+import { FooterComponent } from '../../../components/footer/footer.component';
 // import { ToastrService } from 'ngx-toastr';
 @Component({
   selector: 'app-renter-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, FooterComponent],
   templateUrl: './renter-dashboard.component.html',
   styleUrl: './renter-dashboard.component.css',
 })
