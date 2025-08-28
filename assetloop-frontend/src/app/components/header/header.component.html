@@ -1,48 +1,50 @@
 <nav class="navbar navbar-expand-lg navbar-light bg-light shadow-sm">
-  <div class="container-fluid">
+  <div
+    class="container-fluid w-100 d-flex justify-content-start align-items-center gap-4"
+  >
     <a class="navbar-brand text-black">AssetLoop</a>
-    <a class="text-black">Browse</a>
-    <div class="d-flex w-100 justify-content-end align-items-center px-5">
-      <div class="d-flex gap-4 px-4">
-        <a class="nav-link text-black">Favorites</a>
-        <a class="nav-link text-black">Cart</a>
-      </div>
-      <form class="d-flex" [formGroup]="searchForm">
-        <input
-          class="form-control me-2"
-          type="search"
-          formControlName="keywords"
-          placeholder="Search listings..."
-        />
-        <button
-          class="btn btn-outline-success"
-          type="button"
-          (click)="applySearch()"
+    <form class="d-flex" [formGroup]="searchForm">
+      <input
+        class="form-control me-2"
+        type="search"
+        formControlName="keywords"
+        placeholder="Search listings..."
+      />
+      <button
+        class="btn btn-outline-success btn-sm"
+        type="button"
+        (click)="applySearch()"
+      >
+        Search
+      </button>
+    </form>
+    <button class="btn btn-outline-dark" type="button">Apply Filters</button>
+  </div>
+  <div class="d-flex gap-4">
+    <a class="nav-link text-black">Favorites</a>
+    <a class="nav-link text-black">Cart</a>
+    <a class="nav-link text-black">Notifications</a>
+  </div>
+  <div class="collapse navbar-collapse px-3" id="navbarNav">
+    <ul class="navbar-nav ms-auto">
+      <li class="nav-item dropdown">
+        <a
+          class="nav-link dropdown-toggle text-black"
+          id="userDropdown"
+          role="button"
+          data-bs-toggle="dropdown"
+          aria-expanded="false"
         >
-          Search
-        </button>
-      </form>
-    </div>
-    <div class="collapse navbar-collapse" id="navbarNav">
-      <ul class="navbar-nav ms-auto">
-        <li class="nav-item dropdown">
-          <a
-            class="nav-link dropdown-toggle text-black"
-            id="userDropdown"
-            role="button"
-            data-bs-toggle="dropdown"
-            aria-expanded="false"
-          >
-            Jane
-          </a>
-          <ul
-            class="dropdown-menu dropdown-menu-end"
-            aria-labelledby="userDropdown"
-          >
-            <li><a class="dropdown-item" (click)="logout.emit()">Logout</a></li>
-          </ul>
-        </li>
-      </ul>
-    </div>
+          Jane
+        </a>
+        <ul
+          class="dropdown-menu dropdown-menu-end"
+          aria-labelledby="userDropdown"
+        >
+          <li><a class="dropdown-item">Help/Support</a></li>
+          <li><a class="dropdown-item" (click)="logout.emit()">Logout</a></li>
+        </ul>
+      </li>
+    </ul>
   </div>
 </nav>
