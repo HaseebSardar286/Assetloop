@@ -1,0 +1,43 @@
+<div
+  class="d-flex flex-column flex-shrink-0 p-3 bg-light text-black vh-100 sidebar"
+  style="width: 280px"
+>
+  <ul class="nav nav-pills flex-column mb-auto">
+    <li class="nav-item">
+      <a
+        class="nav-link border-bottom border-top"
+        (click)="navigateTo('/renter/dashboard')"
+        [class.active]="isActive('/renter/dashboard')"
+      >
+        <i class="bi bi-house-door-fill"></i> Dashboard
+      </a>
+    </li>
+    <li class="nav-item">
+      <a
+        class="nav-link border-bottom border-top"
+        (click)="navigateTo('/renter/booking-history')"
+        [class.active]="isActive('/renter/booking-history')"
+      >
+        <i class="bi bi-box-seam-fill"></i> Booking History
+      </a>
+    </li>
+    <li class="nav-item">
+      <a
+        class="nav-link border-bottom border-top"
+        (click)="navigateTo('/renter/search')"
+        [class.active]="isActive('/renter/search')"
+      >
+        <i class="bi bi-calendar-check-fill"></i> Search Listings
+      </a>
+    </li>
+    <li class="nav-item">
+      <a
+        class="nav-link border-bottom border-top"
+        (click)="navigateTo('/renter/profile')"
+        [class.active]="isActive('/renter/profile')"
+      >
+        <i class="bi bi-person-fill"></i> Settings
+      </a>
+    </li>
+  </ul>
+</div>

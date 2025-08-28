@@ -1,0 +1,85 @@
+<div class="d-flex flex-column vh-100">
+  <app-header (logout)="logout()"></app-header>
+  <div class="d-flex flex-grow-1">
+    <app-renter-side-bar (logout)="logout()"></app-renter-side-bar>
+    <main class="flex-grow-1 p-4 bg-light">
+      <h2 class="mb-4">My Bookings</h2>
+      <ul class="nav nav-tabs mb-4">
+        <li class="nav-item">
+          <a
+            class="nav-link"
+            [class.active]="activeTab === 'upcoming'"
+            (click)="setActiveTab('upcoming')"
+            >Upcoming</a
+          >
+        </li>
+        <li class="nav-item">
+          <a
+            class="nav-link"
+            [class.active]="activeTab === 'past'"
+            (click)="setActiveTab('past')"
+            >Past</a
+          >
+        </li>
+        <li class="nav-item">
+          <a
+            class="nav-link"
+            [class.active]="activeTab === 'cancelled'"
+            (click)="setActiveTab('cancelled')"
+            >Cancelled</a
+          >
+        </li>
+      </ul>
+
+      <div class="row g-4">
+        <div class="col-md-4" *ngFor="let booking of bookings[activeTab]">
+          <div class="card h-100 shadow-sm">
+            <img
+              src="{{ booking.imageUrl }}"
+              class="card-img-top"
+              alt="{{ booking.name }}"
+            />
+            <div class="card-body">
+              <h5 class="card-title">{{ booking.name }}</h5>
+              <p class="card-text">{{ booking.address }}</p>
+              <p class="card-text">
+                <strong>Dates:</strong> {{ booking.dates }}
+              </p>
+              <p class="card-text">
+                <strong>Total:</strong> {{ booking.total }}
+              </p>
+              <span
+                class="badge"
+                [ngClass]="{
+                  'bg-success': booking.status === 'confirmed',
+                  'bg-warning': booking.status === 'pending'
+                }"
+                >{{ booking.status }}</span
+              >
+            </div>
+            <div class="card-footer d-flex justify-content-between">
+              <button
+                class="btn btn-primary btn-sm"
+                (click)="viewListing(booking.id)"
+              >
+                View Listing
+              </button>
+              <button
+                class="btn btn-danger btn-sm"
+                *ngIf="
+                  activeTab === 'upcoming' && booking.status !== 'cancelled'
+                "
+                (click)="cancelBooking(booking.id)"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="col-12" *ngIf="bookings[activeTab].length === 0">
+          <p class="text-center">No bookings available.</p>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>

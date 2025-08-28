@@ -1,0 +1,91 @@
+<div class="d-flex flex-column vh-100">
+  <app-header (logout)="logout()"></app-header>
+  <!-- Main Content -->
+  <div class="d-flex flex-grow-1">
+    <app-renter-side-bar></app-renter-side-bar>
+    <main class="flex-grow-1 p-4 bg-light">
+      <h2 class="mb-4">Renter Dashboard</h2>
+
+      <div class="row g-4">
+        <!-- Rented Items Card -->
+        <div class="col-md-6">
+          <div class="card h-100 shadow-sm">
+            <div class="card-header bg-primary text-white">
+              <h5 class="mb-0">Rented Items</h5>
+            </div>
+            <div class="card-body">
+              <ul class="list-group list-group-flush">
+                <li *ngFor="let item of rentedItems" class="list-group-item">
+                  <div class="d-flex justify-content-between">
+                    <span>{{ item.name }}</span>
+                    <span>{{ item.price }}</span>
+                  </div>
+                  <small class="text-muted"
+                    >{{ item.daysLeft }} days left</small
+                  >
+                </li>
+              </ul>
+              <a
+                href="#"
+                class="btn btn-outline-primary mt-3"
+                [routerLink]="['/rented-items']"
+                >View All</a
+              >
+            </div>
+          </div>
+        </div>
+
+        <!-- Upcoming Bookings Card -->
+        <div class="col-md-6">
+          <div class="card h-100 shadow-sm">
+            <div class="card-header bg-success text-white">
+              <h5 class="mb-0">Upcoming Bookings</h5>
+            </div>
+            <div class="card-body">
+              <ul class="list-group list-group-flush">
+                <li
+                  *ngFor="let booking of upcomingBookings"
+                  class="list-group-item"
+                >
+                  <div class="d-flex justify-content-between">
+                    <span>{{ booking.item }}</span>
+                    <span
+                      class="text-{{
+                        booking.status === 'Confirmed' ? 'success' : 'warning'
+                      }}"
+                    >
+                      {{ booking.status }}
+                    </span>
+                  </div>
+                  <small class="text-muted">{{ booking.date }}</small>
+                </li>
+              </ul>
+              <a
+                class="btn btn-outline-success mt-3"
+                [routerLink]="['/bookings']"
+                >View All</a
+              >
+            </div>
+          </div>
+        </div>
+
+        <!-- Account Overview Card -->
+        <div class="col-12">
+          <div class="card shadow-sm">
+            <div class="card-header bg-info text-white">
+              <h5 class="mb-0">Account Overview</h5>
+            </div>
+            <div class="card-body">
+              <p><strong>Email:</strong> john.doeexample.com</p>
+              <p><strong>Joined:</strong> Jan 15, 2025</p>
+              <p><strong>Total Spend:</strong> $250</p>
+              <a class="btn btn-outline-info mt-3" [routerLink]="['/account']"
+                >Manage Account</a
+              >
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>

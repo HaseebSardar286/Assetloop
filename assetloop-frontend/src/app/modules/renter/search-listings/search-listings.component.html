@@ -1,0 +1,114 @@
+<div class="d-flex flex-column vh-100">
+  <app-header (logout)="logout()"></app-header>
+  <div class="d-flex flex-grow-1">
+    <app-renter-side-bar (logout)="logout()"></app-renter-side-bar>
+    <main class="flex-grow-1 p-4 bg-light">
+      <h2 class="mb-4">Search Results</h2>
+      <div class="row">
+        <div class="col-md-3">
+          <div class="card p-3 mb-4">
+            <h5>Filters</h5>
+            <form [formGroup]="searchForm">
+              <div class="mb-3">
+                <label>Keywords</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  formControlName="keywords"
+                  placeholder="Keywords..."
+                />
+              </div>
+              <div class="mb-3">
+                <label>Category</label>
+                <select class="form-select" formControlName="category">
+                  <option>All Categories</option>
+                  <option>Apartment</option>
+                  <option>House</option>
+                </select>
+              </div>
+              <div class="mb-3">
+                <label>Price Range (per night)</label>
+                <div class="row">
+                  <div class="col">
+                    <input
+                      type="number"
+                      class="form-control"
+                      formControlName="minPrice"
+                      placeholder="Min"
+                    />
+                  </div>
+                  <div class="col">
+                    <input
+                      type="number"
+                      class="form-control"
+                      formControlName="maxPrice"
+                      placeholder="Max"
+                    />
+                  </div>
+                </div>
+              </div>
+              <button
+                type="button"
+                class="btn btn-primary w-100 mb-2"
+                (click)="applyFilters()"
+              >
+                Apply Filters
+              </button>
+              <button
+                type="button"
+                class="btn btn-outline-secondary w-100"
+                (click)="clearFilters()"
+              >
+                Clear Filters
+              </button>
+            </form>
+          </div>
+        </div>
+        <div class="col-md-9">
+          <div class="d-flex justify-content-between mb-3">
+            <p>
+              <strong>{{ listings.length }} listings found</strong>
+            </p>
+            <select class="form-select w-auto">
+              <option>Sort by: Recommended</option>
+              <option>Price: Low to High</option>
+              <option>Price: High to Low</option>
+            </select>
+          </div>
+          <div class="row g-4">
+            <div class="col-md-6" *ngFor="let listing of listings">
+              <div class="card h-100 shadow-sm">
+                <img
+                  src="{{ listing.imageUrl }}"
+                  class="card-img-top"
+                  alt="{{ listing.name }}"
+                />
+                <div class="card-body">
+                  <h5 class="card-title">{{ listing.name }}</h5>
+                  <p class="card-text">{{ listing.address }}</p>
+                  <p class="card-text">
+                    <strong>{{ listing.pricePerNight }}</strong>
+                  </p>
+                  <p class="card-text">{{ listing.description }}</p>
+                  <p class="card-text">
+                    <small class="text-muted">{{
+                      listing.amenities.join(", ")
+                    }}</small>
+                  </p>
+                </div>
+                <div class="card-footer text-center">
+                  <button
+                    class="btn btn-primary"
+                    (click)="viewDetails(listing.id)"
+                  >
+                    View Details
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
