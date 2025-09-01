@@ -1,0 +1,16 @@
+<div class="invoices">
+  <h4>Invoices & Receipts</h4>
+  <ul class="list-group">
+    <li class="list-group-item" *ngFor="let invoice of invoices">
+      <p>Booking ID: {{ invoice.bookingId }}</p>
+      <p>Asset: {{ invoice.asset }}</p>
+      <p>Dates: {{ invoice.dates }}</p>
+      <p>
+        Amounts: Rent PKR {{ invoice.amounts.rent }}, Fees PKR
+        {{ invoice.amounts.fees }}
+      </p>
+      <p>Status: {{ invoice.status }}</p>
+      <button class="btn btn-secondary">Download PDF</button>
+    </li>
+  </ul>
+</div>

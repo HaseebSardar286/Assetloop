@@ -1,0 +1,93 @@
+<div class="d-flex flex-column vh-100">
+  <app-header (logout)="onLogout()"></app-header>
+  <div class="d-flex flex-grow-1">
+    <app-renter-side-bar
+      (logout)="onLogout()"
+      (navigate)="onNavigate($event)"
+    ></app-renter-side-bar>
+    <main class="flex-grow-1 p-4 bg-light">
+      <h2 class="mb-4">Payments & Wallet</h2>
+      <ul class="nav nav-tabs mb-4">
+        <li class="nav-item">
+          <a
+            class="nav-link"
+            [class.active]="activeTab === 'overview'"
+            (click)="setActiveTab('overview')"
+            >Overview</a
+          >
+        </li>
+        <li class="nav-item">
+          <a
+            class="nav-link"
+            [class.active]="activeTab === 'transactions'"
+            (click)="setActiveTab('transactions')"
+            >Transactions</a
+          >
+        </li>
+        <li class="nav-item">
+          <a
+            class="nav-link"
+            [class.active]="activeTab === 'payment-methods'"
+            (click)="setActiveTab('payment-methods')"
+            >Payment Methods</a
+          >
+        </li>
+        <li class="nav-item">
+          <a
+            class="nav-link"
+            [class.active]="activeTab === 'booking-payments'"
+            (click)="setActiveTab('booking-payments')"
+            >Booking Payments</a
+          >
+        </li>
+        <li class="nav-item">
+          <a
+            class="nav-link"
+            [class.active]="activeTab === 'invoices'"
+            (click)="setActiveTab('invoices')"
+            >Invoices</a
+          >
+        </li>
+        <li class="nav-item">
+          <a
+            class="nav-link"
+            [class.active]="activeTab === 'refunds'"
+            (click)="setActiveTab('refunds')"
+            >Refunds</a
+          >
+        </li>
+        <li class="nav-item">
+          <a
+            class="nav-link"
+            [class.active]="activeTab === 'security'"
+            (click)="setActiveTab('security')"
+            >Security</a
+          >
+        </li>
+      </ul>
+      <div class="tab-content">
+        <app-wallet-overview
+          *ngIf="activeTab === 'overview'"
+        ></app-wallet-overview>
+        <app-transaction-history
+          *ngIf="activeTab === 'transactions'"
+        ></app-transaction-history>
+        <app-payment-methods
+          *ngIf="activeTab === 'payment-methods'"
+        ></app-payment-methods>
+        <app-booking-payments
+          *ngIf="activeTab === 'booking-payments'"
+        ></app-booking-payments>
+        <app-invoices-receipts
+          *ngIf="activeTab === 'invoices'"
+        ></app-invoices-receipts>
+        <app-refunds-disputes
+          *ngIf="activeTab === 'refunds'"
+        ></app-refunds-disputes>
+        <app-security-features
+          *ngIf="activeTab === 'security'"
+        ></app-security-features>
+      </div>
+    </main>
+  </div>
+</div>

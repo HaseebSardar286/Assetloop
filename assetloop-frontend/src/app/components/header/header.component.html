@@ -1,41 +1,55 @@
 <nav class="navbar navbar-expand-lg navbar-light bg-light shadow-sm">
   <div
-    class="container-fluid w-100 d-flex justify-content-start align-items-center gap-4"
+    class="container-fluid w-100 d-flex justify-content-start align-items-center gap-2"
   >
     <a class="navbar-brand text-black">AssetLoop</a>
-    <form class="d-flex" [formGroup]="searchForm">
+    <form class="d-flex w-50" [formGroup]="searchForm">
       <input
-        class="form-control me-2"
+        class="form-control me-2 rounded-5"
         type="search"
         formControlName="keywords"
         placeholder="Search listings..."
       />
       <button
-        class="btn btn-outline-success btn-sm"
+        class="btn btn-outline-success rounded-5"
         type="button"
         (click)="applySearch()"
       >
-        Search
+        <fa-icon [icon]="faSearch"></fa-icon>
       </button>
     </form>
-    <button class="btn btn-outline-dark" type="button">Apply Filters</button>
+    <button
+      class="btn btn-outline-secondary rounded-5"
+      type="button"
+      (click)="filterListings()"
+    >
+      <fa-icon [icon]="faFilter"></fa-icon>
+    </button>
   </div>
-  <div class="d-flex gap-4">
-    <a class="nav-link text-black">Favorites</a>
-    <a class="nav-link text-black">Cart</a>
-    <a class="nav-link text-black">Notifications</a>
+  <div class="d-flex gap-2 px-2">
+    <button type="button" class="btn btn-info rounded-5">
+      <fa-icon [icon]="faShoppingCart"></fa-icon>
+    </button>
+    <button type="button" class="btn btn-danger rounded-5">
+      <fa-icon [icon]="faHeart"></fa-icon>
+    </button>
+    <button type="button" class="btn btn-warning rounded-5">
+      <fa-icon [icon]="faBell"></fa-icon>
+    </button>
   </div>
   <div class="collapse navbar-collapse px-3" id="navbarNav">
     <ul class="navbar-nav ms-auto">
       <li class="nav-item dropdown">
         <a
-          class="nav-link dropdown-toggle text-black"
+          class="nav-link text-black"
           id="userDropdown"
           role="button"
           data-bs-toggle="dropdown"
           aria-expanded="false"
         >
-          Jane
+          <button type="button" class="btn btn-dark rounded-5">
+            <fa-icon [icon]="faUser"></fa-icon>
+          </button>
         </a>
         <ul
           class="dropdown-menu dropdown-menu-end"

@@ -1,0 +1,15 @@
+<div class="conversation-list">
+  <input
+    type="text"
+    class="form-control mb-3"
+    placeholder="Search chats..."
+    [(ngModel)]="searchQuery"
+  />
+  <div class="conversation-cards">
+    <app-conversation-card
+      *ngFor="let conversation of getFilteredConversations()"
+      [chat]="conversation"
+      (select)="selectChat.emit(conversation.id)"
+    ></app-conversation-card>
+  </div>
+</div>

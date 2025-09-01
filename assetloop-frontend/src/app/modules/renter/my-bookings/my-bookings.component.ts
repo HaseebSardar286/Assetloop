@@ -4,32 +4,24 @@ import { RenterSideBarComponent } from '../renter-side-bar/renter-side-bar.compo
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { HeaderComponent } from '../../../components/header/header.component';
-// Define the Booking interface
-interface Booking {
-  id: number;
-  name: string;
-  address: string;
-  dates: string;
-  total: string;
-  status: string;
-  imageUrl?: string;
-}
-
-// Define the Bookings interface
-interface Bookings {
-  upcoming: Booking[];
-  past: Booking[];
-  cancelled: Booking[];
-}
+import { ProductItemComponent } from '../../../components/cards/product-item/product-item.component';
+import { Bookings } from '../../../interfaces/bookings';
 
 @Component({
   selector: 'app-my-bookings',
-  imports: [RenterSideBarComponent, FormsModule, CommonModule, HeaderComponent],
+  standalone: true,
+  imports: [
+    RenterSideBarComponent,
+    FormsModule,
+    CommonModule,
+    HeaderComponent,
+    ProductItemComponent,
+  ],
   templateUrl: './my-bookings.component.html',
-  styleUrl: './my-bookings.component.css',
+  styleUrls: ['./my-bookings.component.css'],
 })
 export class MyBookingsComponent {
-  activeTab: keyof Bookings = 'upcoming'; // Restrict activeTab to the keys of Bookings
+  activeTab: keyof Bookings = 'upcoming';
 
   bookings: Bookings = {
     upcoming: [
@@ -41,6 +33,7 @@ export class MyBookingsComponent {
         total: '$750',
         status: 'confirmed',
         imageUrl: '/images/download.jpg',
+        category: 'Apartment',
       },
       {
         id: 2,
@@ -50,6 +43,7 @@ export class MyBookingsComponent {
         total: '$1250',
         status: 'pending',
         imageUrl: '/images/download.jpg',
+        category: 'House',
       },
     ],
     past: [],
@@ -64,7 +58,14 @@ export class MyBookingsComponent {
 
   cancelBooking(bookingId: number) {
     console.log(`Cancelled booking with ID: ${bookingId}`);
-    // Add cancellation logic here
+    const booking = this.bookings.upcoming.find((b) => b.id === bookingId);
+    if (booking) {
+      this.bookings.upcoming = this.bookings.upcoming.filter(
+        (b) => b.id !== bookingId
+      );
+      booking.status = 'cancelled';
+      this.bookings.cancelled = [...this.bookings.cancelled, booking];
+    }
   }
 
   viewListing(bookingId: number) {
@@ -73,5 +74,26 @@ export class MyBookingsComponent {
 
   logout() {
     this.router.navigate(['/auth/login']);
+  }
+
+  removeFavourite(id: number) {
+    console.log(`Removed from favourites: ${id}`);
+  }
+
+  addToCart(id: number) {
+    console.log(`Added to cart: ${id}`);
+  }
+
+  share(id: number) {
+    console.log(`Sharing item ${id}`);
+  }
+
+  updateNotes(event: { id: number; notes: string }) {
+    const booking = [
+      ...this.bookings.upcoming,
+      ...this.bookings.past,
+      ...this.bookings.cancelled,
+    ].find((b) => b.id === event.id);
+    if (booking) booking.notes = event.notes;
   }
 }

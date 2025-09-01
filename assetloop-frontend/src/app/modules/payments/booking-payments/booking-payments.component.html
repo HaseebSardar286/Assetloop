@@ -1,0 +1,21 @@
+<div class="booking-payments">
+  <h4>Upcoming Payments</h4>
+  <ul class="list-group">
+    <li class="list-group-item" *ngFor="let payment of upcomingPayments">
+      {{ payment.type }}: PKR {{ payment.amount }} ({{ payment.date }})
+    </li>
+  </ul>
+  <div class="mt-2">
+    <h4>Security Deposit</h4>
+    <p>PKR {{ securityDeposit }} held</p>
+  </div>
+  <div class="form-check mt-2">
+    <input
+      type="checkbox"
+      class="form-check-input"
+      id="autoPay"
+      [(ngModel)]="autoPay"
+    />
+    <label class="form-check-label" for="autoPay">Enable Auto-Pay</label>
+  </div>
+</div>

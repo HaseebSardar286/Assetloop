@@ -31,55 +31,25 @@
         </li>
       </ul>
 
-      <div class="row g-4">
-        <div class="col-md-4" *ngFor="let booking of bookings[activeTab]">
-          <div class="card h-100 shadow-sm">
-            <img
-              src="{{ booking.imageUrl }}"
-              class="card-img-top"
-              alt="{{ booking.name }}"
-            />
-            <div class="card-body">
-              <h5 class="card-title">{{ booking.name }}</h5>
-              <p class="card-text">{{ booking.address }}</p>
-              <p class="card-text">
-                <strong>Dates:</strong> {{ booking.dates }}
-              </p>
-              <p class="card-text">
-                <strong>Total:</strong> {{ booking.total }}
-              </p>
-              <span
-                class="badge"
-                [ngClass]="{
-                  'bg-success': booking.status === 'confirmed',
-                  'bg-warning': booking.status === 'pending'
-                }"
-                >{{ booking.status }}</span
-              >
-            </div>
-            <div class="card-footer d-flex justify-content-between">
-              <button
-                class="btn btn-primary btn-sm"
-                (click)="viewListing(booking.id)"
-              >
-                View Listing
-              </button>
-              <button
-                class="btn btn-danger btn-sm"
-                *ngIf="
-                  activeTab === 'upcoming' && booking.status !== 'cancelled'
-                "
-                (click)="cancelBooking(booking.id)"
-              >
-                Cancel
-              </button>
-            </div>
+      <ng-container *ngIf="bookings[activeTab].length; else noBookings">
+        <div class="row g-4">
+          <div class="col-md-4" *ngFor="let booking of bookings[activeTab]">
+            <app-product-item
+              [booking]="booking"
+              [activeTab]="activeTab"
+              (viewListing)="viewListing($event)"
+              (cancelBooking)="cancelBooking($event)"
+              (removeFavourite)="removeFavourite($event)"
+              (addToCart)="addToCart($event)"
+              (share)="share($event)"
+              (updateNotes)="updateNotes($event)"
+            ></app-product-item>
           </div>
         </div>
-        <div class="col-12" *ngIf="bookings[activeTab].length === 0">
-          <p class="text-center">No bookings available.</p>
-        </div>
-      </div>
+      </ng-container>
+      <ng-template #noBookings>
+        <div class="text-center">No bookings found.</div>
+      </ng-template>
     </main>
   </div>
 </div>

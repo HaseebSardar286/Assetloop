@@ -4,7 +4,7 @@ import { ErrorPageComponent } from './modules/error-page/error-page.component';
 export const routes: Routes = [
   {
     path: '',
-    redirectTo: 'auth/login',
+    redirectTo: 'renter/home',
     pathMatch: 'full',
   },
   {
