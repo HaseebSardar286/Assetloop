@@ -1,10 +1,10 @@
 import { Routes } from '@angular/router';
 import { OwnerDashboardComponent } from './owner-dashboard/owner-dashboard.component';
-import { AssetManagementComponent } from './asset-management/asset-management.component';
-import { BookingManagementComponent } from './booking-management/booking-management.component';
 import { CreateAssetComponent } from './create-asset/create-asset.component';
 import { OwnerProfileComponent } from './owner-profile/owner-profile.component';
-import { ChatComponent } from './chat/chat.component';
+import { ChatComponent } from '../chat/components/chat/chat.component';
+import { MyListingsComponent } from './my-listing/my-listing.component';
+import { RentalRequestsComponent } from './rental-requests/rental-requests.component';
 
 export const OWNER_ROUTES: Routes = [
   {
@@ -19,13 +19,13 @@ export const OWNER_ROUTES: Routes = [
   },
   {
     path: 'assets',
-    component: AssetManagementComponent,
+    component: MyListingsComponent,
     data: { title: 'Asset Management' },
   },
   {
-    path: 'bookings',
-    component: BookingManagementComponent,
-    data: { title: 'Booking Management' },
+    path: 'rentals',
+    component: RentalRequestsComponent,
+    data: { title: 'Rental Requests' },
   },
   {
     path: 'create-asset',
@@ -37,9 +37,10 @@ export const OWNER_ROUTES: Routes = [
     component: OwnerProfileComponent,
     data: { title: 'Owner Profile' },
   },
-  {
-    path: 'chat',
-    component: ChatComponent,
-    data: { title: 'Chat' },
-  },
+
+  // {
+  //   path: 'chat',
+  //   component: ChatComponent,
+  //   data: { title: 'Owner Chat' },
+  // },
 ];

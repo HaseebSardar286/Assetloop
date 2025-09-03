@@ -23,6 +23,11 @@ export const routes: Routes = [
       import('./modules/renter/renter.route').then((m) => m.RENTER_ROUTES),
   },
   {
+    path: 'admin',
+    loadChildren: () =>
+      import('./modules/admin/admin.route').then((m) => m.ADMIN_ROUTES),
+  },
+  {
     path: '**',
     component: ErrorPageComponent,
   },

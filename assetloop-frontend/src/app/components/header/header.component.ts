@@ -43,4 +43,8 @@ export class HeaderComponent {
     this.router.navigate(['/renter/home']);
     // Add filter logic here
   }
+
+  favourites() {
+    this.router.navigate(['/renter/favourites']);
+  }
 }

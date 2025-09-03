@@ -1,29 +1,48 @@
-import { NgIf } from '@angular/common';
+import { NgFor, NgIf } from '@angular/common';
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms'; // Import FormsModule for ngModel
 import { Router } from '@angular/router';
+import { RegisterForm, User } from '../../../interfaces/user';
+import { AuthService } from '../../../services/auth.service';
 
 @Component({
   selector: 'app-register',
   standalone: true,
-  imports: [FormsModule, NgIf], // Add FormsModule here for template-driven forms
+  imports: [FormsModule, NgIf, NgFor], // Add FormsModule here for template-driven forms
   templateUrl: './register.component.html',
   styleUrls: ['./register.component.css'],
 })
 export class RegisterComponent {
-  user = {
+  user: RegisterForm = {
     firstName: '',
     lastName: '',
-    username: '',
+    middleName: '',
     email: '',
     phoneNumber: '',
     password: '',
-    confirmPassword: '',
-    role: '',
+    role: 'renter',
     terms: false,
+    country: '',
+    city: '',
+    address: '',
+    confirmPassword: '',
   };
 
-  constructor(private router: Router) {}
+  countries: string[] = ['Pakistan', 'India', 'United States', 'UK', 'Canada'];
+  selectedCountry: string | null = null;
+
+  cities: string[] = [];
+  selectedCity: string | null = null;
+
+  allCities: any = {
+    Pakistan: ['Lahore', 'Karachi', 'Islamabad'],
+    India: ['Delhi', 'Mumbai', 'Bangalore'],
+    'United States': ['New York', 'Los Angeles', 'Chicago'], // Adjusted key
+    UK: ['London', 'Manchester', 'Birmingham'],
+    Canada: ['Toronto', 'Vancouver', 'Montreal'],
+  };
+
+  constructor(private router: Router, private authService: AuthService) {}
 
   onSubmit() {
     if (this.user.password !== this.user.confirmPassword) {
@@ -31,7 +50,35 @@ export class RegisterComponent {
       return;
     }
 
-    this.router.navigate(['/auth/login']);
+    if (
+      !this.user.firstName ||
+      !this.user.lastName ||
+      !this.user.email ||
+      !this.user.password ||
+      !this.user.role
+    ) {
+      alert('Please fill all required fields!');
+      return;
+    }
+
+    this.authService.register(this.user).subscribe({
+      next: (res) => {
+        alert('Registration successful! Redirecting to login...');
+        this.router.navigate(['/auth/login']);
+      },
+      error: (err) => {
+        alert(err.error.message || 'Registration failed. Please try again!');
+      },
+    });
+  }
+
+  onCountryChange(country: string) {
+    this.cities = this.allCities[country.replace(/\s+/g, '_')] || []; // Handle spaces in country names
+    this.user.country = country; // Update user object
+  }
+
+  onCityChange(city: string) {
+    this.user.city = city; // Update user object
   }
 
   login() {

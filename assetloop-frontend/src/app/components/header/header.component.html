@@ -30,7 +30,11 @@
     <button type="button" class="btn btn-info rounded-5">
       <fa-icon [icon]="faShoppingCart"></fa-icon>
     </button>
-    <button type="button" class="btn btn-danger rounded-5">
+    <button
+      type="button"
+      class="btn btn-danger rounded-5"
+      (click)="favourites()"
+    >
       <fa-icon [icon]="faHeart"></fa-icon>
     </button>
     <button type="button" class="btn btn-warning rounded-5">
