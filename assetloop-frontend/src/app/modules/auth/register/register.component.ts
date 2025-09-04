@@ -37,7 +37,7 @@ export class RegisterComponent {
   allCities: any = {
     Pakistan: ['Lahore', 'Karachi', 'Islamabad'],
     India: ['Delhi', 'Mumbai', 'Bangalore'],
-    'United States': ['New York', 'Los Angeles', 'Chicago'], // Adjusted key
+    United_States: ['New York', 'Los Angeles', 'Chicago'], // Adjusted key
     UK: ['London', 'Manchester', 'Birmingham'],
     Canada: ['Toronto', 'Vancouver', 'Montreal'],
   };
@@ -52,7 +52,6 @@ export class RegisterComponent {
 
     if (
       !this.user.firstName ||
-      !this.user.lastName ||
       !this.user.email ||
       !this.user.password ||
       !this.user.role
@@ -63,7 +62,6 @@ export class RegisterComponent {
 
     this.authService.register(this.user).subscribe({
       next: (res) => {
-        alert('Registration successful! Redirecting to login...');
         this.router.navigate(['/auth/login']);
       },
       error: (err) => {

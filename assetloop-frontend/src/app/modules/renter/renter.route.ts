@@ -3,16 +3,20 @@ import { RenterDashboardComponent } from './renter-dashboard/renter-dashboard.co
 import { SearchListingsComponent } from './search-listings/search-listings.component';
 import { RenterProfileComponent } from './renter-profile/renter-profile.component';
 import { MyBookingsComponent } from './my-bookings/my-bookings.component';
-import { HomeComponent } from './home/home.component';
+import { HomeComponent } from '../../components/home/home.component';
 import { FavouritesComponent } from './favourites/favourites.component';
 import { ChatComponent } from '../chat/components/chat/chat.component';
 import { PaymentsWalletComponent } from '../payments/payments-wallet/payments-wallet.component';
 
 export const RENTER_ROUTES: Routes = [
   {
-    path: 'dashboard',
+    path: '',
     component: RenterDashboardComponent,
     data: { title: 'Renter Dashboard' },
+  },
+  {
+    path: 'dashboard',
+    component: RenterDashboardComponent,
   },
   {
     path: 'search',

@@ -7,8 +7,8 @@ import {
   ReactiveFormsModule,
 } from '@angular/forms';
 import { RouterModule } from '@angular/router';
-import { Booking } from '../../../interfaces/bookings';
-import { ProductItemComponent } from '../../../components/cards/product-item/product-item.component';
+import { Booking } from '../../interfaces/bookings';
+import { ProductItemComponent } from '../cards/product-item/product-item.component';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import {
   faUser,

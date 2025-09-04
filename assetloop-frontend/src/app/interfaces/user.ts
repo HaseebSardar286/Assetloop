@@ -6,7 +6,7 @@ export interface User {
   email: string;
   phoneNumber?: string;
   password: string;
-  role?: string | 'owner' | 'renter';
+  role: 'owner' | 'renter' | 'admin';
   terms: boolean;
   country: string;
   city: string;
@@ -15,4 +15,10 @@ export interface User {
 
 export interface RegisterForm extends User {
   confirmPassword: string;
+}
+
+export interface LoginForm {
+  email: string;
+  password: string;
+  rememberMe?: boolean;
 }

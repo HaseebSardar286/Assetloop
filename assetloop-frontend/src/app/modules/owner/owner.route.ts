@@ -2,20 +2,19 @@ import { Routes } from '@angular/router';
 import { OwnerDashboardComponent } from './owner-dashboard/owner-dashboard.component';
 import { CreateAssetComponent } from './create-asset/create-asset.component';
 import { OwnerProfileComponent } from './owner-profile/owner-profile.component';
-import { ChatComponent } from '../chat/components/chat/chat.component';
 import { MyListingsComponent } from './my-listing/my-listing.component';
 import { RentalRequestsComponent } from './rental-requests/rental-requests.component';
 
 export const OWNER_ROUTES: Routes = [
   {
     path: '',
-    redirectTo: 'dashboard',
-    pathMatch: 'full',
+    component: OwnerDashboardComponent,
+    data: { title: 'Owner Dashboard' },
   },
+
   {
     path: 'dashboard',
     component: OwnerDashboardComponent,
-    data: { title: 'Owner Dashboard' },
   },
   {
     path: 'assets',

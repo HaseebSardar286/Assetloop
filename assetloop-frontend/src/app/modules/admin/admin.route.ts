@@ -9,9 +9,14 @@ import { SystemSettingsComponent } from './system-settings/system-settings.compo
 
 export const ADMIN_ROUTES: Routes = [
   {
+    path: '',
+    component: AdminDashboardComponent,
+  },
+
+  {
     path: 'dashboard',
     component: AdminDashboardComponent,
-    data: { title: 'Renter Dashboard' },
+    data: { title: 'Admin Dashboard' },
   },
 
   {

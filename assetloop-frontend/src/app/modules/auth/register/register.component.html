@@ -33,7 +33,6 @@
                   name="middleName"
                   [(ngModel)]="user.middleName"
                   #middleName="ngModel"
-                  required
                   class="form-control"
                 />
                 <div
@@ -53,7 +52,6 @@
                   name="lastname"
                   [(ngModel)]="user.lastName"
                   #lastName="ngModel"
-                  required
                   class="form-control"
                 />
                 <div
@@ -109,6 +107,9 @@
                 >
                   Must be at least 6 characters long.
                 </div>
+                <div *ngIf="password.touched" class="text-danger">
+                  Password is required.
+                </div>
               </div>
 
               <div class="mb-3 col-md-6">
@@ -135,7 +136,6 @@
                   name="country"
                   [(ngModel)]="user.country"
                   (change)="onCountryChange(user.country)"
-                  required
                   class="form-control"
                 >
                   <option *ngFor="let c of countries" [value]="c">
@@ -148,7 +148,6 @@
                 <select
                   name="city"
                   [(ngModel)]="user.city"
-                  required
                   class="form-control"
                 >
                   <option *ngFor="let c of cities" [value]="c">{{ c }}</option>
@@ -162,7 +161,6 @@
                   name="address"
                   [(ngModel)]="user.address"
                   #address="ngModel"
-                  required
                   class="form-control"
                   placeholder="House #, Street, Area"
                 />
@@ -180,7 +178,7 @@
                     required
                     class="form-check-input"
                   />
-                  <label class="form-check-label">Rent items</label>
+                  <label class="form-check-label">Rent items (Renter)</label>
                 </div>
                 <div class="form-check form-check-inline">
                   <input
@@ -190,7 +188,7 @@
                     value="owner"
                     class="form-check-input"
                   />
-                  <label class="form-check-label">List my items</label>
+                  <label class="form-check-label">List my items (Owner)</label>
                 </div>
               </div>
             </div>
