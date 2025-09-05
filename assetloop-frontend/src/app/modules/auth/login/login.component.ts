@@ -50,7 +50,8 @@ export class LoginComponent {
         }
       },
       error: (err) => {
-        alert(err.error.message || 'Login failed. Please try again!');
+        console.error('Login failed with error:', err);
+        alert(err.error?.message || 'Login failed due to an unknown error');
       },
     });
   }

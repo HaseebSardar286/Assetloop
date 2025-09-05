@@ -7,20 +7,25 @@ const assetSchema = new mongoose.Schema(
       ref: "User",
       required: true,
     },
-    title: { type: String, required: true },
+    name: { type: String, required: true },
     address: { type: String, required: true },
-    description: { type: String },
+    description: { type: String, required: true },
     price: { type: Number, required: true },
-    startDate: { type: Date, required: true },
-    endDate: { type: Date, required: true },
+    startDate: { type: String, required: false }, // Optional
+    endDate: { type: String, required: false }, // Optional
     status: {
       type: String,
       enum: ["available", "unavailable"],
       default: "available",
     },
-    capacity: { type: Number },
+    category: {
+      type: String,
+      enum: ["car", "apartment", "house", "tool"],
+      required: true,
+    },
+    capacity: { type: Number, required: true },
+    images: [{ type: String }], // Array of file paths
     features: [{ type: String }],
-    image: [{ type: String }],
     amenities: [{ type: String }],
   },
   { timestamps: true }

@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, tap } from 'rxjs';
 import { LoginForm, RegisterForm, User } from '../interfaces/user';
 
 @Injectable({
@@ -15,10 +15,11 @@ export class AuthService {
     return this.http.post<RegisterForm>(`${this.apiUrl}/register`, data);
   }
 
-  login(data: LoginForm) {
-    return this.http.post<{ token: string; user: User }>(
-      `${this.apiUrl}/login`,
-      data
+  login(credentials: any): Observable<any> {
+    return this.http.post(`${this.apiUrl}/login`, credentials).pipe(
+      tap((response: any) => {
+        localStorage.setItem('authToken', response.token); // Ensure this matches
+      })
     );
   }
 

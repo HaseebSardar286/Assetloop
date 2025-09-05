@@ -13,7 +13,7 @@ exports.getBookings = async (req, res) => {
   }
 };
 
-exports.updateBookings = async (req, res) => {
+exports.updateBookingStatus = async (req, res) => {
   try {
     const booking = await booking.findByIdAndUpdate(
       req.params.id,

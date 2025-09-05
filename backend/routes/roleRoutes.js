@@ -1,5 +1,6 @@
-import express from "express";
-import { roleMiddleware } from "../middleware/roleMiddleware.js";
+const express = require("express");
+const authMiddleware = require("../middlewares/authMiddleware");
+const roleMiddleware = require("../middlewares/roleMiddleware");
 
 const router = express.Router();
 
@@ -33,4 +34,4 @@ router.get(
   }
 );
 
-export default router;
+module.exports = router;

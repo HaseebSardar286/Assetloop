@@ -12,7 +12,7 @@
           <div class="card text-white bg-primary">
             <div class="card-body">
               <h5 class="card-title">Total Assets</h5>
-              <p class="card-text display-6">{{ totalAssets }}</p>
+              <p class="card-text display-6">{{ stats.totalAssets }}</p>
             </div>
           </div>
         </div>
@@ -20,7 +20,7 @@
           <div class="card text-white bg-success">
             <div class="card-body">
               <h5 class="card-title">Active Bookings</h5>
-              <p class="card-text display-6">{{ activeBookings.length }}</p>
+              <p class="card-text display-6">{{ stats.activeBookings }}</p>
             </div>
           </div>
         </div>
@@ -28,7 +28,7 @@
           <div class="card text-white bg-info">
             <div class="card-body">
               <h5 class="card-title">Total Earnings</h5>
-              <p class="card-text display-6">PKR {{ totalEarnings }}</p>
+              <p class="card-text display-6">PKR {{ stats.totalEarnings }}</p>
             </div>
           </div>
         </div>
@@ -36,7 +36,7 @@
           <div class="card text-white bg-warning">
             <div class="card-body">
               <h5 class="card-title">Pending Reviews</h5>
-              <p class="card-text display-6">{{ pendingReviews }}</p>
+              <p class="card-text display-6">{{ stats.pendingReviews }}</p>
             </div>
           </div>
         </div>
