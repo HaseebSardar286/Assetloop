@@ -1,0 +1,74 @@
+<div class="d-flex flex-column vh-100">
+  <app-header (logout)="onLogout()"></app-header>
+  <div class="d-flex flex-grow-1">
+    <app-admin-sidebar></app-admin-sidebar>
+    <main class="flex-grow-1 p-4 bg-light">
+      <h2 class="mb-4">Transaction Management</h2>
+      <div class="card">
+        <div class="card-header">All Transactions</div>
+        <div class="card-body">
+          <table class="table table-striped">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>User</th>
+                <th>Listing</th>
+                <th>Amount (PKR)</th>
+                <th>Date</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let transaction of transactions">
+                <td>{{ transaction.id }}</td>
+                <td>{{ transaction.user }}</td>
+                <td>{{ transaction.listing }}</td>
+                <td>{{ transaction.amount }}</td>
+                <td>{{ transaction.date }}</td>
+                <td *ngIf="transaction.status === 'Completed'">
+                  <button class="btn btn-success btn-sm" disabled>
+                    Completed
+                  </button>
+                </td>
+                <td *ngIf="transaction.status === 'Pending'">
+                  <button class="btn btn-warning btn-sm" disabled>
+                    Pending
+                  </button>
+                </td>
+                <td *ngIf="transaction.status === 'Failed'">
+                  <button class="btn btn-danger btn-sm" disabled>Failed</button>
+                </td>
+                <td>
+                  <button
+                    *ngIf="!transaction.isConfirmed"
+                    class="btn btn-success btn-sm me-2"
+                    (click)="confirmTransaction(transaction)"
+                  >
+                    Confirm
+                  </button>
+
+                  <button
+                    *ngIf="!transaction.isConfirmed"
+                    class="btn btn-danger btn-sm me-2"
+                    (click)="cancelTransaction(transaction)"
+                  >
+                    Cancel
+                  </button>
+
+                  <button
+                    *ngIf="transaction.isConfirmed"
+                    class="btn btn-info btn-sm"
+                    (click)="markCompleted(transaction)"
+                  >
+                    Mark Completed
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>

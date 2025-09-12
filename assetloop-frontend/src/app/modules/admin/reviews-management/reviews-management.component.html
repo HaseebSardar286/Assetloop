@@ -1,0 +1,57 @@
+<div class="d-flex flex-column vh-100">
+  <app-header (logout)="onLogout()"></app-header>
+  <div class="d-flex flex-grow-1">
+    <app-admin-sidebar></app-admin-sidebar>
+    <main class="flex-grow-1 p-4 bg-light">
+      <h2 class="mb-4">Reviews Management</h2>
+      <div class="card">
+        <div class="card-header">All Reviews</div>
+        <div class="card-body">
+          <table class="table table-striped">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Reviewer</th>
+                <th>Listing/User</th>
+                <th>Rating</th>
+                <th>Comment</th>
+                <th>Date</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let review of reviews">
+                <td>{{ review.id }}</td>
+                <td>{{ review.reviewer }}</td>
+                <td>{{ review.listing }}</td>
+                <td>{{ review.rating }} ★</td>
+                <td>{{ review.comment }}</td>
+                <td>{{ review.date }}</td>
+                <td>
+                  <button
+                    class="btn btn-info btn-sm me-2"
+                    [routerLink]="['/admin/view-review', review.id]"
+                  >
+                    View
+                  </button>
+                  <button
+                    class="btn btn-warning btn-sm me-2"
+                    [routerLink]="['/admin/edit-review', review.id]"
+                  >
+                    Edit
+                  </button>
+                  <button
+                    class="btn btn-danger btn-sm"
+                    (click)="deleteReview(review.id)"
+                  >
+                    Delete
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>

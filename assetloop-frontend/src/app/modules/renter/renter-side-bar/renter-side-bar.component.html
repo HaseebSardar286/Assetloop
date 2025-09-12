@@ -1,0 +1,87 @@
+<div class="d-flex flex-column flex-shrink-0 p-3 text-black vh-100 sidebar">
+  <ul class="nav nav-pills flex-column mb-auto">
+    <li class="nav-item">
+      <a
+        class="nav-link border-bottom border-top btn-primary"
+        (click)="navigateTo('/renter/dashboard')"
+        [class.active]="isActive('/renter/dashboard')"
+      >
+        <fa-icon [icon]="faTachometerAlt" class="btn-primary"></fa-icon>
+        Dashboard
+      </a>
+    </li>
+    <li class="nav-item">
+      <a
+        class="nav-link border-bottom border-top btn-primary"
+        (click)="navigateTo('/renter/search')"
+        [class.active]="isActive('/renter/search')"
+      >
+        <fa-icon [icon]="faSearch"></fa-icon> Search Listings
+      </a>
+    </li>
+    <li class="nav-item">
+      <a
+        class="nav-link border-bottom border-top btn-primary"
+        (click)="navigateTo('/renter/booking-history')"
+        [class.active]="isActive('/renter/booking-history')"
+      >
+        <fa-icon [icon]="faCalendarCheck"></fa-icon> My Bookings
+      </a>
+    </li>
+    <li class="nav-item">
+      <a
+        class="nav-link border-bottom border-top btn-primary"
+        (click)="navigateTo('/renter/requested-assets')"
+        [class.active]="isActive('/renter/requested-assets')"
+      >
+        <fa-icon [icon]="faClipboardList"></fa-icon> Requested Assets
+      </a>
+    </li>
+    <li class="nav-item">
+      <a
+        class="nav-link border-bottom border-top btn-primary"
+        (click)="navigateTo('/renter/favourites')"
+        [class.active]="isActive('/renter/favourites')"
+      >
+        <fa-icon [icon]="faHeart"></fa-icon> Favourites
+      </a>
+    </li>
+    <li class="nav-item">
+      <a
+        class="nav-link border-bottom border-top btn-primary"
+        (click)="navigateTo('/renter/cart')"
+        [class.active]="isActive('/renter/cart')"
+      >
+        <fa-icon [icon]="faShoppingCart"></fa-icon> Cart
+      </a>
+    </li>
+    <li class="nav-item">
+      <a
+        class="nav-link border-bottom border-top btn-primary"
+        (click)="navigateTo('/renter/chat')"
+        [class.active]="isActive('/renter/chat')"
+      >
+        <fa-icon [icon]="faEnvelope"></fa-icon> Messages
+      </a>
+    </li>
+    <li class="nav-item">
+      <a
+        class="nav-link border-bottom border-top btn-primary"
+        (click)="navigateTo('/renter/payments')"
+        [class.active]="isActive('/renter/payments')"
+      >
+        <fa-icon [icon]="faCreditCard"></fa-icon> Payments
+      </a>
+    </li>
+
+    <li class="nav-item">
+      <a
+        class="nav-link border-bottom border-top btn-primary"
+        (click)="navigateTo('/renter/profile')"
+        [class.active]="isActive('/renter/profile')"
+      >
+        <fa-icon [icon]="faUserCog"></fa-icon> Profile & Settings
+      </a>
+    </li>
+  </ul>
+</div>

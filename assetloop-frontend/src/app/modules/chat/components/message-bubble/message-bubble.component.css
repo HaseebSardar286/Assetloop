@@ -1,0 +1,28 @@
+.message-bubble {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+  max-width: 70%;
+}
+
+.me .bubble-content {
+  background-color: #007bff;
+  color: white;
+  border-radius: 10px 0 10px 10px;
+  margin-left: auto;
+}
+
+.bubble-content {
+  background-color: #e9ecef;
+  padding: 0.5rem 1rem;
+  border-radius: 10px 10px 0 10px;
+}
+
+.profile-pic {
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.text-muted {
+  font-size: 0.75rem;
+}

@@ -1,0 +1,50 @@
+<div class="card h-100 shadow-sm position-relative">
+  <img
+    [src]="asset.images[0] || '/images/default.jpg'"
+    class="card-img-top"
+    [alt]="asset.name"
+  />
+  <div class="card-body">
+    <h5 class="card-title">{{ asset.name }}</h5>
+    <p class="card-text">
+      <strong>Category:</strong> {{ asset.category || "N/A" }}
+    </p>
+    <p class="card-text"><strong>Location:</strong> {{ asset.address }}</p>
+    <p class="card-text"><strong>Price:</strong> ${{ asset.price }}/night</p>
+    <p class="card-text">{{ asset.description }}</p>
+    <p class="card-text">
+      <small class="text-muted">{{ asset.amenities.join(", ") }}</small>
+    </p>
+    <span *ngIf="likedCount" class="badge bg-info">{{ likedCount }} Likes</span>
+    <input
+      type="text"
+      class="form-control mt-2"
+      placeholder="Add a note..."
+      (input)="onNotesChange($event)"
+    />
+  </div>
+  <div class="card-footer d-flex justify-content-between align-items-center">
+    <div>
+      <button
+        class="btn btn-outline-danger btn-sm me-2"
+        (click)="onRemoveFavourite()"
+      >
+        <fa-icon [icon]="faTrash" *ngIf="isFavourite"></fa-icon>
+        <fa-icon [icon]="faHeart" *ngIf="!isFavourite"></fa-icon>
+        {{ isFavourite ? "Remove Favourite" : "Add to Favourites" }}
+      </button>
+      <button
+        class="btn btn-outline-primary btn-sm me-2"
+        (click)="onAddToCart()"
+      >
+        <fa-icon [icon]="faShoppingCart"></fa-icon> Book Now
+      </button>
+      <button class="btn btn-outline-secondary btn-sm" (click)="onShare()">
+        <fa-icon [icon]="faShare"></fa-icon> Share
+      </button>
+    </div>
+    <button class="btn btn-primary btn-sm" (click)="onViewListing()">
+      View Listing
+    </button>
+  </div>
+</div>

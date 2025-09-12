@@ -1,0 +1,74 @@
+<div class="d-flex flex-column vh-100">
+  <app-header (logout)="onLogout()"></app-header>
+  <div class="d-flex flex-grow-1">
+    <app-owner-side-bar
+      (logout)="onLogout()"
+      (navigate)="onNavigate($event)"
+    ></app-owner-side-bar>
+    <main class="flex-grow-1 p-4 bg-light">
+      <h2 class="mb-4">Owner Dashboard</h2>
+      <div class="row">
+        <div class="col-md-3 mb-4">
+          <div class="card text-white bg-primary">
+            <div class="card-body">
+              <h5 class="card-title">Total Assets</h5>
+              <p class="card-text display-6">{{ stats.totalAssets }}</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-3 mb-4">
+          <div class="card text-white bg-success">
+            <div class="card-body">
+              <h5 class="card-title">Active Bookings</h5>
+              <p class="card-text display-6">{{ stats.activeBookings }}</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-3 mb-4">
+          <div class="card text-white bg-info">
+            <div class="card-body">
+              <h5 class="card-title">Total Earnings</h5>
+              <p class="card-text display-6">PKR {{ stats.totalEarnings }}</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-3 mb-4">
+          <div class="card text-white bg-warning">
+            <div class="card-body">
+              <h5 class="card-title">Pending Reviews</h5>
+              <p class="card-text display-6">{{ stats.pendingReviews }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-6 mb-4">
+          <div class="card">
+            <div class="card-header">Active Bookings</div>
+            <ul class="list-group list-group-flush">
+              <li
+                class="list-group-item"
+                *ngFor="let booking of activeBookings"
+              >
+                {{ booking.name }} - {{ booking.address }} ({{
+                  booking.startDate
+                }}, {{ booking.totalPaid }}, {{ booking.status }})
+              </li>
+            </ul>
+          </div>
+        </div>
+        <div class="col-md-6 mb-4">
+          <div class="card">
+            <div class="card-header">Quick Actions</div>
+            <div class="card-body">
+              <button class="btn btn-primary w-100 mb-2">Manage Assets</button>
+              <button class="btn btn-success w-100 mb-2">View Earnings</button>
+              <button class="btn btn-info w-100 mb-2">Check Reviews</button>
+              <button class="btn btn-warning w-100">Resolve Disputes</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>

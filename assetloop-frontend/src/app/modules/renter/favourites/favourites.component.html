@@ -1,0 +1,26 @@
+<div class="d-flex flex-column vh-100">
+  <app-header (logout)="logout()"></app-header>
+  <div class="d-flex flex-grow-1">
+    <app-renter-side-bar></app-renter-side-bar>
+    <main class="flex-grow-1 p-4 bg-light">
+      <h2 class="mb-4">Favourites</h2>
+      <div class="row g-4" *ngIf="favouriteItems.length; else noItems">
+        <div class="col-md-4" *ngFor="let item of favouriteItems">
+          <app-booking-item
+            [booking]="item"
+            [isFavourite]="true"
+            [likedCount]="likedCounts[item.id]"
+            (removeFavourite)="removeFavourite($event)"
+            (addToCart)="addToCart($event)"
+            (viewListing)="viewDetails($event)"
+            (share)="share($event)"
+            (updateNotes)="updateNotes($event)"
+          ></app-booking-item>
+        </div>
+      </div>
+      <ng-template #noItems>
+        <div class="text-center py-5">No favourite items found.</div>
+      </ng-template>
+    </main>
+  </div>
+</div>

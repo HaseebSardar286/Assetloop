@@ -1,0 +1,230 @@
+<div class="container mt-4">
+  <div class="row justify-content-center">
+    <div class="col-md-5">
+      <div class="card">
+        <div class="card-body">
+          <h2 class="card-title text-center">Create an Account</h2>
+          <p class="text-center text-muted">Join AssetLoop today</p>
+
+          <form #registerForm="ngForm" (ngSubmit)="onSubmit()">
+            <div class="row">
+              <div class="mb-3 col-md-6">
+                <label class="form-check-label">First Name</label>
+                <input
+                  type="text"
+                  name="firstName"
+                  [(ngModel)]="user.firstName"
+                  #firstName="ngModel"
+                  required
+                  class="form-control"
+                />
+                <div
+                  *ngIf="firstName.invalid && firstName.touched"
+                  class="text-danger"
+                >
+                  First Name is required.
+                </div>
+              </div>
+
+              <div class="mb-3 col-md-6">
+                <label class="form-check-label">Middle Name</label>
+                <input
+                  type="text"
+                  name="middleName"
+                  [(ngModel)]="user.middleName"
+                  #middleName="ngModel"
+                  class="form-control"
+                />
+                <div
+                  *ngIf="middleName.invalid && middleName.touched"
+                  class="text-danger"
+                >
+                  Middle Name is required.
+                </div>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="mb-3 col-md-6">
+                <label class="form-check-label">Last Name</label>
+                <input
+                  type="text"
+                  name="lastname"
+                  [(ngModel)]="user.lastName"
+                  #lastName="ngModel"
+                  class="form-control"
+                />
+                <div
+                  *ngIf="lastName.invalid && lastName.touched"
+                  class="text-danger"
+                >
+                  Last Name is required.
+                </div>
+              </div>
+
+              <div class="mb-3 col-md-6">
+                <label class="form-check-label">Phone Number (Optional)</label>
+                <input
+                  type="tel"
+                  name="phoneNumber"
+                  [(ngModel)]="user.phoneNumber"
+                  #phoneNumber="ngModel"
+                  class="form-control"
+                />
+              </div>
+            </div>
+            <div class="mb-3">
+              <label class="form-check-label">Email</label>
+              <input
+                type="email"
+                name="email"
+                [(ngModel)]="user.email"
+                #email="ngModel"
+                required
+                email
+                class="form-control"
+              />
+              <div *ngIf="email.invalid && email.touched" class="text-danger">
+                Valid email is required.
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="mb-3 col-md-6">
+                <label class="form-check-label">Password</label>
+                <input
+                  type="password"
+                  name="password"
+                  [(ngModel)]="user.password"
+                  #password="ngModel"
+                  required
+                  minlength="6"
+                  class="form-control"
+                />
+                <div
+                  *ngIf="password.errors?.['minlength'] && password.touched"
+                  class="text-danger"
+                >
+                  Must be at least 6 characters long.
+                </div>
+                <div *ngIf="password.touched" class="text-danger">
+                  Password is required.
+                </div>
+              </div>
+
+              <div class="mb-3 col-md-6">
+                <label class="form-check-label">Confirm Password</label>
+                <input
+                  type="password"
+                  name="confirmPassword"
+                  [(ngModel)]="user.confirmPassword"
+                  #confirmPassword="ngModel"
+                  required
+                  class="form-control"
+                />
+                <div
+                  *ngIf="confirmPassword.invalid && confirmPassword.touched"
+                  class="text-danger"
+                >
+                  Confirm Password is required.
+                </div>
+              </div>
+
+              <div class="mb-3 col-md-6">
+                <label class="form-label">Country</label>
+                <select
+                  name="country"
+                  [(ngModel)]="user.country"
+                  (change)="onCountryChange(user.country || '')"
+                  class="form-control"
+                >
+                  <option *ngFor="let c of countries" [value]="c">
+                    {{ c }}
+                  </option>
+                </select>
+              </div>
+              <div class="mb-3 col-md-6">
+                <label class="form-label">City</label>
+                <select
+                  name="city"
+                  [(ngModel)]="user.city"
+                  class="form-control"
+                >
+                  <option *ngFor="let c of cities" [value]="c">{{ c }}</option>
+                </select>
+              </div>
+
+              <div class="mb-3 col-md-12">
+                <label class="form-check-label">Address</label>
+                <input
+                  type="text"
+                  name="address"
+                  [(ngModel)]="user.address"
+                  #address="ngModel"
+                  class="form-control"
+                  placeholder="House #, Street, Area"
+                />
+              </div>
+            </div>
+            <div class="mb-3">
+              <strong class="form-label">I want to:</strong>
+              <div>
+                <div class="form-check form-check-inline">
+                  <input
+                    type="radio"
+                    name="role"
+                    [(ngModel)]="user.role"
+                    value="renter"
+                    required
+                    class="form-check-input"
+                  />
+                  <label class="form-check-label">Rent items (Renter)</label>
+                </div>
+                <div class="form-check form-check-inline">
+                  <input
+                    type="radio"
+                    name="role"
+                    [(ngModel)]="user.role"
+                    value="owner"
+                    class="form-check-input"
+                  />
+                  <label class="form-check-label">List my items (Owner)</label>
+                </div>
+              </div>
+            </div>
+
+            <div class="mb-3 form-check">
+              <input
+                type="checkbox"
+                name="terms"
+                [(ngModel)]="user.terms"
+                #terms="ngModel"
+                required
+                class="form-check-input"
+              />
+              <label class="form-check-label"
+                >I agree to the Terms of Service and Privacy Policy</label
+              >
+              <div *ngIf="terms.invalid && terms.touched" class="text-danger">
+                You must agree to the terms.
+              </div>
+            </div>
+
+            <button
+              type="submit"
+              [disabled]="!registerForm.valid"
+              class="btn btn-primary w-100"
+            >
+              Create Account
+            </button>
+
+            <p class="text-center mt-3">
+              Already have an account?
+              <a (click)="login()" class="text-decoration-none">Sign In</a>
+            </p>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,76 @@
+<div class="d-flex flex-column vh-100">
+  <app-header (logout)="onLogout()"></app-header>
+  <div class="d-flex flex-grow-1">
+    <app-renter-side-bar
+      (logout)="onLogout()"
+      (navigate)="onNavigate($event)"
+    ></app-renter-side-bar>
+    <main class="flex-grow-1 p-4">
+      <h2 class="mb-4">Requested Assets</h2>
+      <!-- <div class="card">
+        <div class="card-header">Pending Requests</div>
+        <div class="card-body">
+          <table class="table table-striped">
+            <thead>
+              <tr>
+                <th>Requester</th>
+                <th>Asset</th>
+                <th>Request Date</th>
+                <th>Amount (PKR)</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let request of requests">
+                <td>{{ request.requester }}</td>
+                <td>{{ request.asset }}</td>
+                <td>{{ request.date }}</td>
+                <td>{{ request.amount }}</td>
+                <td>{{ request.status }}</td>
+                <td>
+                  <button class="btn btn-primary btn-sm me-2">Details</button>
+                  <button
+                    *ngIf="request.status === 'pending'"
+                    class="btn btn-success btn-sm me-2"
+                    (click)="updateStatus(request.id, 'confirmed')"
+                  >
+                    Approve
+                  </button>
+                  <button
+                    *ngIf="request.status === 'pending'"
+                    class="btn btn-danger btn-sm"
+                    (click)="updateStatus(request.id, 'cancelled')"
+                  >
+                    Reject
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div> -->
+
+      <ng-container *ngIf="loading">
+        <div class="text-center">Loading bookings...</div>
+      </ng-container>
+      <div *ngIf="error" class="alert alert-danger">{{ error }}</div>
+      <ng-container *ngIf="!loading && bookings[activeTab].length">
+        <div class="row g-4">
+          <div class="col-md-4" *ngFor="let booking of bookings[activeTab]">
+            <app-booking-item
+              [booking]="booking"
+              [activeTab]="activeTab"
+              (viewListing)="viewListing($event)"
+              (leaveReview)="leaveReview($event)"
+              (share)="share($event)"
+            ></app-booking-item>
+          </div>
+        </div>
+      </ng-container>
+      <ng-template #noBookings>
+        <div class="text-center">No bookings found.</div>
+      </ng-template>
+    </main>
+  </div>
+</div>

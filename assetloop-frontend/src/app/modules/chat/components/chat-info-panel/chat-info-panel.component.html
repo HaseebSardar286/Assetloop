@@ -1,0 +1,16 @@
+<div class="info-panel" *ngIf="chatId">
+  <app-asset-preview-card
+    *ngIf="getSelectedChat()?.asset"
+    [asset]="getSelectedChat()!.asset"
+  ></app-asset-preview-card>
+  <app-user-profile-card
+    *ngIf="getSelectedChat()?.otherUser"
+    [user]="getSelectedChat()!.otherUser"
+    [userRole]="userRole"
+  ></app-user-profile-card>
+  <div class="actions">
+    <button class="btn btn-primary w-100 mb-2">View Listing</button>
+    <button class="btn btn-success w-100 mb-2">Book Now</button>
+    <button class="btn btn-danger w-100">Report User</button>
+  </div>
+</div>

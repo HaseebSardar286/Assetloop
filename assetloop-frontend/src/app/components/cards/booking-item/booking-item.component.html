@@ -1,0 +1,74 @@
+<div class="card h-100 shadow-sm position-relative">
+  <img
+    [src]="booking.imageUrl || '/images/default.jpg'"
+    class="card-img-top"
+    [alt]="booking.name"
+  />
+  <div class="card-body">
+    <h5 class="card-title">{{ booking.name }}</h5>
+    <p class="card-text">
+      <strong>Category:</strong> {{ booking.category || "N/A" }}
+    </p>
+    <p class="card-text"><strong>Location:</strong> {{ booking.address }}</p>
+    <p class="card-text">
+      <strong>Price:</strong> ${{ booking.price || booking.totalPaid || 0 }}
+    </p>
+    <span
+      class="badge me-1"
+      [ngClass]="{
+        'bg-success': booking.status === 'confirmed',
+        'bg-warning': booking.status === 'pending',
+        'bg-danger': booking.status === 'cancelled'
+      }"
+      >{{ booking.status }}</span
+    >
+    <span *ngIf="likedCount" class="badge bg-info">{{ likedCount }} Likes</span>
+    <input
+      type="text"
+      class="form-control mt-2"
+      placeholder="Add a note..."
+      (input)="onNotesChange($event)"
+    />
+  </div>
+  <div class="card-footer d-flex justify-content-between align-items-center">
+    <div>
+      <button
+        class="btn btn-outline-danger btn-sm me-2"
+        (click)="onRemoveFavourite()"
+      >
+        <fa-icon [icon]="faTrash" *ngIf="isFavourite"></fa-icon>
+        <fa-icon [icon]="faHeart" *ngIf="!isFavourite"></fa-icon>
+      </button>
+      <button
+        class="btn btn-outline-primary btn-sm me-2"
+        (click)="onAddToCart()"
+      >
+        <fa-icon [icon]="faShoppingCart"></fa-icon>
+      </button>
+      <button class="btn btn-outline-secondary btn-sm" (click)="onShare()">
+        <fa-icon [icon]="faShare"></fa-icon>
+      </button>
+    </div>
+    <button class="btn btn-primary btn-sm" (click)="onViewListing()">
+      View Listing
+    </button>
+    <button
+      class="btn btn-danger btn-sm"
+      *ngIf="activeTab === 'upcoming' && booking.status !== 'cancelled'"
+      (click)="onCancelBooking()"
+    >
+      Cancel
+    </button>
+    <button
+      class="btn btn-success btn-sm"
+      *ngIf="
+        activeTab === 'past' &&
+        booking.status === 'completed' &&
+        !booking.review
+      "
+      (click)="onLeaveReview()"
+    >
+      Leave Review
+    </button>
+  </div>
+</div>

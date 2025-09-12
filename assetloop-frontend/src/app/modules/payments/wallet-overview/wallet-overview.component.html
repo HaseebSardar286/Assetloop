@@ -1,0 +1,25 @@
+<div class="wallet-card">
+  <h3>Wallet Balance</h3>
+  <p class="balance">PKR {{ currentBalance }}</p>
+</div>
+<div class="section">
+  <h4>Pending Payments</h4>
+  <ul class="list-group">
+    <li class="list-group-item" *ngFor="let payment of pendingPayments">
+      {{ payment.type }}: PKR {{ payment.amount }} ({{ payment.status }})
+    </li>
+  </ul>
+</div>
+<div class="section">
+  <h4>Earnings/Refunds</h4>
+  <ul class="list-group">
+    <li class="list-group-item" *ngFor="let earning of earningsRefunds">
+      {{ earning.type }}: PKR {{ earning.amount }} ({{ earning.status }})
+    </li>
+  </ul>
+</div>
+<div class="quick-actions">
+  <button class="btn btn-success">Add Money</button>
+  <button class="btn btn-warning">Withdraw</button>
+  <button class="btn btn-info">Transaction History</button>
+</div>

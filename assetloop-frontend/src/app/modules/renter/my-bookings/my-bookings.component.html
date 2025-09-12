@@ -1,0 +1,60 @@
+<div class="d-flex flex-column vh-100">
+  <app-header (logout)="logout()"></app-header>
+  <div class="d-flex flex-grow-1">
+    <app-renter-side-bar (logout)="logout()"></app-renter-side-bar>
+    <main class="flex-grow-1 p-4 bg-light">
+      <h2 class="mb-4">My Bookings</h2>
+      <ul class="nav nav-tabs mb-4 gap-1">
+        <li class="nav-item">
+          <a
+            class="nav-link"
+            [class.active]="activeTab === 'current'"
+            (click)="setActiveTab('current')"
+            >Current Bookings</a
+          >
+        </li>
+        <li class="nav-item">
+          <a
+            class="nav-link"
+            [class.active]="activeTab === 'past'"
+            (click)="setActiveTab('past')"
+            >Past</a
+          >
+        </li>
+        <li class="nav-item">
+          <a
+            class="nav-link"
+            [class.active]="activeTab === 'cancelled'"
+            (click)="setActiveTab('cancelled')"
+            >Cancelled</a
+          >
+        </li>
+      </ul>
+
+      <ng-container *ngIf="loading">
+        <div class="text-center">Loading bookings...</div>
+      </ng-container>
+      <div *ngIf="error" class="alert alert-danger">{{ error }}</div>
+      <ng-container *ngIf="!loading && bookings[activeTab].length">
+        <div class="row g-4">
+          <div class="col-md-4" *ngFor="let booking of bookings[activeTab]">
+            <app-booking-item
+              [booking]="booking"
+              [activeTab]="activeTab"
+              (viewListing)="viewListing($event)"
+              (cancelBooking)="cancelBooking($event)"
+              (leaveReview)="leaveReview($event)"
+              (removeFavourite)="removeFavourite($event)"
+              (addToCart)="addToCart($event)"
+              (share)="share($event)"
+              (updateNotes)="updateNotes($event)"
+            ></app-booking-item>
+          </div>
+        </div>
+      </ng-container>
+      <ng-template #noBookings>
+        <div class="text-center">No bookings found.</div>
+      </ng-template>
+    </main>
+  </div>
+</div>

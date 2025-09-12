@@ -1,0 +1,26 @@
+<div class="card transaction-card">
+  <div class="card-body">
+    <h6 class="card-title">Transaction #{{ transaction.id }}</h6>
+    <p class="card-text">Amount: PKR {{ transaction.amount }}</p>
+    <p class="card-text">
+      Status:
+      <span *ngIf="transaction.status === 'successful'" class="text-success"
+        >✔ Paid</span
+      >
+      <span *ngIf="transaction.status === 'pending'" class="text-warning"
+        >⏳ Pending</span
+      >
+      <span *ngIf="transaction.status === 'failed'" class="text-danger"
+        >❌ Failed</span
+      >
+    </p>
+    <p class="card-text">
+      Method:
+      <span *ngIf="transaction.method === 'card'">💳</span>
+      <span *ngIf="transaction.method === 'bank'">🏦</span>
+      <span *ngIf="transaction.method === 'wallet'">💸</span>
+      {{ transaction.method }}
+    </p>
+    <p class="card-text">Date: {{ transaction.date }}</p>
+  </div>
+</div>
