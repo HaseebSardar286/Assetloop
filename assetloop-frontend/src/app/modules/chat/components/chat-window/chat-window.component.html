@@ -1,0 +1,20 @@
+<div class="chat-window" *ngIf="chatId">
+  <div class="messages" #messagesContainer>
+    <app-message-bubble
+      *ngFor="let message of messages"
+      [message]="message"
+      [userRole]="userRole"
+    ></app-message-bubble>
+    <div *ngIf="isTyping" class="typing-indicator">Ali is typing...</div>
+  </div>
+  <div class="input-bar">
+    <input
+      type="text"
+      class="form-control"
+      [(ngModel)]="newMessage"
+      (input)="isTyping = true"
+      placeholder="Type a message..."
+    />
+    <button class="btn btn-primary ms-2" (click)="sendMessage()">Send</button>
+  </div>
+</div>

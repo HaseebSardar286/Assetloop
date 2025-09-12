@@ -1,0 +1,335 @@
+<div class="container mt-5">
+  <div class="row justify-content-center">
+    <div class="col-md-8">
+      <div class="card shadow-lg border-1 rounded-3 mb-5">
+        <div class="card-body p-4">
+          <h2 class="card-title text-center fs-3 fw-bold text-primary mb-2">
+            Seller Identity Verification
+          </h2>
+          <p class="text-center text-muted mb-4">
+            Complete the verification steps to activate your account.
+          </p>
+
+          <!-- Updated Progress Bar -->
+          <div class="progress mb-4" style="height: 8px">
+            <div
+              class="progress-bar bg-gradient bg-primary"
+              role="progressbar"
+              [style.width.%]="progress"
+              aria-valuenow="progress"
+              aria-valuemin="0"
+              aria-valuemax="100"
+            ></div>
+          </div>
+
+          <ul class="nav nav-tabs justify-content-between mb-4 border-bottom-0">
+            <li
+              class="nav-item px-3"
+              [ngClass]="{
+                'fw-bold': currentStep === 1,
+                'text-muted': currentStep !== 1
+              }"
+            >
+              <span
+                style="
+                  border-radius: 50px;
+                  background-color: rgb(104, 180, 255);
+                  height: 30px;
+                  width: 30px;
+                  display: inline-flex;
+                  align-items: center;
+                  justify-content: center;
+                  color: white;
+                "
+                >1</span
+              >
+            </li>
+            <li
+              class="nav-item px-3"
+              [ngClass]="{
+                'fw-bold': currentStep === 2,
+                'text-muted': currentStep !== 2
+              }"
+            >
+              <span
+                style="
+                  border-radius: 50px;
+                  background-color: rgb(104, 180, 255);
+                  height: 30px;
+                  width: 30px;
+                  display: inline-flex;
+                  align-items: center;
+                  justify-content: center;
+                  color: white;
+                "
+                >2</span
+              >
+            </li>
+            <li
+              class="nav-item px-3"
+              [ngClass]="{
+                'fw-bold': currentStep === 3,
+                'text-muted': currentStep !== 3
+              }"
+            >
+              <span
+                style="
+                  border-radius: 50px;
+                  background-color: rgb(104, 180, 255);
+                  height: 30px;
+                  width: 30px;
+                  display: inline-flex;
+                  align-items: center;
+                  justify-content: center;
+                  color: white;
+                "
+                >3</span
+              >
+            </li>
+            <li
+              class="nav-item px-3"
+              [ngClass]="{
+                'fw-bold': currentStep === 4,
+                'text-muted': currentStep !== 4
+              }"
+            >
+              <span
+                style="
+                  border-radius: 50px;
+                  background-color: rgb(104, 180, 255);
+                  height: 30px;
+                  width: 30px;
+                  display: inline-flex;
+                  align-items: center;
+                  justify-content: center;
+                  color: white;
+                "
+                >4</span
+              >
+            </li>
+          </ul>
+
+          <form #verifyForm="ngForm" class="needs-validation" novalidate>
+            <!-- Step 1: Upload ID -->
+            <div *ngIf="currentStep === 1" class="step-content">
+              <h5 class="fw-bold text-primary mb-3">Upload ID Card</h5>
+              <p class="fs-0.1 mb-5">
+                Please upload clear photos of the front and back of your
+                government-issued ID card
+              </p>
+              <div class="row g-3">
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label for="idFront" class="form-label fw-medium"
+                      >ID Front</label
+                    >
+                    <input
+                      type="file"
+                      id="idFront"
+                      (change)="onFileChange($event, 'idFront')"
+                      accept="image/*"
+                      class="form-control"
+                      required
+                    />
+                    <div class="invalid-feedback">
+                      Please upload the front of your ID.
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label for="idBack" class="form-label fw-medium"
+                      >ID Back</label
+                    >
+                    <input
+                      type="file"
+                      id="idBack"
+                      (change)="onFileChange($event, 'idBack')"
+                      accept="image/*"
+                      class="form-control"
+                      required
+                    />
+                    <div class="invalid-feedback">
+                      Please upload the back of your ID.
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Step 2: Personal Information -->
+            <div *ngIf="currentStep === 2" class="step-content">
+              <h5 class="fw-bold text-primary mb-3">Personal Information</h5>
+              <p class="fs-0.1 mb-5">
+                Please enter your information as it appears on your ID card.
+              </p>
+              <div class="row g-3">
+                <div class="col-6">
+                  <div class="form-group">
+                    <label for="fullName" class="form-label fw-medium"
+                      >Full Name</label
+                    >
+                    <input
+                      type="text"
+                      id="fullName"
+                      name="fullName"
+                      class="form-control"
+                      required
+                    />
+                    <div class="invalid-feedback">
+                      Please enter your full name.
+                    </div>
+                  </div>
+                </div>
+                <div class="col-6">
+                  <div class="form-group">
+                    <label for="dateOfBirth" class="form-label fw-medium"
+                      >Date of Birth</label
+                    >
+                    <input
+                      type="date"
+                      id="dateOfBirth"
+                      name="dateOfBirth"
+                      class="form-control"
+                      required
+                    />
+                    <div class="invalid-feedback">
+                      Please select your date of birth.
+                    </div>
+                  </div>
+                </div>
+                <div class="col-12">
+                  <div class="form-group">
+                    <label for="idNumber" class="form-label fw-medium"
+                      >CNIC Number</label
+                    >
+                    <input
+                      type="text"
+                      id="idNumber"
+                      name="idNumber"
+                      class="form-control"
+                      required
+                    />
+                    <div class="invalid-feedback">
+                      Please enter your ID number.
+                    </div>
+                  </div>
+                </div>
+
+                <div class="col-12">
+                  <div class="form-group">
+                    <label for="address" class="form-label fw-medium"
+                      >Address</label
+                    >
+                    <textarea
+                      id="address"
+                      name="address"
+                      class="form-control"
+                      rows="3"
+                      required
+                    ></textarea>
+                    <div class="invalid-feedback">
+                      Please enter your address.
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Step 3: Selfie -->
+            <div *ngIf="currentStep === 3" class="step-content">
+              <h5 class="fw-bold text-primary mb-3">Upload Selfie</h5>
+              <div class="form-group">
+                <label for="selfie" class="form-label fw-medium"
+                  >Selfie Photo</label
+                >
+                <input
+                  type="file"
+                  id="selfie"
+                  (change)="onFileChange($event, 'selfie')"
+                  accept="image/*"
+                  class="form-control"
+                  required
+                />
+                <div class="invalid-feedback">Please upload your selfie.</div>
+              </div>
+              <div class="alert alert-info mt-3 p-2">
+                <small
+                  ><i class="bi bi-info-circle"></i> Tips: Good lighting, no
+                  glasses/hats, neutral expression.</small
+                >
+              </div>
+            </div>
+
+            <!-- Step 4: Review & Submit -->
+            <div *ngIf="currentStep === 4" class="step-content">
+              <h5 class="fw-bold text-primary mb-3">Review Your Information</h5>
+              <div class="list-group">
+                <div class="list-group-item">
+                  <strong>Full Name:</strong>
+                  <span class="text-muted">Not provided</span>
+                </div>
+                <div class="list-group-item">
+                  <strong>ID Number:</strong>
+                  <span class="text-muted">Not provided</span>
+                </div>
+                <div class="list-group-item">
+                  <strong>Date of Birth:</strong>
+                  <span class="text-muted">Not provided</span>
+                </div>
+                <div class="list-group-item">
+                  <strong>Address:</strong>
+                  <span class="text-muted">Not provided</span>
+                </div>
+                <div class="list-group-item">
+                  <strong>ID Front:</strong>
+                  <span class="text-muted">Not uploaded</span>
+                </div>
+                <div class="list-group-item">
+                  <strong>ID Back:</strong>
+                  <span class="text-muted">Not uploaded</span>
+                </div>
+                <div class="list-group-item">
+                  <strong>Selfie:</strong>
+                  <span class="text-muted">Not uploaded</span>
+                </div>
+              </div>
+            </div>
+          </form>
+
+          <!-- Navigation Buttons -->
+          <div class="d-flex justify-content-between mt-4">
+            <!-- Previous Button (only shown if currentStep > 1) -->
+            <button
+              class="btn btn-outline-secondary btn-small"
+              (click)="previousStep()"
+              *ngIf="currentStep > 1"
+            >
+              <i class="bi bi-arrow-left"></i> Previous
+            </button>
+
+            <!-- Spacer to maintain layout consistency -->
+            <div *ngIf="currentStep === 1" class="flex-grow-1"></div>
+
+            <!-- Next or Submit Button (always on the right) -->
+            <button
+              class="btn btn-small"
+              [ngClass]="{
+                'btn-primary': currentStep < 4,
+                'btn-success': currentStep === 4
+              }"
+              (click)="currentStep < 4 ? nextStep(verifyForm) : submit()"
+            >
+              <span *ngIf="currentStep < 4"
+                >Next <i class="bi bi-arrow-right"></i
+              ></span>
+              <span *ngIf="currentStep === 4"
+                >Submit <i class="bi bi-check-circle"></i
+              ></span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,47 @@
+<div class="container mt-5">
+  <div class="row justify-content-center">
+    <div class="col-md-5">
+      <div class="card">
+        <div class="card-body">
+          <h2 class="card-title text-center">Verify OTP</h2>
+          <p class="text-center text-muted">
+            Enter the 6-digit code sent to your email
+          </p>
+
+          <form #otpForm="ngForm" (ngSubmit)="onSubmit()">
+            <div class="mb-4">
+              <label class="form-check-label">OTP</label>
+              <input
+                type="text"
+                name="otp"
+                (ngModel)="(otp)"
+                #otp="ngModel"
+                required
+                pattern="[0-9]{6}"
+                maxlength="6"
+                class="form-control"
+                placeholder="Enter 6-digit code"
+              />
+              <div *ngIf="otp.invalid && otp.touched" class="text-danger">
+                A valid 6-digit OTP is required.
+              </div>
+            </div>
+
+            <button
+              type="submit"
+              [disabled]="!otpForm.valid"
+              class="btn btn-primary w-100"
+            >
+              Verify OTP
+            </button>
+
+            <p class="text-center mt-4">
+              Didn't receive the code?
+              <a (click)="resendOtp()" class="text-decoration-none">Resend</a>
+            </p>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

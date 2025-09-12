@@ -1,0 +1,11 @@
+.conversation-card {
+  cursor: pointer;
+}
+
+.conversation-card:hover {
+  background-color: #f8f9fa;
+}
+
+.rounded-circle {
+  object-fit: cover;
+}

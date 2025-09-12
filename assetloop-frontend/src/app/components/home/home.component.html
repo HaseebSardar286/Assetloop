@@ -1,0 +1,152 @@
+<div class="container-fluid p-0">
+  <!-- Header -->
+  <header
+    class="bg-light p-3 d-flex justify-content-between align-items-center"
+  >
+    <a class="navbar-brand text-black logo">AssetLoop</a>
+    <form
+      class="d-flex w-100 px-5"
+      [formGroup]="searchForm"
+      (ngSubmit)="applyFilters()"
+    >
+      <input
+        class="form-control me-2 rounded-5"
+        type="search"
+        formControlName="keywords"
+        placeholder="Search listings..."
+      />
+      <button class="btn btn-outline-success rounded-5" type="submit">
+        <fa-icon [icon]="faSearch"></fa-icon>
+      </button>
+    </form>
+    <div class="d-flex gap-2 px-2">
+      <button type="button" class="btn btn-primary rounded-5">
+        <fa-icon [icon]="faBell"></fa-icon>
+      </button>
+      <button type="button" class="btn btn-danger rounded-5">
+        <fa-icon [icon]="faHeart"></fa-icon>
+      </button>
+    </div>
+    <div class="px-1" id="navbarNav">
+      <ul class="navbar-nav ms-auto">
+        <li class="nav-item dropdown">
+          <a
+            class="nav-link text-black"
+            id="userDropdown"
+            role="button"
+            data-bs-toggle="dropdown"
+            aria-expanded="false"
+          >
+            <button type="button" class="btn btn-dark rounded-5">
+              <fa-icon [icon]="faUser"></fa-icon>
+            </button>
+          </a>
+          <ul
+            class="dropdown-menu dropdown-menu-end"
+            aria-labelledby="userDropdown"
+          >
+            <li><a class="dropdown-item" href="#">Help/Support</a></li>
+            <li><a class="dropdown-item" (click)="logout.emit()">Logout</a></li>
+          </ul>
+        </li>
+      </ul>
+    </div>
+  </header>
+
+  <!-- Filters -->
+  <div class="filters p-3 bg-light d-flex gap-2">
+    <form
+      [formGroup]="searchForm"
+      class="d-flex gap-2 w-100 align-items-center"
+    >
+      <select class="form-select" formControlName="category">
+        <option value="All Categories">All Categories</option>
+        <option value="car">Car</option>
+        <option value="apartment">Apartment</option>
+        <option value="house">House</option>
+        <option value="tool">Tool</option>
+      </select>
+      <input
+        type="number"
+        class="form-control"
+        placeholder="Min Price"
+        formControlName="minPrice"
+      />
+      <input
+        type="number"
+        class="form-control"
+        placeholder="Max Price"
+        formControlName="maxPrice"
+      />
+      <select class="form-select" (change)="changeSort($event)">
+        <option value="recommended">Sort: Recommended</option>
+        <option value="priceLowToHigh">Price: Low to High</option>
+        <option value="priceHighToLow">Price: High to Low</option>
+      </select>
+      <button type="button" class="btn btn-primary" (click)="applyFilters()">
+        Apply Filters
+      </button>
+      <button
+        type="button"
+        class="btn btn-outline-secondary"
+        (click)="clearFilters()"
+      >
+        Clear Filters
+      </button>
+    </form>
+  </div>
+
+  <!-- Error Display -->
+  <div class="p-4" *ngIf="error">
+    <div class="alert alert-danger">{{ error }}</div>
+  </div>
+
+  <!-- Assets Grid -->
+  <div class="p-4">
+    <div class="row g-3">
+      <div class="col-md-3" *ngFor="let asset of displayedAssets">
+        <app-product-item
+          [asset]="asset"
+          [isFavourite]="false"
+          (viewListing)="viewDetails($event)"
+          (addToCart)="onBookNow($event)"
+          (removeFavourite)="removeFavourite($event)"
+          (share)="share($event)"
+          (updateNotes)="updateNotes($event)"
+        ></app-product-item>
+      </div>
+    </div>
+  </div>
+
+  <!-- Pagination -->
+  <div
+    class="d-flex justify-content-center align-items-center gap-2 p-3"
+    *ngIf="pagination.totalPages > 1"
+  >
+    <button
+      class="btn btn-outline-secondary"
+      [disabled]="pagination.page === 1"
+      (click)="changePage(pagination.page - 1)"
+    >
+      &lt;
+    </button>
+    <span
+      *ngFor="let page of [].constructor(pagination.totalPages); let i = index"
+    >
+      <button
+        class="btn btn-outline-secondary"
+        [class.active]="pagination.page === i + 1"
+        (click)="changePage(i + 1)"
+      >
+        {{ i + 1 }}
+      </button>
+    </span>
+    <button
+      class="btn btn-outline-secondary"
+      [disabled]="pagination.page === pagination.totalPages"
+      (click)="changePage(pagination.page + 1)"
+    >
+      &gt;
+    </button>
+  </div>
+</div>

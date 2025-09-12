@@ -1,0 +1,170 @@
+<div class="d-flex flex-column vh-100">
+  <app-header (logout)="onLogout()"></app-header>
+  <div class="d-flex flex-grow-1">
+    <app-owner-side-bar
+      (logout)="onLogout()"
+      (navigate)="onNavigate($event)"
+    ></app-owner-side-bar>
+    <main class="flex-grow-1 p-4 bg-light">
+      <h2 class="mb-4">My Listings</h2>
+      <div class="card">
+        <div class="card-header">Your Assets</div>
+        <div class="card-body">
+          <table class="table table-striped">
+            <thead>
+              <tr>
+                <th>Title</th>
+                <th>Address</th>
+                <th>Status</th>
+                <th>From</th>
+                <th>Till</th>
+                <th>Price (PKR/day)</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let asset of assets">
+                <td>{{ asset.name }}</td>
+                <td>{{ asset.address }}</td>
+                <td>{{ asset.status }}</td>
+                <td>{{ asset.startDate }}</td>
+                <td>{{ asset.endDate }}</td>
+                <td>{{ asset.price }} PKR /day</td>
+                <td>
+                  <button
+                    class="btn btn-info btn-sm me-2"
+                    [routerLink]="['/owner/view', asset.id]"
+                  >
+                    View
+                  </button>
+                  <button
+                    class="btn btn-warning btn-sm me-2"
+                    (click)="openModal(asset)"
+                  >
+                    Edit
+                  </button>
+                  <button
+                    *ngIf="asset.status === 'Active'"
+                    class="btn btn-danger btn-sm me-2"
+                  >
+                    De-activate
+                  </button>
+                  <button
+                    *ngIf="asset.status === 'Inactive'"
+                    class="btn btn-primary btn-sm me-2"
+                  >
+                    Activate
+                  </button>
+                  <!-- <div class="form-check form-switch">
+                    <input
+                      type="checkbox"
+                      class="form-check-input"
+                      [id]="'switch_' + listing.id"
+                      [checked]="listing.status === 'available'"
+                      (change)="toggleAvailability(listing.id)"
+                    />
+                  </div> -->
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Update Modal -->
+      <div
+        class="modal"
+        tabindex="-1"
+        [class.show]="selectedListing !== null"
+        [style.display]="selectedListing !== null ? 'block' : 'none'"
+        (click)="closeModal()"
+      >
+        <div class="modal-dialog" (click)="$event.stopPropagation()">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title">Edit Listing</h5>
+              <button
+                type="button"
+                class="btn-close"
+                (click)="closeModal()"
+                aria-label="Close"
+              ></button>
+            </div>
+            <div class="modal-body">
+              <form #editForm="ngForm">
+                <div class="mb-3">
+                  <label for="editName" class="form-label">Title</label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="editName"
+                    (ngModel)="(selectedListing.name)"
+                    name="name"
+                  />
+                </div>
+                <div class="mb-3">
+                  <label for="editAddress" class="form-label">Address</label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="editAddress"
+                    (ngModel)="(selectedListing.address)"
+                    name="address"
+                  />
+                </div>
+                <div class="mb-3">
+                  <label for="editPrice" class="form-label"
+                    >Price (PKR/day)</label
+                  >
+                  <input
+                    type="number"
+                    class="form-control"
+                    id="editPrice"
+                    (ngModel)="(selectedListing.price)"
+                    name="price"
+                    min="0"
+                  />
+                </div>
+                <div class="mb-3">
+                  <label for="editStatus" class="form-label">Status</label>
+                  <select
+                    class="form-select"
+                    id="editStatus"
+                    (ngModel)="(selectedListing.status)"
+                    name="status"
+                  >
+                    <option value="available">Available</option>
+                    <option value="unavailable">Unavailable</option>
+                  </select>
+                </div>
+              </form>
+            </div>
+            <div class="modal-dialog">
+              <div class="modal-footer">
+                <button
+                  type="button"
+                  class="btn btn-secondary"
+                  (click)="closeModal()"
+                >
+                  Close
+                </button>
+                <!-- <button
+                  type="button"
+                  class="btn btn-primary"
+                  (click)="saveChanges()"
+                >
+                  Save Changes
+                </button> -->
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div
+        class="modal-backdrop"
+        *ngIf="selectedListing !== null"
+        (click)="closeModal()"
+      ></div>
+    </main>
+  </div>
+</div>

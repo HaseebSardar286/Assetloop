@@ -1,0 +1,53 @@
+<div class="d-flex flex-column vh-100">
+  <app-header (logout)="onLogout()"></app-header>
+  <div class="d-flex flex-grow-1">
+    <app-admin-sidebar></app-admin-sidebar>
+    <main class="flex-grow-1 p-4 bg-light">
+      <h2 class="mb-4">Admin Dashboard</h2>
+      <div class="row g-4">
+        <div class="col-md-4">
+          <div class="card h-100">
+            <div class="card-body">
+              <h5 class="card-title">Total Users</h5>
+              <p class="card-text display-4">{{ metrics.totalUsers }}</p>
+              <button
+                class="btn btn-primary w-100"
+                [routerLink]="['/admin/users']"
+              >
+                View Users
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="card h-100">
+            <div class="card-body">
+              <h5 class="card-title">Total Assets</h5>
+              <p class="card-text display-4">{{ metrics.totalAssets }}</p>
+              <button
+                class="btn btn-primary w-100"
+                [routerLink]="['/admin/assets']"
+              >
+                View Assets
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="card h-100">
+            <div class="card-body">
+              <h5 class="card-title">Pending Requests</h5>
+              <p class="card-text display-4">{{ metrics.pendingRequests }}</p>
+              <button
+                class="btn btn-primary w-100"
+                [routerLink]="['/admin/requests']"
+              >
+                View Requests
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>

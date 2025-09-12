@@ -1,0 +1,42 @@
+.nav-link.active {
+  background-color: #007bff !important;
+  color: white !important;
+}
+
+.nav-link {
+  border-radius: 5px;
+  margin-bottom: 0.5rem;
+  transition: background-color 0.3s ease;
+  color: black;
+}
+
+.nav-link:hover {
+  background-color: #0056b3;
+  color: white;
+}
+
+a {
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.btn-outline-light {
+  border-radius: 5px;
+  transition: all 0.3s ease;
+}
+
+.btn-outline-light:hover {
+  background-color: #ffffff;
+  color: #007bff;
+}
+
+.sidebar {
+  width: 230px;
+  height: 100vh;
+  position: fixed;
+  top: 70px;
+  left: 0;
+  background-color: #fcf9f9;
+  padding: 1rem;
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.36);
+}

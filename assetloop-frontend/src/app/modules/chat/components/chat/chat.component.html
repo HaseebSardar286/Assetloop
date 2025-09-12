@@ -1,0 +1,29 @@
+<div class="d-flex flex-column vh-100">
+  <app-header (logout)="onLogout()"></app-header>
+  <div class="d-flex flex-grow-1">
+    <app-renter-side-bar
+      (logout)="onLogout()"
+      (navigate)="onNavigate($event)"
+    ></app-renter-side-bar>
+    <main class="flex-grow-1 p-4 bg-light">
+      <h2 class="mb-4">Chat</h2>
+      <div class="chat-container d-flex">
+        <app-conversation-list
+          [conversations]="conversations"
+          (selectChat)="onSelectChat($event)"
+        ></app-conversation-list>
+        <app-chat-window
+          [chatId]="selectedChatId"
+          [userRole]="userRole"
+        ></app-chat-window>
+        <app-chat-info-panel
+          [chatId]="selectedChatId"
+          [userRole]="userRole"
+        ></app-chat-info-panel>
+        <app-chat-empty-state
+          *ngIf="!selectedChatId && !conversations.length"
+        ></app-chat-empty-state>
+      </div>
+    </main>
+  </div>
+</div>

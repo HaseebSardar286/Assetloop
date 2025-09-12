@@ -1,0 +1,13 @@
+.conversation-list {
+  width: 300px;
+  border-right: 1px solid #dee2e6;
+  padding: 1rem;
+  height: calc(100vh - 60px); /* Adjust for header */
+  overflow-y: auto;
+}
+
+.conversation-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}

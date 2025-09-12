@@ -1,0 +1,16 @@
+<div class="conversation-list p-3 mb-3">
+  <input
+    class="form-control mb-3"
+    placeholder="Search"
+    [(ngModel)]="searchQuery"
+  />
+  <div *ngFor="let c of getFilteredConversations()">
+    <app-conversation-card
+      [chat]="c"
+      (select)="selectChat.emit(c.id)"
+    ></app-conversation-card>
+  </div>
+  <div *ngIf="!getFilteredConversations().length" class="text-muted small">
+    No conversations
+  </div>
+</div>

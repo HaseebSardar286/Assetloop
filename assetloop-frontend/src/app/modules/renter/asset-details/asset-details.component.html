@@ -1,0 +1,103 @@
+<div class="d-flex flex-column vh-100">
+  <app-header></app-header>
+  <div class="d-flex flex-grow-1">
+    <app-renter-side-bar></app-renter-side-bar>
+    <main class="flex-grow-1 p-4 bg-light">
+      <h2 class="mb-4">Asset Details</h2>
+      <div *ngIf="error" class="alert alert-danger">{{ error }}</div>
+      <ng-container *ngIf="asset; else loadingOrEmpty">
+        <div class="row col-md-12">
+          <div class="card shadow-lg col-md-12">
+            <div class="row g-0">
+              <div class="mt-2 p-3">
+                <img
+                  [src]="asset.images?.[0] || '/images/default.jpg'"
+                  class="img-fluid rounded"
+                  [alt]="asset.name"
+                />
+              </div>
+              <div>
+                <div class="card-body">
+                  <h4 class="card-title">{{ asset.name }}</h4>
+                  <p class="card-text">
+                    <strong>Category:</strong> {{ asset.category }}
+                  </p>
+                  <p class="card-text">
+                    <strong>Address:</strong> {{ asset.address }}
+                  </p>
+                  <p class="card-text">
+                    <strong>Price:</strong> ${{ asset.price }}/night
+                  </p>
+                  <p class="card-text">{{ asset.description }}</p>
+                  <p class="card-text">
+                    <strong>Amenities:</strong>
+                    <small class="text-muted">{{
+                      asset.amenities?.join(", ")
+                    }}</small>
+                  </p>
+                  <div class="d-flex gap-2">
+                    <button
+                      class="btn btn-outline-danger"
+                      (click)="addToFavourites()"
+                      [disabled]="loading"
+                    >
+                      ❤ {{ loading ? "Adding..." : "Add to Favourites" }}
+                    </button>
+                    <button
+                      class="btn btn-outline-primary"
+                      (click)="addToCart()"
+                    >
+                      🛒 Add to Cart
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="card shadow-sm col-md-12 p-2 mt-3">
+            <div class="card-body">
+              <h5 class="card-title">Owner Details</h5>
+              <div *ngIf="reviews.length; else noReviews">
+                <div class="mb-2" *ngFor="let r of reviews">
+                  <div>
+                    <strong>{{ r.reviewer }}</strong> •
+                    <span>{{ r.createdAt | date : "mediumDate" }}</span>
+                  </div>
+                  <div>Rating: {{ r.rating }}/5</div>
+                  <div class="text-muted">{{ r.comment }}</div>
+                </div>
+              </div>
+              <ng-template #noReviews>
+                <div class="text-muted">No Owner Details Yet.</div>
+              </ng-template>
+            </div>
+          </div>
+        </div>
+
+        <div class="card shadow-lg mt-3">
+          <div class="card-body">
+            <h5 class="card-title">Reviews</h5>
+            <div *ngIf="reviews.length; else noReviews">
+              <div class="mb-2" *ngFor="let r of reviews">
+                <div>
+                  <strong>{{ r.reviewer }}</strong> •
+                  <span>{{ r.createdAt | date : "mediumDate" }}</span>
+                </div>
+                <div>Rating: {{ r.rating }}/5</div>
+                <div class="text-muted">{{ r.comment }}</div>
+              </div>
+            </div>
+            <ng-template #noReviews>
+              <div class="text-muted">No reviews yet.</div>
+            </ng-template>
+          </div>
+        </div>
+      </ng-container>
+      <ng-template #loadingOrEmpty>
+        <div class="text-muted">
+          {{ loading ? "Loading..." : "No asset found." }}
+        </div>
+      </ng-template>
+    </main>
+  </div>
+</div>

@@ -1,0 +1,22 @@
+.chat-container {
+  flex-grow: 1;
+  display: flex;
+}
+
+main {
+  margin-left: 200px; /* Width of sidebar */
+  flex-grow: 1;
+  overflow-y: auto;
+  padding: 1rem;
+}
+
+@media (max-width: 768px) {
+  main {
+    margin-left: 0;
+    width: 100%;
+  }
+
+  .chat-container {
+    flex-direction: column;
+  }
+}

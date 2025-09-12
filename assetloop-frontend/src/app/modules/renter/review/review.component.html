@@ -1,0 +1,42 @@
+<div class="d-flex flex-column vh-100">
+  <app-header></app-header>
+  <div class="d-flex flex-grow-1">
+    <app-renter-side-bar></app-renter-side-bar>
+    <main class="flex-grow-1 p-4 bg-light">
+      <h2 class="mb-4">Leave a Review</h2>
+      <div *ngIf="error" class="alert alert-danger">{{ error }}</div>
+      <form
+        (ngSubmit)="submit()"
+        #form="ngForm"
+        class="card p-3"
+        style="max-width: 480px"
+      >
+        <div class="mb-3">
+          <label class="form-label">Rating</label>
+          <select
+            class="form-select"
+            [(ngModel)]="rating"
+            name="rating"
+            required
+          >
+            <option *ngFor="let r of [1, 2, 3, 4, 5]" [ngValue]="r">
+              {{ r }}
+            </option>
+          </select>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Comment</label>
+          <textarea
+            class="form-control"
+            [(ngModel)]="comment"
+            name="comment"
+            rows="4"
+          ></textarea>
+        </div>
+        <button class="btn btn-primary" type="submit" [disabled]="loading">
+          {{ loading ? "Submitting..." : "Submit Review" }}
+        </button>
+      </form>
+    </main>
+  </div>
+</div>

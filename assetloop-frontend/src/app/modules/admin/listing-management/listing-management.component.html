@@ -1,0 +1,64 @@
+<div class="d-flex flex-column vh-100">
+  <app-header (logout)="onLogout()"></app-header>
+  <div class="d-flex flex-grow-1">
+    <app-admin-sidebar></app-admin-sidebar>
+    <main class="flex-grow-1 p-4 bg-light">
+      <h2 class="mb-4">Listing Management</h2>
+      <div class="card">
+        <div class="card-header">All Listings</div>
+        <div class="card-body">
+          <table class="table table-striped">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Owner</th>
+                <th>Status</th>
+                <th>Price (PKR/day)</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let listing of listings">
+                <td>{{ listing.id }}</td>
+                <td>{{ listing.name }}</td>
+                <td>{{ listing.owner }}</td>
+                <td *ngIf="listing.status === 'inactive'">
+                  <button class="btn btn-danger btn-sm" disabled>
+                    Inactive
+                  </button>
+                </td>
+                <td *ngIf="listing.status === 'active'">
+                  <button class="btn btn-success btn-sm" disabled>
+                    Active
+                  </button>
+                </td>
+                <td>{{ listing.price }}</td>
+                <td>
+                  <button
+                    class="btn btn-info btn-sm me-2"
+                    [routerLink]="['/admin/view-listing', listing.id]"
+                  >
+                    View
+                  </button>
+                  <button
+                    class="btn btn-warning btn-sm me-2"
+                    [routerLink]="['/admin/status-listing', listing.id]"
+                  >
+                    DeActivate
+                  </button>
+                  <button
+                    class="btn btn-danger btn-sm"
+                    (click)="deleteListing(listing.id)"
+                  >
+                    Delete
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>

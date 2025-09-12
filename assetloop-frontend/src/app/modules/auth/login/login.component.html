@@ -1,0 +1,86 @@
+<div class="container mt-5">
+  <div class="row justify-content-center">
+    <div class="col-md-5">
+      <div class="card">
+        <div class="card-body">
+          <h2 class="card-title text-center">Welcome Back</h2>
+          <p class="text-center text-muted">
+            Sign in to your AssetLoop account
+          </p>
+
+          <form #loginForm="ngForm" (ngSubmit)="onSubmit()">
+            <div class="mb-4">
+              <label class="form-check-label">Email</label>
+              <input
+                type="email"
+                name="email"
+                [(ngModel)]="user.email"
+                #email="ngModel"
+                required
+                email
+                class="form-control"
+              />
+              <div *ngIf="email.invalid && email.touched" class="text-danger">
+                Valid email is required.
+              </div>
+            </div>
+
+            <div class="mb-4">
+              <label class="form-check-label">Password</label>
+              <input
+                type="password"
+                name="password"
+                [(ngModel)]="user.password"
+                #password="ngModel"
+                required
+                minlength="6"
+                class="form-control"
+              />
+              <div
+                *ngIf="password.errors?.['minlength'] && password.touched"
+                class="text-danger"
+              >
+                Password must be at least 6 characters long.
+              </div>
+            </div>
+
+            <div class="row col-md-12 mb-4">
+              <div class="col-md-6">
+                <input
+                  type="checkbox"
+                  name="rememberMe"
+                  [(ngModel)]="user.rememberMe"
+                  class="form-check-input"
+                />
+                <label class="form-check-label" style="margin-left: 7px"
+                  >Remember Me</label
+                >
+              </div>
+
+              <div class="text-end col-md-6">
+                <a
+                  (click)="onForgotPassword()"
+                  class="text-decoration-none text-primary"
+                >
+                  Forgot Password?
+                </a>
+              </div>
+            </div>
+            <button
+              type="submit"
+              [disabled]="!loginForm.valid"
+              class="btn btn-primary w-100"
+            >
+              Login
+            </button>
+
+            <p class="text-center mt-4">
+              Don't have an account?
+              <a (click)="register()" class="text-decoration-none">Sign Up</a>
+            </p>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

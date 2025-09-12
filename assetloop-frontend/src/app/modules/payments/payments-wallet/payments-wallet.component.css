@@ -1,0 +1,66 @@
+/* Ensure the entire container takes full viewport height */
+.d-flex {
+  height: 100vh;
+}
+
+/* Style the main content area */
+main {
+  margin-left: 230px; /* Match sidebar width */
+  flex-grow: 1;
+  overflow-y: auto; /* Enable scrolling if content overflows */
+  padding: 1rem;
+  background-color: #f8f9fa; /* Light background for consistency */
+  transition: margin-left 0.3s ease; /* Smooth transition for responsive adjustment */
+}
+
+/* Adjust for header height (assuming 60px, adjust if different) */
+main {
+  margin-top: 60px; /* Offset for header */
+  height: calc(100vh - 60px); /* Full height minus header */
+}
+
+/* Responsive design: Collapse sidebar on small screens */
+@media (max-width: 768px) {
+  main {
+    margin-left: 0; /* Remove sidebar margin on small screens */
+    width: 100%; /* Full width */
+    margin-top: 60px; /* Maintain header offset */
+    height: calc(100vh - 60px); /* Adjust height */
+  }
+
+  .d-flex .flex-grow-1 {
+    flex-direction: column; /* Stack content vertically */
+  }
+
+  .nav-tabs {
+    flex-direction: column; /* Stack tabs vertically */
+  }
+
+  .nav-link {
+    margin-bottom: 0.5rem; /* Spacing between stacked tabs */
+  }
+}
+
+/* Ensure tabs and content are properly contained */
+.tab-content {
+  padding: 1rem;
+  background-color: white;
+  border-radius: 5px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+}
+
+/* Style the nav tabs */
+.nav-tabs {
+  border-bottom: 1px solid #dee2e6;
+  margin-bottom: 1rem;
+}
+
+.nav-link {
+  cursor: pointer;
+}
+
+.nav-link.active {
+  background-color: #007bff;
+  color: white;
+  border-color: #007bff;
+}

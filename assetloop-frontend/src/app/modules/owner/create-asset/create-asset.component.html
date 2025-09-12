@@ -1,0 +1,239 @@
+<div class="d-flex flex-column vh-100">
+  <app-header (logout)="onLogout()"></app-header>
+  <div class="d-flex flex-grow-1">
+    <app-owner-side-bar
+      (logout)="onLogout()"
+      (navigate)="onNavigate($event)"
+    ></app-owner-side-bar>
+    <main class="flex-grow-1 p-4 bg-light">
+      <form
+        #assetForm="ngForm"
+        (ngSubmit)="onSubmit()"
+        class="needs-validation"
+        novalidate
+      >
+        <h2 class="mb-4">Create a Listing</h2>
+        <div class="card">
+          <div class="card-header">Basic Information</div>
+          <div class="card-body">
+            <div class="row">
+              <div class="mb-3 col-md-6">
+                <label for="name" class="form-label">Asset Name</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="name"
+                  name="name"
+                  [(ngModel)]="asset.name"
+                  required
+                />
+              </div>
+              <div class="mb-3 col-md-6">
+                <label for="address" class="form-label">Address</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="address"
+                  name="address"
+                  [(ngModel)]="asset.address"
+                  required
+                />
+              </div>
+            </div>
+
+            <div class="mb-3 col-md-12">
+              <label for="description" class="form-label">Description</label>
+              <textarea
+                class="form-control"
+                id="description"
+                name="description"
+                [(ngModel)]="asset.description"
+                rows="3"
+                required
+              ></textarea>
+            </div>
+
+            <div class="row">
+              <div class="mb-3 col-md-6">
+                <label for="availability" class="form-label"
+                  >Availability</label
+                >
+                <select
+                  class="form-select"
+                  id="availability"
+                  name="availability"
+                  [(ngModel)]="asset.availability"
+                  required
+                >
+                  <option value="available">Available</option>
+                  <option value="unavailable">Unavailable</option>
+                </select>
+              </div>
+              <div class="mb-3 col-md-6">
+                <label for="price" class="form-label">Price (PKR/day)</label>
+                <input
+                  type="number"
+                  class="form-control"
+                  id="price"
+                  name="price"
+                  [(ngModel)]="asset.price"
+                  required
+                  min="0"
+                />
+              </div>
+            </div>
+
+            <div class="row" *ngIf="asset.availability === 'available'">
+              <div class="mb-3 col-md-6">
+                <label for="startDate" class="form-label">Start Date</label>
+                <input
+                  type="date"
+                  class="form-control"
+                  id="startDate"
+                  name="startDate"
+                  [(ngModel)]="asset.startDate"
+                  required
+                  min="2025-09-01"
+                />
+              </div>
+              <div class="mb-3 col-md-6">
+                <label for="endDate" class="form-label">End Date</label>
+                <input
+                  type="date"
+                  class="form-control"
+                  id="endDate"
+                  name="endDate"
+                  [(ngModel)]="asset.endDate"
+                  required
+                  [min]="asset.startDate"
+                />
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="mb-3 col-md-6">
+                <label for="category" class="form-label">Category</label>
+                <select
+                  class="form-select"
+                  id="category"
+                  name="category"
+                  [(ngModel)]="asset.category"
+                  required
+                >
+                  <option *ngFor="let cat of categories" [value]="cat">
+                    {{ cat }}
+                  </option>
+                </select>
+              </div>
+              <div class="mb-3 col-md-6">
+                <label for="capacity" class="form-label"
+                  >Capacity (e.g., seats, rooms)</label
+                >
+                <input
+                  type="number"
+                  class="form-control"
+                  id="capacity"
+                  name="capacity"
+                  [(ngModel)]="asset.capacity"
+                  required
+                  min="1"
+                />
+              </div>
+            </div>
+            <div class="row">
+              <div class="mb-3 col-md-6">
+                <label class="form-label">Features</label>
+                <div class="mb-2">
+                  <select class="form-select">
+                    <option value="">Select a Feature</option>
+                    <option
+                      *ngFor="let feature of availableFeatures"
+                      [value]="feature"
+                    >
+                      {{ feature }}
+                    </option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="mb-3 col-md-6">
+                <label class="form-label">Status</label>
+                <div class="mb-2">
+                  <select class="form-select">
+                    <option *ngFor="let status of statuses" [value]="status">
+                      {{ status }}
+                    </option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="mb-3 mt-3">
+          <div class="card">
+            <div class="card-header">Amenities</div>
+            <div class="card-body">
+              <div class="mb-2">
+                <div
+                  class="form-check"
+                  *ngFor="let amenity of availableAmenities"
+                >
+                  <input
+                    type="checkbox"
+                    class="form-check-input"
+                    [id]="'amenity_' + amenity"
+                    [value]="amenity"
+                    (change)="toggleAmenity(amenity)"
+                  />
+                  <label
+                    class="form-check-label"
+                    [for]="'amenity_' + amenity"
+                    >{{ amenity }}</label
+                  >
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="mb-3 mt-3">
+          <div class="card">
+            <div class="card-header">Images</div>
+            <div class="card-body">
+              <div class="mb-2">
+                <label class="form-label">Images</label>
+                <input
+                  type="file"
+                  class="form-control"
+                  id="images"
+                  name="images"
+                  (change)="onFileChange($event)"
+                  multiple
+                />
+                <small class="text-muted"
+                  >Select multiple images for the listing.</small
+                >
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <button
+          type="submit"
+          class="btn btn-primary"
+          [disabled]="!assetForm.valid"
+        >
+          Create Listing
+        </button>
+        <button
+          type="button"
+          class="btn btn-secondary ms-2"
+          (click)="resetForm()"
+        >
+          Reset
+        </button>
+      </form>
+    </main>
+  </div>
+</div>

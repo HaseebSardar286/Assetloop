@@ -1,0 +1,37 @@
+/* footer.component.css */
+footer {
+  position: relative;
+  bottom: 0;
+  width: 100%;
+}
+
+h5 {
+  color: #ffffff;
+  border-bottom: 2px solid #007bff;
+  padding-bottom: 5px;
+}
+
+.list-unstyled li {
+  margin-bottom: 0.5rem;
+}
+
+.list-unstyled a:hover {
+  color: #007bff;
+}
+
+.bi {
+  margin-right: 0.5rem;
+}
+
+hr {
+  opacity: 0.2;
+}
+
+.text-muted {
+  color: #adb5bd !important;
+}
+
+a.text-white:hover {
+  color: #007bff;
+  text-decoration: none;
+}

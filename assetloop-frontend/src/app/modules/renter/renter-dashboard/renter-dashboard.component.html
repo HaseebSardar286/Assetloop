@@ -1,0 +1,231 @@
+<div class="d-flex flex-column vh-100">
+  <app-header (logout)="logout()"></app-header>
+  <div class="d-flex flex-grow-1">
+    <app-renter-side-bar></app-renter-side-bar>
+    <main class="flex-grow-1 p-4 bg-light">
+      <!-- Welcome & Quick Stats -->
+      <div class="mb-4">
+        <h2 class="mb-3">👋 Welcome back, {{ userName }}!</h2>
+        <div class="row g-3">
+          <div class="col-md-3">
+            <div class="card h-100 bg-primary text-white">
+              <div class="card-body text-center">
+                <h6 class="card-title">Active Rentals</h6>
+                <p class="display-6 mb-0">{{ quickStats.activeRentals }}</p>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="card h-100 bg-warning text-white">
+              <div class="card-body text-center">
+                <h6 class="card-title">Pending Requests</h6>
+                <p class="display-6 mb-0">{{ quickStats.pendingRequests }}</p>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="card h-100 bg-info text-white">
+              <div class="card-body text-center">
+                <h6 class="card-title">Wishlist Items</h6>
+                <p class="display-6 mb-0">{{ quickStats.wishlistItems }}</p>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="card h-100 bg-success text-white">
+              <div class="card-body text-center">
+                <h6 class="card-title">Total Spent</h6>
+                <p class="display-6 mb-0">PKR {{ quickStats.totalSpent }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- My Rentals -->
+      <div class="card mb-4 shadow-sm">
+        <div class="card-header bg-primary text-white">
+          <h4 class="mb-0">My Rentals</h4>
+        </div>
+        <div class="card-body">
+          <!-- Current Rentals -->
+          <h5 class="mb-3">Current Rentals</h5>
+          <div class="row g-3" *ngIf="bookings.current.length > 0">
+            <div
+              class="col-md-6 col-lg-4"
+              *ngFor="let booking of bookings.current"
+            >
+              <div class="card h-100">
+                <img
+                  [src]="booking.imageUrl"
+                  class="card-img-top"
+                  alt="{{ booking.name }}"
+                  *ngIf="booking.imageUrl"
+                />
+                <div class="card-body">
+                  <h6 class="card-title">{{ booking.name }}</h6>
+                  <p class="card-text">{{ booking.description }}</p>
+                  <p class="card-text">
+                    <strong>Owner:</strong> {{ booking.owner.name }} <br />
+                    <small class="text-muted">{{
+                      booking.owner.contact
+                    }}</small>
+                  </p>
+                  <p class="card-text">
+                    <strong>Period:</strong>
+                    {{ booking.startDate | date : "mediumDate" }} -
+                    {{ booking.endDate | date : "mediumDate" }}
+                  </p>
+                  <p class="card-text">
+                    <strong>Price:</strong> PKR {{ booking.price }} / night
+                  </p>
+                  <p class="card-text">
+                    <span
+                      class="badge bg-{{
+                        booking.status === 'active'
+                          ? 'success'
+                          : booking.status === 'expiring soon'
+                          ? 'warning'
+                          : 'danger'
+                      }}"
+                    >
+                      {{ booking.status }}
+                    </span>
+                  </p>
+                  <button
+                    class="btn btn-sm btn-outline-primary"
+                    (click)="viewRentalDetails(booking.id)"
+                  >
+                    View Details
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <p class="text-muted" *ngIf="bookings.current.length === 0">
+            No current rentals.
+          </p>
+
+          <!-- Past Rentals -->
+          <h5 class="mt-4 mb-3">Past Rentals</h5>
+          <div class="row g-3" *ngIf="bookings.past.length > 0">
+            <div
+              class="col-md-6 col-lg-4"
+              *ngFor="let booking of bookings.past"
+            >
+              <div class="card h-100">
+                <img
+                  [src]="booking.imageUrl"
+                  class="card-img-top"
+                  alt="{{ booking.name }}"
+                  *ngIf="booking.imageUrl"
+                />
+                <div class="card-body">
+                  <h6 class="card-title">{{ booking.name }}</h6>
+                  <p class="card-text">{{ booking.description }}</p>
+                  <p class="card-text">
+                    <strong>Owner:</strong> {{ booking.owner.name }} <br />
+                    <small class="text-muted">{{
+                      booking.owner.contact
+                    }}</small>
+                  </p>
+                  <p class="card-text">
+                    <strong>Period:</strong>
+                    {{ booking.startDate | date : "mediumDate" }} -
+                    {{ booking.endDate | date : "mediumDate" }}
+                  </p>
+                  <p class="card-text">
+                    <strong>Total Paid:</strong> PKR {{ booking.totalPaid }}
+                  </p>
+                  <div *ngIf="booking.review">
+                    <p class="card-text">
+                      <strong>Your Review:</strong>
+                      {{ booking.review.rating }}/5
+                      <span
+                        *ngIf="booking.review.comment"
+                        class="text-muted ms-2"
+                        >"{{ booking.review.comment }}"</span
+                      >
+                    </p>
+                  </div>
+                  <div *ngIf="!booking.review">
+                    <button
+                      class="btn btn-sm btn-outline-secondary"
+                      (click)="leaveReview(booking.id)"
+                    >
+                      Leave Review
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <p class="text-muted" *ngIf="bookings.past.length === 0">
+            No past rentals.
+          </p>
+        </div>
+      </div>
+
+      <!-- Rental Requests -->
+      <div class="card shadow-sm">
+        <div class="card-header bg-info text-white">
+          <h5 class="mb-0">Rental Requests</h5>
+        </div>
+        <div class="card-body">
+          <div class="row g-3" *ngIf="bookings.cancelled.length > 0">
+            <div
+              class="col-md-6 col-lg-4"
+              *ngFor="let request of bookings.cancelled"
+            >
+              <div class="card h-100">
+                <img
+                  [src]="request.imageUrl"
+                  class="card-img-top"
+                  alt="{{ request.name }}"
+                  *ngIf="request.imageUrl"
+                />
+                <div class="card-body">
+                  <h6 class="card-title">{{ request.name }}</h6>
+                  <p class="card-text">{{ request.description }}</p>
+                  <p class="card-text">
+                    <strong>Owner:</strong> {{ request.owner.name }} <br />
+                    <small class="text-muted">{{
+                      request.owner.contact
+                    }}</small>
+                  </p>
+                  <p class="card-text">
+                    <strong>Requested:</strong>
+                    {{ request.createdAt | date : "mediumDate" }}
+                  </p>
+                  <p class="card-text">
+                    <span
+                      class="badge bg-{{
+                        request.status === 'pending'
+                          ? 'warning'
+                          : request.status === 'confirmed'
+                          ? 'success'
+                          : 'danger'
+                      }}"
+                    >
+                      {{ request.status }}
+                    </span>
+                  </p>
+                  <!-- <button
+                    *ngIf="request.status === 'pending'"
+                    class="btn btn-sm btn-danger mt-2"
+                    (click)="cancelRentalRequest(request.id)"
+                  >
+                    Cancel
+                  </button> -->
+                </div>
+              </div>
+            </div>
+          </div>
+          <p class="text-muted" *ngIf="bookings.cancelled.length === 0">
+            No pending requests.
+          </p>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>

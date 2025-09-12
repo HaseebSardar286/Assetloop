@@ -1,0 +1,19 @@
+<div class="message-bubble" [ngClass]="{ me: message.sender === userRole }">
+  <img
+    *ngIf="message.sender !== userRole"
+    [src]="'/images/profile.png'"
+    class="profile-pic"
+    width="20"
+    height="20"
+    alt="Profile"
+  />
+  <div class="bubble-content">
+    <p>{{ message.content }}</p>
+    <small class="text-muted"
+      >{{ message.timestamp }}
+      <span [ngClass]="{ 'text-primary': message.status === 'read' }">{{
+        getStatusIcon()
+      }}</span></small
+    >
+  </div>
+</div>
