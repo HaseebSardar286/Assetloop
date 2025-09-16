@@ -206,7 +206,7 @@ exports.getWishlist = async (req, res) => {
       .filter((w) => w.asset)
       .map((w) => ({
         id: w.asset._id.toString(),
-        _id: w.asset._id.toString(), // For compatibility
+        _id: w.asset._id.toString(),
         name: w.asset.name,
         description: w.asset.description,
         price: w.asset.price,
@@ -215,6 +215,19 @@ exports.getWishlist = async (req, res) => {
         endDate: undefined,
         status: "pending",
         address: w.asset.address,
+        // images:
+        //   Array.isArray(w.asset.images) && w.asset.images.length
+        //     ? w.asset.images.map((img) => {
+        //         try {
+        //           return `data:image/png;base64,${Buffer.from(img).toString(
+        //             "base64"
+        //           )}`;
+        //         } catch (e) {
+        //           console.error("Invalid image buffer:", e);
+        //           return "/images/default.jpg";
+        //         }
+        //       })
+        //     : ["/images/default.jpg"],
         imageUrl:
           Array.isArray(w.asset.images) && w.asset.images.length
             ? `data:image/png;base64,${Buffer.from(w.asset.images[0]).toString(
@@ -224,6 +237,7 @@ exports.getWishlist = async (req, res) => {
         category: w.asset.category,
       }));
 
+    console.log("Wishlist response:", response);
     res.status(200).json(response);
   } catch (error) {
     console.error("Error in getWishlist:", error);
