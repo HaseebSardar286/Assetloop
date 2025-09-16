@@ -40,15 +40,15 @@ export class FavouritesComponent implements OnInit {
     this.loading = true;
     this.error = null;
     this.renterService.getFavourites().subscribe({
-      next: (items: any[]) => {
+      next: (items: Booking[]) => {
         // Items come as simplified Booking-like entries from backend
         this.favouriteItems = items.map((item) => ({
           ...item,
           id: item.id || item._id || '',
           imageUrl:
-            item.imageUrl ||
-            (item.images && item.images[0]) ||
-            '/images/default.jpg',
+            item.imageUrl && item.imageUrl.length > 0
+              ? item.imageUrl[0] // Use the first image
+              : '/images/default.jpg', // Fallback to default image
           startDate: item.startDate || new Date(),
           endDate: item.endDate || new Date(),
           status: item.status || 'pending',

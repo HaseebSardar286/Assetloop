@@ -54,7 +54,7 @@
     </button>
     <button
       class="btn btn-danger btn-sm"
-      *ngIf="activeTab === 'upcoming' && booking.status !== 'cancelled'"
+      *ngIf="booking.status !== 'cancelled'"
       (click)="onCancelBooking()"
     >
       Cancel
