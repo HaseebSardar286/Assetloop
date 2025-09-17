@@ -27,31 +27,13 @@ export class RequestedAssetsComponent {
   error: string | null = null;
 
   requests: any[] = [];
-  private apiUrl = 'http://localhost:5000/api/owner';
 
-  constructor(
-    private router: Router,
-    private renterService: RenterService,
-    private http: HttpClient
-  ) {}
+  constructor(private router: Router, private renterService: RenterService) {}
 
   ngOnInit(): void {
     this.loadBookings();
     // this.fetchRequests();
   }
-
-  // private getHeaders(): HttpHeaders {
-  //   const token = localStorage.getItem('authToken') || '';
-  //   return new HttpHeaders().set('Authorization', `Bearer ${token}`);
-  // }
-
-  // fetchRequests(): void {
-  //   this.http
-  //     .get<any[]>(`${this.apiUrl}/rental-requests`, {
-  //       headers: this.getHeaders(),
-  //     })
-  //     .subscribe((list) => (this.requests = list));
-  // }
 
   loadBookings(): void {
     this.loading = true;
@@ -113,14 +95,4 @@ export class RequestedAssetsComponent {
       console.log('Navigating to:', path);
     }
   }
-
-  // updateStatus(requestId: string, newStatus: 'confirmed' | 'cancelled') {
-  //   this.http
-  //     .put(
-  //       `${this.apiUrl}/bookings/${requestId}/status`,
-  //       { status: newStatus },
-  //       { headers: this.getHeaders() }
-  //     )
-  //     .subscribe(() => this.fetchRequests());
-  // }
 }

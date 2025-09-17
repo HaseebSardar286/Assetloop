@@ -3,6 +3,11 @@ export interface Owner {
   contact: string;
 }
 
+export interface Renter {
+  name: string;
+  contact: string;
+}
+
 export interface Favourite {
   id: string;
   name: string;

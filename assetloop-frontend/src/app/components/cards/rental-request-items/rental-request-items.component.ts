@@ -1,0 +1,22 @@
+import { CommonModule } from '@angular/common';
+import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { Booking } from '../../../interfaces/bookings';
+
+@Component({
+  selector: 'app-rental-request-items',
+  standalone: true,
+  imports: [CommonModule],
+  templateUrl: './rental-request-items.component.html',
+  styleUrls: ['./rental-request-items.component.css'],
+})
+export class RentalRequestItemsComponent {
+  @Input() booking!: Booking;
+  @Output() statusUpdate = new EventEmitter<{
+    bookingId: string;
+    newStatus: 'confirmed' | 'cancelled';
+  }>();
+
+  updateStatus(bookingId: string, newStatus: 'confirmed' | 'cancelled') {
+    this.statusUpdate.emit({ bookingId, newStatus });
+  }
+}
