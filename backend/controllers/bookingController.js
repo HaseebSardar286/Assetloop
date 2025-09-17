@@ -32,6 +32,8 @@ exports.createBooking = async (req, res) => {
       category: asset.category,
       notes: notes || "",
       status: "pending",
+      // NEW: Explicitly set requestDate for frontend
+      requestDate: new Date(),
     });
 
     await booking.save();
@@ -53,6 +55,8 @@ exports.createBooking = async (req, res) => {
         endDate: booking.endDate,
         status: booking.status,
         totalPaid: booking.totalPaid,
+        // NEW: Include requestDate in response
+        requestDate: booking.requestDate,
         address: booking.address,
         imageUrl: booking.imageUrl,
         category: booking.category,
@@ -108,6 +112,8 @@ exports.getBookings = async (req, res) => {
               comment: booking.review.comment,
             }
           : undefined,
+        // NEW: Include requestDate with fallback to createdAt
+        requestDate: booking.requestDate || booking.createdAt,
         address: booking.address,
         imageUrl:
           booking.imageUrl && booking.imageUrl.startsWith("/uploads/")
@@ -136,7 +142,8 @@ exports.getOwnerBookings = async (req, res) => {
         name: booking.name,
         description: booking.description,
         price: booking.price,
-        renter: booking.renter
+        // CHANGED: Renamed 'renter' to 'requester' to match frontend interface
+        requester: booking.renter
           ? {
               name: `${booking.renter.firstName} ${booking.renter.lastName}`,
               contact: booking.renter.email,
@@ -149,6 +156,8 @@ exports.getOwnerBookings = async (req, res) => {
         review: booking.review
           ? { rating: booking.review.rating, comment: booking.review.comment }
           : undefined,
+        // NEW: Include requestDate with fallback to createdAt
+        requestDate: booking.requestDate || booking.createdAt,
         address: booking.address,
         imageUrl:
           booking.imageUrl && booking.imageUrl.startsWith("/uploads/")

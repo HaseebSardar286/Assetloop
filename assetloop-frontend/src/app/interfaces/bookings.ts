@@ -1,4 +1,4 @@
-import { Owner } from './rental';
+import { Owner, Renter } from './rental';
 
 export interface Booking {
   id: string;
@@ -7,6 +7,7 @@ export interface Booking {
   description?: string;
   price: number;
   owner: Owner;
+  requester?: Renter;
   startDate: string | Date; // Backend sends string
   endDate: string | Date; // Backend sends string
   status:
@@ -24,6 +25,7 @@ export interface Booking {
   category?: string;
   notes?: string;
   createdAt?: string;
+  requestDate?: string;
 }
 
 export interface Message {

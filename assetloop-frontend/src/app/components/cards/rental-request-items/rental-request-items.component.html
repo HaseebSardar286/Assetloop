@@ -1,0 +1,43 @@
+<div class="card">
+  <div class="card-header">Pending Request</div>
+  <div class="card-body">
+    <div class="booking-details">
+      <div class="detail-item">
+        <strong>Requester:</strong> {{ booking.requester?.name || "N/A" }}
+      </div>
+      <div class="detail-item"><strong>Asset:</strong> {{ booking.name }}</div>
+      <div class="detail-item">
+        <strong>Request Date:</strong>
+        {{
+          booking.requestDate
+            ? (booking.requestDate | date : "shortDate")
+            : "N/A"
+        }}
+      </div>
+      <div class="detail-item">
+        <strong>Amount (PKR):</strong> {{ booking.price | currency : "PKR" }}
+      </div>
+      <div class="detail-item">
+        <strong>Status:</strong> {{ booking.status }}
+      </div>
+      <div class="detail-item">
+        <strong>Actions:</strong>
+        <button class="btn btn-primary btn-sm me-2">Details</button>
+        <button
+          *ngIf="booking.status === 'pending'"
+          class="btn btn-success btn-sm me-2"
+          (click)="updateStatus(booking.id, 'confirmed')"
+        >
+          Approve
+        </button>
+        <button
+          *ngIf="booking.status === 'pending'"
+          class="btn btn-danger btn-sm"
+          (click)="updateStatus(booking.id, 'cancelled')"
+        >
+          Reject
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

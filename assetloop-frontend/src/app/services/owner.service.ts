@@ -5,6 +5,7 @@ import { AssetForm } from '../interfaces/asset';
 import { AssetResponse } from '../interfaces/asset';
 import { DashboardStats } from '../interfaces/ownerDashboard';
 import { User } from '../interfaces/user';
+import { Booking } from '../interfaces/bookings';
 
 @Injectable({
   providedIn: 'root',
@@ -51,16 +52,19 @@ export class OwnerService {
     );
   }
 
-  getBookings(): Observable<any> {
-    return this.http.get<any>(`${this.apiUrl}/bookings`, {
+  getBookings(): Observable<Booking[]> {
+    return this.http.get<Booking[]>(`${this.apiUrl}/rental-requests`, {
       headers: this.getHeaders(),
     });
   }
 
-  updateBookingStatus(id: string, status: string): Observable<any> {
-    return this.http.put<any>(
-      `${this.apiUrl}/bookings/${id}/status`,
-      { status },
+  updateStatus(
+    bookingId: string,
+    newStatus: 'confirmed' | 'cancelled'
+  ): Observable<Booking> {
+    return this.http.patch<Booking>(
+      `${this.apiUrl}/bookings/${bookingId}/status`,
+      { status: newStatus },
       { headers: this.getHeaders() }
     );
   }
