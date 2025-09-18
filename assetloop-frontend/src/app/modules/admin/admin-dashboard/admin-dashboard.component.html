@@ -1,51 +1,163 @@
 <div class="d-flex flex-column vh-100">
-  <app-header (logout)="onLogout()"></app-header>
+  <app-header></app-header>
   <div class="d-flex flex-grow-1">
     <app-admin-sidebar></app-admin-sidebar>
     <main class="flex-grow-1 p-4 bg-light">
-      <h2 class="mb-4">Admin Dashboard</h2>
-      <div class="row g-4">
-        <div class="col-md-4">
-          <div class="card h-100">
-            <div class="card-body">
-              <h5 class="card-title">Total Users</h5>
-              <p class="card-text display-4">{{ metrics.totalUsers }}</p>
-              <button
-                class="btn btn-primary w-100"
-                [routerLink]="['/admin/users']"
-              >
-                View Users
-              </button>
+      <!-- Welcome & Quick Stats -->
+      <div class="mb-4">
+        <h2 class="mb-3">👋 Welcome back, {{ adminName }}!</h2>
+        <div class="row g-3">
+          <div class="col-md-3">
+            <div class="card h-100 bg-primary text-white">
+              <div class="card-body text-center">
+                <h6 class="card-title">Total Users</h6>
+                <p class="display-6 mb-0">{{ metrics.totalUsers }}</p>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="card h-100 bg-success text-white">
+              <div class="card-body text-center">
+                <h6 class="card-title">Total Assets</h6>
+                <p class="display-6 mb-0">{{ metrics.totalAssets }}</p>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="card h-100 bg-warning text-white">
+              <div class="card-body text-center">
+                <h6 class="card-title">Pending Requests</h6>
+                <p class="display-6 mb-0">{{ metrics.pendingRequests }}</p>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="card h-100 bg-info text-white">
+              <div class="card-body text-center">
+                <h6 class="card-title">Total Bookings</h6>
+                <p class="display-6 mb-0">{{ metrics.totalBookings }}</p>
+              </div>
             </div>
           </div>
         </div>
-        <div class="col-md-4">
-          <div class="card h-100">
-            <div class="card-body">
-              <h5 class="card-title">Total Assets</h5>
-              <p class="card-text display-4">{{ metrics.totalAssets }}</p>
-              <button
-                class="btn btn-primary w-100"
-                [routerLink]="['/admin/assets']"
-              >
-                View Assets
-              </button>
-            </div>
-          </div>
+      </div>
+
+      <!-- User Management -->
+      <div class="card mb-4 shadow-sm">
+        <div class="card-header bg-primary text-white">
+          <h4 class="mb-0">User Management</h4>
         </div>
-        <div class="col-md-4">
-          <div class="card h-100">
-            <div class="card-body">
-              <h5 class="card-title">Pending Requests</h5>
-              <p class="card-text display-4">{{ metrics.pendingRequests }}</p>
-              <button
-                class="btn btn-primary w-100"
-                [routerLink]="['/admin/requests']"
-              >
-                View Requests
-              </button>
+        <div class="card-body">
+          <h5 class="mb-3">Recent Users</h5>
+          <div class="row g-3" *ngIf="users.length > 0">
+            <div
+              class="col-md-6 col-lg-4"
+              *ngFor="let user of users | slice : 0 : 3"
+            >
+              <div class="card h-100">
+                <div class="card-body">
+                  <h6 class="card-title">{{ user.name }}</h6>
+                  <p class="card-text">
+                    <strong>Email:</strong> {{ user.email }}<br />
+                    <small class="text-muted"
+                      >Joined: {{ user.createdAt | date : "mediumDate" }}</small
+                    >
+                  </p>
+                  <button
+                    class="btn btn-sm btn-outline-primary"
+                    [routerLink]="['/admin/users', user.id]"
+                  >
+                    View Details
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
+          <p class="text-muted" *ngIf="users.length === 0">No recent users.</p>
+        </div>
+      </div>
+
+      <!-- Asset Management -->
+      <div class="card mb-4 shadow-sm">
+        <div class="card-header bg-success text-white">
+          <h4 class="mb-0">Asset Management</h4>
+        </div>
+        <div class="card-body">
+          <h5 class="mb-3">Recent Assets</h5>
+          <div class="row g-3" *ngIf="assets.length > 0">
+            <div
+              class="col-md-6 col-lg-4"
+              *ngFor="let asset of assets | slice : 0 : 3"
+            >
+              <div class="card h-100">
+                <img
+                  [src]="asset.imageUrl"
+                  class="card-img-top"
+                  alt="{{ asset.name }}"
+                  *ngIf="asset.imageUrl"
+                />
+                <div class="card-body">
+                  <h6 class="card-title">{{ asset.name }}</h6>
+                  <p class="card-text">{{ asset.description }}</p>
+                  <p class="card-text">
+                    <strong>Price:</strong> PKR {{ asset.price }} / night
+                  </p>
+                  <button
+                    class="btn btn-sm btn-outline-success"
+                    [routerLink]="['/admin/assets', asset.id]"
+                  >
+                    View Details
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <p class="text-muted" *ngIf="assets.length === 0">
+            No recent assets.
+          </p>
+        </div>
+      </div>
+
+      <!-- Request Management -->
+      <div class="card shadow-sm">
+        <div class="card-header bg-warning text-white">
+          <h4 class="mb-0">Request Management</h4>
+        </div>
+        <div class="card-body">
+          <h5 class="mb-3">Pending Requests</h5>
+          <div class="row g-3" *ngIf="requests.length > 0">
+            <div
+              class="col-md-6 col-lg-4"
+              *ngFor="let request of requests | slice : 0 : 3"
+            >
+              <div class="card h-100">
+                <img
+                  [src]="request.imageUrl"
+                  class="card-img-top"
+                  alt="{{ request.name }}"
+                  *ngIf="request.imageUrl"
+                />
+                <div class="card-body">
+                  <h6 class="card-title">{{ request.name }}</h6>
+                  <p class="card-text">{{ request.description }}</p>
+                  <p class="card-text">
+                    <strong>Requested:</strong>
+                    {{ request.createdAt | date : "mediumDate" }}
+                  </p>
+                  <span class="badge bg-warning">Pending</span>
+                  <button
+                    class="btn btn-sm btn-outline-warning mt-2"
+                    [routerLink]="['/admin/requests', request.id]"
+                  >
+                    View Details
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <p class="text-muted" *ngIf="requests.length === 0">
+            No pending requests.
+          </p>
         </div>
       </div>
     </main>

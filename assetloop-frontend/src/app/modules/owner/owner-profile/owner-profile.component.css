@@ -40,18 +40,15 @@
   top: 60px; /* Height of the header */
   left: 0;
   bottom: 0;
-  width: 200px;
-  overflow-y: auto;
+  width: 230px;
 }
 
 /* Ensure main content adjusts for fixed header and sidebar */
 main {
-  margin-left: 200px;
+  margin-left: 230px;
   margin-top: 60px; /* Height of the header */
   padding: 20px;
   background-color: #f8f9fa;
-  overflow-y: auto;
-  height: calc(100vh - 56px); /* Full viewport height minus header height */
 }
 
 /* Adjust row and columns */
@@ -61,21 +58,4 @@ main {
 
 .col-md-4 {
   padding: 0 15px;
-}
-
-.settings-container {
-  max-width: 600px;
-  margin: 0 auto;
-}
-
-.card-title {
-  color: #333;
-}
-
-.form-check {
-  margin-bottom: 0.5rem;
-}
-
-.btn-primary {
-  width: 100%;
 }

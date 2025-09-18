@@ -17,6 +17,12 @@ export class RentalRequestItemsComponent {
   }>();
 
   updateStatus(bookingId: string, newStatus: 'confirmed' | 'cancelled') {
+    console.log(
+      'Emitting status update for booking:',
+      bookingId,
+      'to',
+      newStatus
+    );
     this.statusUpdate.emit({ bookingId, newStatus });
   }
 }

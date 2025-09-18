@@ -8,13 +8,12 @@ exports.createBooking = async (req, res) => {
     const { assetId, startDate, endDate, notes } = req.body;
     const renterId = req.user.id;
 
-    // Find the asset and its owner
+    console.log("Creating booking for renter:", renterId, "asset:", assetId);
     const asset = await Asset.findById(assetId).populate("owner");
     if (!asset) {
       return res.status(404).json({ message: "Asset not found" });
     }
 
-    // Create the booking
     const booking = new Booking({
       renter: renterId,
       owner: asset.owner._id,
@@ -32,7 +31,6 @@ exports.createBooking = async (req, res) => {
       category: asset.category,
       notes: notes || "",
       status: "pending",
-      // NEW: Explicitly set requestDate for frontend
       requestDate: new Date(),
     });
 
@@ -55,7 +53,6 @@ exports.createBooking = async (req, res) => {
         endDate: booking.endDate,
         status: booking.status,
         totalPaid: booking.totalPaid,
-        // NEW: Include requestDate in response
         requestDate: booking.requestDate,
         address: booking.address,
         imageUrl: booking.imageUrl,
@@ -72,16 +69,70 @@ exports.createBooking = async (req, res) => {
 
 exports.updateBookingStatus = async (req, res) => {
   try {
-    const booking = await Booking.findByIdAndUpdate(
-      req.params.id,
-      { status: req.body.status },
-      { new: true }
-    );
+    const { id } = req.params;
+    const { status } = req.body;
+    const userId = req.user.id;
+
+    console.log("Updating booking status:", { id, status, userId });
+
+    // Verify that the user is the owner of the booking
+    const booking = await Booking.findOne({ _id: id, owner: userId });
     if (!booking) {
-      return res.status(404).json({ message: "Booking not found" });
+      console.log("Booking not found or user is not owner:", { id, userId });
+      return res
+        .status(404)
+        .json({ message: "Booking not found or you are not the owner" });
     }
-    res.json(booking);
+
+    // Validate status
+    const validStatuses = ["confirmed", "cancelled"];
+    if (!validStatuses.includes(status)) {
+      console.log("Invalid status provided:", status);
+      return res.status(400).json({ message: "Invalid status value" });
+    }
+
+    // Update status
+    booking.status = status;
+    await booking.save();
+
+    // Populate renter for response
+    await booking.populate("renter");
+
+    console.log(
+      "Booking updated successfully:",
+      booking._id,
+      "new status:",
+      status
+    );
+
+    res.status(200).json({
+      id: booking._id,
+      _id: booking._id,
+      name: booking.name,
+      description: booking.description,
+      price: booking.price,
+      requester: booking.renter
+        ? {
+            name: `${booking.renter.firstName} ${booking.renter.lastName}`,
+            contact: booking.renter.email,
+          }
+        : undefined,
+      startDate: booking.startDate,
+      endDate: booking.endDate,
+      status: booking.status,
+      totalPaid: booking.totalPaid,
+      requestDate: booking.requestDate || booking.createdAt,
+      address: booking.address,
+      imageUrl:
+        booking.imageUrl && booking.imageUrl.startsWith("/uploads/")
+          ? `http://localhost:${process.env.PORT || 5000}${booking.imageUrl}`
+          : booking.imageUrl,
+      category: booking.category,
+      notes: booking.notes,
+      createdAt: booking.createdAt,
+    });
   } catch (error) {
+    console.error("Error in updateBookingStatus:", error);
     res.status(400).json({ message: error.message });
   }
 };
@@ -91,10 +142,11 @@ exports.getBookings = async (req, res) => {
     const bookings = await Booking.find({ renter: req.user.id })
       .populate("asset owner review")
       .lean();
+    console.log("Fetched renter bookings:", bookings.length);
     res.status(200).json(
       bookings.map((booking) => ({
         id: booking._id,
-        _id: booking._id, // For compatibility
+        _id: booking._id,
         name: booking.name,
         description: booking.description,
         price: booking.price,
@@ -112,7 +164,6 @@ exports.getBookings = async (req, res) => {
               comment: booking.review.comment,
             }
           : undefined,
-        // NEW: Include requestDate with fallback to createdAt
         requestDate: booking.requestDate || booking.createdAt,
         address: booking.address,
         imageUrl:
@@ -125,16 +176,17 @@ exports.getBookings = async (req, res) => {
       }))
     );
   } catch (error) {
+    console.error("Error in getBookings:", error);
     res.status(500).json({ message: error.message });
   }
 };
 
-// Owner view of bookings (pending/confirmed/etc.) for their assets
 exports.getOwnerBookings = async (req, res) => {
   try {
     const bookings = await Booking.find({ owner: req.user.id })
       .populate("asset renter review")
       .lean();
+    console.log("Fetched owner bookings:", bookings.length);
     res.status(200).json(
       bookings.map((booking) => ({
         id: booking._id,
@@ -142,7 +194,6 @@ exports.getOwnerBookings = async (req, res) => {
         name: booking.name,
         description: booking.description,
         price: booking.price,
-        // CHANGED: Renamed 'renter' to 'requester' to match frontend interface
         requester: booking.renter
           ? {
               name: `${booking.renter.firstName} ${booking.renter.lastName}`,
@@ -156,7 +207,6 @@ exports.getOwnerBookings = async (req, res) => {
         review: booking.review
           ? { rating: booking.review.rating, comment: booking.review.comment }
           : undefined,
-        // NEW: Include requestDate with fallback to createdAt
         requestDate: booking.requestDate || booking.createdAt,
         address: booking.address,
         imageUrl:
@@ -169,6 +219,7 @@ exports.getOwnerBookings = async (req, res) => {
       }))
     );
   } catch (error) {
+    console.error("Error in getOwnerBookings:", error);
     res.status(500).json({ message: error.message });
   }
 };
@@ -184,8 +235,10 @@ exports.cancelBooking = async (req, res) => {
       return res
         .status(404)
         .json({ message: "Booking not found or not cancellable" });
+    console.log("Booking cancelled:", booking._id);
     res.status(200).json({ message: "Booking cancelled", booking });
   } catch (error) {
+    console.error("Error in cancelBooking:", error);
     res.status(500).json({ message: error.message });
   }
 };
@@ -212,8 +265,10 @@ exports.addReview = async (req, res) => {
     await review.save();
     booking.review = review._id;
     await booking.save();
+    console.log("Review added for booking:", bookingId);
     res.status(201).json({ message: "Review added", review });
   } catch (error) {
+    console.error("Error in addReview:", error);
     res.status(500).json({ message: error.message });
   }
 };

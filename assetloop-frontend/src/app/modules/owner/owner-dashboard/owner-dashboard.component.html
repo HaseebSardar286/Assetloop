@@ -51,8 +51,9 @@
                 *ngFor="let booking of activeBookings"
               >
                 {{ booking.name }} - {{ booking.address }} ({{
-                  booking.startDate
-                }}, {{ booking.totalPaid }}, {{ booking.status }})
+                  booking.startDate | date : "MM/dd/yyyy"
+                }}, {{ booking.price | currency : "PKR " }},
+                {{ booking.status }})
               </li>
             </ul>
           </div>

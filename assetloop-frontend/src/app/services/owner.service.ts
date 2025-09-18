@@ -62,7 +62,8 @@ export class OwnerService {
     bookingId: string,
     newStatus: 'confirmed' | 'cancelled'
   ): Observable<Booking> {
-    return this.http.patch<Booking>(
+    console.log('Updating status for booking:', bookingId, 'to', newStatus);
+    return this.http.put<Booking>(
       `${this.apiUrl}/bookings/${bookingId}/status`,
       { status: newStatus },
       { headers: this.getHeaders() }
