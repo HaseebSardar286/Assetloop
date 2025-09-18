@@ -8,7 +8,8 @@
         (click)="navigateTo('/owner/dashboard')"
         [class.active]="isActive('/owner/dashboard')"
       >
-        <i class="bi bi-house-door-fill"></i> Dashboard
+        <fa-icon [icon]="faTachometerAlt" class="btn-primary"></fa-icon>
+        Dashboard
       </a>
     </li>
     <li class="nav-item">
@@ -17,7 +18,7 @@
         (click)="navigateTo('/owner/create-asset')"
         [class.active]="isActive('/owner/create-asset')"
       >
-        <i class="bi bi-calendar-check-fill"></i> Add Asset
+        <fa-icon [icon]="faAdd"></fa-icon> Add Asset
       </a>
     </li>
     <li class="nav-item">
@@ -26,7 +27,7 @@
         (click)="navigateTo('/owner/assets')"
         [class.active]="isActive('/owner/assets')"
       >
-        <i class="bi bi-box-seam-fill"></i> My Assets
+        <fa-icon [icon]="faCalendarCheck"></fa-icon> My Assets
       </a>
     </li>
     <li class="nav-item">
@@ -35,7 +36,7 @@
         (click)="navigateTo('/owner/rentals')"
         [class.active]="isActive('/owner/rentals')"
       >
-        <i class="bi bi-box-seam-fill"></i> Rental Requests
+        <fa-icon [icon]="faClipboardList"></fa-icon> Rental Requests
       </a>
     </li>
     <li class="nav-item">
@@ -44,7 +45,7 @@
         (click)="navigateTo('/owner/chat')"
         [class.active]="isActive('/owner/chat')"
       >
-        <i class="bi bi-box-seam-fill"></i> Messages
+        <fa-icon [icon]="faEnvelope"></fa-icon> Messages
       </a>
     </li>
 
@@ -54,7 +55,7 @@
         (click)="navigateTo('/owner/profile')"
         [class.active]="isActive('/owner/profile')"
       >
-        <i class="bi bi-person-fill"></i> Profile & Settings
+        <fa-icon [icon]="faUserCog"></fa-icon> Profile & Settings
       </a>
     </li>
   </ul>

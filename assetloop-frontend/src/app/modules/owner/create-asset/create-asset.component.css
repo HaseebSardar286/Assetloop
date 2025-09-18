@@ -5,7 +5,7 @@
 
 /* Style the main content area */
 main {
-  margin-left: 200px; /* Match sidebar width */
+  margin-left: 230px; /* Match sidebar width */
   flex-grow: 1;
   overflow-y: auto; /* Enable scrolling if content overflows */
   padding: 1rem;

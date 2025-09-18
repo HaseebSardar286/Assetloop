@@ -20,8 +20,8 @@ const bookingSchema = new mongoose.Schema(
     name: { type: String, required: true },
     description: { type: String },
     price: { type: Number, required: true },
-    startDate: { type: Date, required: true },
-    endDate: { type: Date, required: true },
+    startDate: { type: Date, required: true, default: Date.now },
+    endDate: { type: Date, required: true, default: Date.now },
     totalPaid: { type: Number, default: 0 },
     status: {
       type: String,
@@ -41,7 +41,6 @@ const bookingSchema = new mongoose.Schema(
     imageUrl: { type: String },
     category: { type: String },
     notes: { type: String },
-    // NEW: Added for frontend synchronization (requestDate)
     requestDate: { type: Date, default: Date.now },
   },
   { timestamps: true }
