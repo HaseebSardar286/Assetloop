@@ -1,7 +1,11 @@
-import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { AdminMetrics } from '../interfaces/admin';
+import { Booking } from '../interfaces/bookings';
+import { Review } from '../interfaces/review';
+import { User } from '../interfaces/user';
+import { AssetResponse } from '../interfaces/asset';
 
 @Injectable({
   providedIn: 'root',
@@ -17,13 +21,68 @@ export class AdminService {
   }
 
   getAdminMetrics(): Observable<AdminMetrics> {
-    return this.http.get<AdminMetrics>(`${this.apiUrl}/metrics`, {
+    return this.http.get<AdminMetrics>(`${this.apiUrl}/dashboard-stats`, {
       headers: this.getHeaders(),
     });
   }
 
-  refreshMetrics(): void {
-    // Trigger a refresh - can be used with a service event or RxJS Subject
-    // Implementation depends on how you want to notify components
+  getAllBookings(): Observable<{ bookings: Booking[]; totalBookings: number }> {
+    return this.http.get<{ bookings: Booking[]; totalBookings: number }>(
+      `${this.apiUrl}/bookings`,
+      {
+        headers: this.getHeaders(),
+      }
+    );
+  }
+
+  getAllReviews(): Observable<{ reviews: Review[]; totalReviews: number }> {
+    return this.http.get<{ reviews: Review[]; totalReviews: number }>(
+      `${this.apiUrl}/reviews`,
+      {
+        headers: this.getHeaders(),
+      }
+    );
+  }
+
+  getUsers(): Observable<{ users: User[]; totalUsers: number }> {
+    return this.http.get<{ users: User[]; totalUsers: number }>(
+      `${this.apiUrl}/users`,
+      {
+        headers: this.getHeaders(),
+      }
+    );
+  }
+
+  getAssets(): Observable<{ assets: AssetResponse[]; totalAssets: number }> {
+    return this.http.get<{ assets: AssetResponse[]; totalAssets: number }>(
+      `${this.apiUrl}/assets`,
+      {
+        headers: this.getHeaders(),
+      }
+    );
+  }
+
+  deleteUser(id: string): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/users/${id}`, {
+      headers: this.getHeaders(),
+    });
+  }
+
+  deleteAsset(id: string): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/assets/${id}`, {
+      headers: this.getHeaders(),
+    });
+  }
+
+  getSystemSettings(): Observable<any> {
+    return this.http.get(`${this.apiUrl}/settings`, {
+      headers: this.getHeaders(),
+    });
+  }
+
+  updateSystemSettings(settings: any): Observable<any> {
+    return this.http.put(`${this.apiUrl}/settings`, settings, {
+      headers: this.getHeaders(),
+    });
   }
 }

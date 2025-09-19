@@ -1,11 +1,15 @@
 export interface Owner {
-  name: string;
-  contact: string;
+  firstName: string;
+  middleName: string;
+  lastName: string;
+  email: string;
 }
 
 export interface Renter {
-  name: string;
-  contact: string;
+  firstName: string;
+  middleName: string;
+  lastName: string;
+  email: string;
 }
 
 export interface Favourite {

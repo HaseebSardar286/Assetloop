@@ -66,10 +66,8 @@
                   <h6 class="card-title">{{ booking.name }}</h6>
                   <p class="card-text">{{ booking.description }}</p>
                   <p class="card-text">
-                    <strong>Owner:</strong> {{ booking.owner.name }} <br />
-                    <small class="text-muted">{{
-                      booking.owner.contact
-                    }}</small>
+                    <strong>Owner:</strong> {{ booking.owner.firstName }} <br />
+                    <small class="text-muted">{{ booking.owner.email }}</small>
                   </p>
                   <p class="card-text">
                     <strong>Period:</strong>
@@ -124,10 +122,8 @@
                   <h6 class="card-title">{{ booking.name }}</h6>
                   <p class="card-text">{{ booking.description }}</p>
                   <p class="card-text">
-                    <strong>Owner:</strong> {{ booking.owner.name }} <br />
-                    <small class="text-muted">{{
-                      booking.owner.contact
-                    }}</small>
+                    <strong>Owner:</strong> {{ booking.owner.firstName }} <br />
+                    <small class="text-muted">{{ booking.owner.email }}</small>
                   </p>
                   <p class="card-text">
                     <strong>Period:</strong>
@@ -188,10 +184,8 @@
                   <h6 class="card-title">{{ request.name }}</h6>
                   <p class="card-text">{{ request.description }}</p>
                   <p class="card-text">
-                    <strong>Owner:</strong> {{ request.owner.name }} <br />
-                    <small class="text-muted">{{
-                      request.owner.contact
-                    }}</small>
+                    <strong>Owner:</strong> {{ request.owner.firstName }} <br />
+                    <small class="text-muted">{{ request.owner.email }}</small>
                   </p>
                   <p class="card-text">
                     <strong>Requested:</strong>

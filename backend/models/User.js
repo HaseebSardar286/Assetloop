@@ -3,19 +3,15 @@ const mongoose = require("mongoose");
 const userSchema = new mongoose.Schema(
   {
     firstName: { type: String, required: true },
-    middleName: { type: String },
     lastName: { type: String, required: true },
+    middleName: { type: String },
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true },
+    role: { type: String, enum: ["owner", "renter", "admin"], required: true },
     phoneNumber: { type: String },
     country: { type: String },
-    address: { type: String },
     city: { type: String },
-    role: {
-      type: String,
-      enum: ["owner", "renter", "admin"],
-      required: true,
-    },
+    address: { type: String },
     totalSpent: { type: Number, default: 0 },
     notificationSettings: {
       emailEnabled: { type: Boolean, default: true },
@@ -26,19 +22,19 @@ const userSchema = new mongoose.Schema(
       bookingConfirmations: { type: Boolean, default: true },
       bookingCancellations: { type: Boolean, default: true },
       activeReminders: { type: Boolean, default: true },
-      completedBookings: { type: Boolean, default: false },
+      completedBookings: { type: Boolean, default: true },
       pendingReviews: { type: Boolean, default: true },
       assetStatusChanges: { type: Boolean, default: true },
       paymentUpdates: { type: Boolean, default: true },
-      systemUpdates: { type: Boolean, default: false },
+      systemUpdates: { type: Boolean, default: true },
       frequency: {
         type: String,
         enum: ["immediate", "daily", "weekly"],
         default: "immediate",
       },
-      reminderThreshold: { type: Number, default: 1 }, // Days before/after
-      email: { type: String, default: "" }, // Override profile email
-      phoneNumber: { type: String, default: "" }, // For SMS
+      reminderThreshold: { type: Number, default: 1 },
+      email: { type: String },
+      phoneNumber: { type: String },
     },
   },
   { timestamps: true }

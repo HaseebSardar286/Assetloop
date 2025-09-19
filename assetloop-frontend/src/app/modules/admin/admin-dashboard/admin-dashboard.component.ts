@@ -4,37 +4,11 @@ import { RouterModule } from '@angular/router';
 import { HeaderComponent } from '../../../components/header/header.component';
 import { AdminSidebarComponent } from '../admin-sidebar/admin-sidebar.component';
 import { AdminService } from '../../../services/admin.service';
-
-interface User {
-  id: string;
-  name: string;
-  email: string;
-  createdAt: Date;
-}
-
-interface Asset {
-  id: string;
-  name: string;
-  description: string;
-  price: number;
-  imageUrl?: string;
-}
-
-interface Request {
-  id: string;
-  name: string;
-  description: string;
-  createdAt: Date;
-  imageUrl?: string;
-}
-
-interface AdminMetrics {
-  totalUsers: number;
-  totalAssets: number;
-  pendingRequests: number;
-  totalBookings: number;
-  totalEarnings: number;
-}
+import { AdminMetrics } from '../../../interfaces/admin';
+import { Booking } from '../../../interfaces/bookings';
+import { User } from '../../../interfaces/user';
+import { AssetResponse } from '../../../interfaces/asset';
+import { Review } from '../../../interfaces/review';
 
 @Component({
   selector: 'app-admin-dashboard',
@@ -44,19 +18,27 @@ interface AdminMetrics {
   styleUrls: ['./admin-dashboard.component.css'],
 })
 export class AdminDashboardComponent implements OnInit {
+  deleteReview(arg0: string) {
+    throw new Error('Method not implemented.');
+  }
   metrics: AdminMetrics = {
     totalUsers: 0,
     totalAssets: 0,
     pendingRequests: 0,
     totalBookings: 0,
-    totalEarnings: 0,
+    totalReviews: 0,
   };
+  bookings: Booking[] = [];
+  reviews: Review[] = [];
   users: User[] = [];
-  assets: Asset[] = [];
-  requests: Request[] = [];
-  adminName: string = 'Admin'; // Replace with dynamic value from auth
+  assets: AssetResponse[] = [];
+  adminName: string = 'Admin';
   loading = true;
   error: string | null = null;
+
+  // Pagination
+  currentPage = 1;
+  itemsPerPage = 5;
 
   constructor(private adminService: AdminService) {}
 
@@ -77,52 +59,106 @@ export class AdminDashboardComponent implements OnInit {
       },
     });
 
-    //   this.adminService.getRecentUsers().subscribe({
-    //     next: (data: User[]) => {
-    //       this.users = data;
-    //     },
-    //     error: (err) => {
-    //       this.error = this.error || (err.error?.message || 'Failed to load users');
-    //     },
-    //   });
+    this.adminService.getAllBookings().subscribe({
+      next: (data) => {
+        this.bookings = data.bookings;
+      },
+      error: (err) => {
+        this.error =
+          this.error || err.error?.message || 'Failed to load bookings';
+      },
+    });
 
-    //   this.adminService.getRecentAssets().subscribe({
-    //     next: (data: Asset[]) => {
-    //       this.assets = data;
-    //     },
-    //     error: (err) => {
-    //       this.error = this.error || (err.error?.message || 'Failed to load assets');
-    //     },
-    //   });
+    this.adminService.getAllReviews().subscribe({
+      next: (data) => {
+        this.reviews = data.reviews;
+      },
+      error: (err) => {
+        this.error =
+          this.error || err.error?.message || 'Failed to load reviews';
+      },
+    });
 
-    //   this.adminService.getPendingRequests().subscribe({
-    //     next: (data: Request[]) => {
-    //       this.requests = data;
-    //       this.loading = false;
-    //     },
-    //     error: (err) => {
-    //       this.error = this.error || (err.error?.message || 'Failed to load requests');
-    //       this.loading = false;
-    //     },
-    //   });
-    // }
+    this.adminService.getUsers().subscribe({
+      next: (data) => {
+        this.users = data.users;
+      },
+      error: (err) => {
+        this.error = this.error || err.error?.message || 'Failed to load users';
+      },
+    });
 
-    // onLogout(): void {
-    //   localStorage.removeItem('authToken');
-    //   // Navigate to login page (assuming Router is injected)
-    //   window.location.href = '/auth/login'; // Replace with router.navigate if available
-    // }
+    this.adminService.getAssets().subscribe({
+      next: (data) => {
+        this.assets = data.assets;
+        this.loading = false;
+      },
+      error: (err) => {
+        this.error =
+          this.error || err.error?.message || 'Failed to load assets';
+        this.loading = false;
+      },
+    });
+  }
 
-    // viewUserDetails(userId: string): void {
-    //   // Navigate to user details page
-    // }
+  onLogout(): void {
+    localStorage.removeItem('authToken');
+    window.location.href = '/auth/login';
+  }
 
-    // viewAssetDetails(assetId: string): void {
-    //   // Navigate to asset details page
-    // }
+  onNavigate(event: Event): void {
+    const target = event.target as HTMLAnchorElement;
+    if (target && target.getAttribute('href')) {
+      const path = target.getAttribute('href')!;
+      console.log('Navigating to:', path);
+    }
+  }
 
-    // viewRequestDetails(requestId: string): void {
-    //   // Navigate to request details page
-    // }
+  // Pagination methods
+  get paginatedBookings(): Booking[] {
+    const start = (this.currentPage - 1) * this.itemsPerPage;
+    const end = start + this.itemsPerPage;
+    return this.bookings.slice(start, end);
+  }
+
+  get paginatedReviews(): Review[] {
+    const start = (this.currentPage - 1) * this.itemsPerPage;
+    const end = start + this.itemsPerPage;
+    return this.reviews.slice(start, end);
+  }
+
+  get paginatedUsers(): User[] {
+    const start = (this.currentPage - 1) * this.itemsPerPage;
+    const end = start + this.itemsPerPage;
+    return this.users.slice(start, end);
+  }
+
+  get paginatedAssets(): AssetResponse[] {
+    const start = (this.currentPage - 1) * this.itemsPerPage;
+    const end = start + this.itemsPerPage;
+    return this.assets.slice(start, end);
+  }
+
+  get totalPagesBookings(): number {
+    return Math.ceil(this.bookings.length / this.itemsPerPage);
+  }
+
+  get totalPagesReviews(): number {
+    return Math.ceil(this.reviews.length / this.itemsPerPage);
+  }
+
+  get totalPagesUsers(): number {
+    return Math.ceil(this.users.length / this.itemsPerPage);
+  }
+
+  get totalPagesAssets(): number {
+    return Math.ceil(this.assets.length / this.itemsPerPage);
+  }
+
+  changePage(page: number): void {
+    if (page >= 1 && page <= this.totalPagesAssets) {
+      // Use the highest page count as a reference
+      this.currentPage = page;
+    }
   }
 }

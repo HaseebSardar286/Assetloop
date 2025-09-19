@@ -16,7 +16,7 @@ router.get(
 
 // Owner-only route
 router.post(
-  "/owner/listing",
+  "/owner/dashboard",
   authMiddleware,
   roleMiddleware(["owner"]),
   (req, res) => {
@@ -26,7 +26,7 @@ router.post(
 
 // Admin-only route
 router.get(
-  "/admin/users",
+  "/admin/dashboard",
   authMiddleware,
   roleMiddleware(["admin"]),
   (req, res) => {
