@@ -3,8 +3,29 @@
   <div class="d-flex flex-grow-1">
     <app-admin-sidebar></app-admin-sidebar>
     <main class="flex-grow-1 p-4 bg-light">
-      <form #settingsForm="ngForm">
+      <form #settingsForm="ngForm" (ngSubmit)="saveSettings(settingsForm)">
         <h2 class="mb-4">System Settings</h2>
+
+        <!-- Success Message -->
+        <div *ngIf="success" class="alert alert-success mt-4" role="alert">
+          {{ success }}
+          <button
+            type="button"
+            class="btn-close"
+            (click)="success = null"
+          ></button>
+        </div>
+
+        <!-- Error Message -->
+        <div *ngIf="error" class="alert alert-danger mt-4" role="alert">
+          {{ error }}
+          <button
+            type="button"
+            class="btn-close"
+            (click)="error = null"
+          ></button>
+        </div>
+
         <!-- General Settings -->
         <div class="card">
           <div class="card-header">General Settings</div>
@@ -247,16 +268,16 @@
           <button
             type="button"
             class="btn btn-secondary mt-4"
-            (click)="saveSettings()"
+            (click)="resetToDefault()"
           >
             Reset to Default
           </button>
 
           <!-- Save Button -->
           <button
-            type="button"
+            type="submit"
             class="btn btn-primary mt-4"
-            (click)="saveSettings()"
+            [disabled]="settingsForm.invalid"
           >
             Save Settings
           </button>

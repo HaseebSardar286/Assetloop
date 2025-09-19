@@ -3,5 +3,5 @@ export interface AdminMetrics {
   totalAssets: number;
   pendingRequests: number;
   totalBookings: number;
-  totalEarnings: number;
+  totalReviews: number;
 }

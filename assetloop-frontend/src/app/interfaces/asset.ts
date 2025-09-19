@@ -1,3 +1,5 @@
+import { Owner } from './rental';
+
 export interface AssetForm {
   name: string;
   address: string;
@@ -16,7 +18,7 @@ export interface AssetForm {
 
 export interface AssetResponse {
   _id: string;
-  owner: string;
+  owner: Owner;
   name: string;
   address: string;
   description: string;
