@@ -4,10 +4,42 @@
     <app-admin-sidebar></app-admin-sidebar>
     <main class="flex-grow-1 p-4 bg-light">
       <h2 class="mb-4">Listing Management</h2>
-      <div class="card">
-        <div class="card-header">All Listings</div>
+      <!-- Search Card -->
+      <div class="card mb-4">
+        <div class="card-header">Search Listings</div>
         <div class="card-body">
-          <table class="table table-striped">
+          <div class="input-group">
+            <input
+              type="text"
+              class="form-control"
+              placeholder="Search by name, owner, or status..."
+              [(ngModel)]="searchTerm"
+              (input)="searchListings()"
+            />
+            <button
+              class="btn btn-outline-secondary"
+              type="button"
+              (click)="clearSearch()"
+            >
+              Clear
+            </button>
+          </div>
+        </div>
+      </div>
+      <!-- Listings Card -->
+      <div class="card">
+        <div class="card-header">
+          All Listings ({{ filteredListings.length || 0 }})
+        </div>
+        <div class="card-body">
+          <!-- Loading Spinner -->
+          <div *ngIf="loading" class="text-center mt-5">
+            <div class="spinner-border text-primary" role="status">
+              <span class="visually-hidden">Loading...</span>
+            </div>
+            <p class="mt-2">Loading listings...</p>
+          </div>
+          <table class="table table-striped" *ngIf="!loading">
             <thead>
               <tr>
                 <th>ID</th>
@@ -21,15 +53,17 @@
             <tbody>
               <tr *ngFor="let listing of paginatedListings">
                 <td>{{ listing._id }}</td>
-                <td>{{ listing.name }}</td>
+                <td>{{ listing.name || "N/A" }}</td>
                 <td>
                   {{
                     listing.owner
-                      ? listing.owner.firstName +
-                        " " +
-                        listing.owner.middleName +
-                        " " +
-                        listing.owner.lastName
+                      ? (
+                          (listing.owner.firstName || "") +
+                          " " +
+                          (listing.owner.middleName || "") +
+                          " " +
+                          (listing.owner.lastName || "")
+                        ).trim() || "Unknown Owner"
                       : "N/A"
                   }}
                 </td>
@@ -37,14 +71,14 @@
                   <span
                     class="badge"
                     [ngClass]="{
-                      'bg-danger': listing.status === 'Inactive',
-                      'bg-primary': listing.status === 'Active',
+                      'bg-danger': listing.status.toLowerCase() === 'inactive',
+                      'bg-primary': listing.status.toLowerCase() === 'active'
                     }"
                   >
-                    {{ listing.status }}
+                    {{ listing.status || "N/A" }}
                   </span>
                 </td>
-                <td>{{ listing.price }}</td>
+                <td>{{ listing.price || "N/A" }}</td>
                 <td>
                   <button
                     class="btn btn-info btn-sm me-2"
@@ -54,14 +88,14 @@
                   </button>
                   <button
                     class="btn btn-warning btn-sm me-2"
-                    *ngIf="listing.status === 'Active'"
+                    *ngIf="listing.status?.toLowerCase() === 'active'"
                     [routerLink]="['/admin/status-listing', listing._id]"
                   >
                     Deactivate
                   </button>
                   <button
                     class="btn btn-success btn-sm me-2"
-                    *ngIf="listing.status === 'Inactive'"
+                    *ngIf="listing.status?.toLowerCase() === 'inactive'"
                     [routerLink]="['/admin/status-listing', listing._id]"
                   >
                     Activate
@@ -76,13 +110,13 @@
               </tr>
               <tr *ngIf="paginatedListings.length === 0">
                 <td colspan="6" class="text-center text-muted">
-                  No Listings found
+                  No listings found
                 </td>
               </tr>
             </tbody>
           </table>
           <!-- Pagination -->
-          <nav aria-label="Users pagination" *ngIf="totalPages > 1">
+          <nav aria-label="Listings pagination" *ngIf="totalPages > 1">
             <ul class="pagination justify-content-center mt-3">
               <li class="page-item" [class.disabled]="currentPage === 1">
                 <a
@@ -114,14 +148,6 @@
               </li>
             </ul>
           </nav>
-
-          <!-- Loading Spinner -->
-          <div *ngIf="loading" class="text-center mt-5">
-            <div class="spinner-border text-primary" role="status">
-              <span class="visually-hidden">Loading...</span>
-            </div>
-            <p class="mt-2">Loading listings...</p>
-          </div>
           <!-- Error Message -->
           <div *ngIf="error" class="alert alert-danger mt-4" role="alert">
             {{ error }}

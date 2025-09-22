@@ -4,8 +4,7 @@ const {
   getAssets,
   updateAsset,
   deleteAsset,
-  getDashboardStats,
-  getActiveBookings,
+  getAssetReviews,
 } = require("../controllers/assetController");
 const {
   getBookings,
@@ -19,6 +18,8 @@ const {
   getNotificationSettings,
   updateNotificationSettings,
   getOwnerReviews,
+  getDashboardStats,
+  getActiveBookings,
 } = require("../controllers/ownerController");
 const authMiddleware = require("../middlewares/authMiddleware");
 const roleMiddleware = require("../middlewares/roleMiddleware");
@@ -36,6 +37,7 @@ router.post("/create-asset", createAsset);
 router.get("/assets", getAssets);
 router.put("/assets/:id", updateAsset);
 router.delete("/assets/:id", deleteAsset);
+
 router.get("/dashboard-stats", getDashboardStats);
 router.get("/active-bookings", getActiveBookings);
 

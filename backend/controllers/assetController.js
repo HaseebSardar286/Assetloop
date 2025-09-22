@@ -248,58 +248,58 @@ exports.deleteAsset = async (req, res) => {
   }
 };
 
-exports.getDashboardStats = async (req, res) => {
-  try {
-    const ownerId = req.user.id;
+// exports.getDashboardStats = async (req, res) => {
+//   try {
+//     const ownerId = req.user.id;
 
-    const currentDate = new Date().toISOString().split("T")[0];
-    const totalAssets = await Asset.countDocuments({ owner: ownerId });
-    const activeBookings = await Booking.countDocuments({
-      owner: ownerId,
-      startDate: { $lte: currentDate },
-      endDate: { $gte: currentDate },
-      status: "confirmed",
-    });
-    const totalEarnings = await Booking.aggregate([
-      { $match: { owner: ownerId, status: "completed" } },
-      { $group: { _id: null, total: { $sum: "$price" } } },
-    ]).then((results) => results[0]?.total || 0);
-    const pendingReviews = await Booking.countDocuments({
-      owner: ownerId,
-      status: "completed",
-      review: { $exists: false },
-    });
+//     const currentDate = new Date().toISOString().split("T")[0];
+//     const totalAssets = await Asset.countDocuments({ owner: ownerId });
+//     const activeBookings = await Booking.countDocuments({
+//       owner: ownerId,
+//       startDate: { $lte: currentDate },
+//       endDate: { $gte: currentDate },
+//       status: "confirmed",
+//     });
+//     const totalEarnings = await Booking.aggregate([
+//       { $match: { owner: ownerId, status: "completed" } },
+//       { $group: { _id: null, total: { $sum: "$price" } } },
+//     ]).then((results) => results[0]?.total || 0);
+//     const pendingReviews = await Booking.countDocuments({
+//       owner: ownerId,
+//       status: "completed",
+//       review: { $exists: false },
+//     });
 
-    res.status(200).json({
-      totalAssets,
-      activeBookings,
-      totalEarnings,
-      pendingReviews,
-    });
-  } catch (error) {
-    console.error("Error in getDashboardStats:", error);
-    res.status(500).json({ message: error.message });
-  }
-};
+//     res.status(200).json({
+//       totalAssets,
+//       activeBookings,
+//       totalEarnings,
+//       pendingReviews,
+//     });
+//   } catch (error) {
+//     console.error("Error in getDashboardStats:", error);
+//     res.status(500).json({ message: error.message });
+//   }
+// };
 
-exports.getActiveBookings = async (req, res) => {
-  try {
-    const ownerId = req.user.id;
-    const currentDate = new Date().toISOString().split("T")[0];
+// exports.getActiveBookings = async (req, res) => {
+//   try {
+//     const ownerId = req.user.id;
+//     const currentDate = new Date().toISOString().split("T")[0];
 
-    const activeBookings = await Booking.find({
-      owner: ownerId,
-      startDate: { $lte: currentDate },
-      endDate: { $gte: currentDate },
-      status: "confirmed",
-    }).populate("asset", "name address price");
+//     const activeBookings = await Booking.find({
+//       owner: ownerId,
+//       startDate: { $lte: currentDate },
+//       endDate: { $gte: currentDate },
+//       status: "confirmed",
+//     }).populate("asset", "name address price");
 
-    res.status(200).json(activeBookings);
-  } catch (error) {
-    console.error("Error in getActiveBookings:", error);
-    res.status(500).json({ message: error.message });
-  }
-};
+//     res.status(200).json(activeBookings);
+//   } catch (error) {
+//     console.error("Error in getActiveBookings:", error);
+//     res.status(500).json({ message: error.message });
+//   }
+// };
 
 // Public/read endpoint to get reviews for a given asset
 exports.getAssetReviews = async (req, res) => {

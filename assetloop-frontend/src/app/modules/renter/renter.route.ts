@@ -54,11 +54,7 @@ export const RENTER_ROUTES: Routes = [
     component: FavouritesComponent,
     data: { title: 'Favourites' },
   },
-  {
-    path: 'chat',
-    component: ChatComponent,
-    data: { title: 'Chat' },
-  },
+
   {
     path: 'requested-assets',
     component: RequestedAssetsComponent,
@@ -78,5 +74,10 @@ export const RENTER_ROUTES: Routes = [
     path: 'review/:id',
     component: ReviewComponent,
     data: { title: 'Leave Review' },
+  },
+  {
+    path: 'chat',
+    component: ChatComponent,
+    data: { title: 'Chat' },
   },
 ];

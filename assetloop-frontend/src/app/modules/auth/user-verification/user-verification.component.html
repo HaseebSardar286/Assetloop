@@ -7,10 +7,11 @@
             Seller Identity Verification
           </h2>
           <p class="text-center text-muted mb-4">
-            Complete the verification steps to activate your account.
+            Complete the verification steps to activate your account. This is
+            required for {{ role | titlecase }} users.
           </p>
 
-          <!-- Updated Progress Bar -->
+          <!-- Progress Bar -->
           <div class="progress mb-4" style="height: 8px">
             <div
               class="progress-bar bg-gradient bg-primary"
@@ -30,19 +31,7 @@
                 'text-muted': currentStep !== 1
               }"
             >
-              <span
-                style="
-                  border-radius: 50px;
-                  background-color: rgb(104, 180, 255);
-                  height: 30px;
-                  width: 30px;
-                  display: inline-flex;
-                  align-items: center;
-                  justify-content: center;
-                  color: white;
-                "
-                >1</span
-              >
+              <span class="step-number">1</span>
             </li>
             <li
               class="nav-item px-3"
@@ -51,19 +40,7 @@
                 'text-muted': currentStep !== 2
               }"
             >
-              <span
-                style="
-                  border-radius: 50px;
-                  background-color: rgb(104, 180, 255);
-                  height: 30px;
-                  width: 30px;
-                  display: inline-flex;
-                  align-items: center;
-                  justify-content: center;
-                  color: white;
-                "
-                >2</span
-              >
+              <span class="step-number">2</span>
             </li>
             <li
               class="nav-item px-3"
@@ -72,19 +49,7 @@
                 'text-muted': currentStep !== 3
               }"
             >
-              <span
-                style="
-                  border-radius: 50px;
-                  background-color: rgb(104, 180, 255);
-                  height: 30px;
-                  width: 30px;
-                  display: inline-flex;
-                  align-items: center;
-                  justify-content: center;
-                  color: white;
-                "
-                >3</span
-              >
+              <span class="step-number">3</span>
             </li>
             <li
               class="nav-item px-3"
@@ -93,29 +58,22 @@
                 'text-muted': currentStep !== 4
               }"
             >
-              <span
-                style="
-                  border-radius: 50px;
-                  background-color: rgb(104, 180, 255);
-                  height: 30px;
-                  width: 30px;
-                  display: inline-flex;
-                  align-items: center;
-                  justify-content: center;
-                  color: white;
-                "
-                >4</span
-              >
+              <span class="step-number">4</span>
             </li>
           </ul>
 
-          <form #verifyForm="ngForm" class="needs-validation" novalidate>
+          <form
+            #verifyForm="ngForm"
+            (ngSubmit)="submit()"
+            class="needs-validation"
+            novalidate
+          >
             <!-- Step 1: Upload ID -->
             <div *ngIf="currentStep === 1" class="step-content">
               <h5 class="fw-bold text-primary mb-3">Upload ID Card</h5>
               <p class="fs-0.1 mb-5">
                 Please upload clear photos of the front and back of your
-                government-issued ID card
+                government-issued ID card.
               </p>
               <div class="row g-3">
                 <div class="col-md-6">
@@ -164,7 +122,7 @@
                 Please enter your information as it appears on your ID card.
               </p>
               <div class="row g-3">
-                <div class="col-6">
+                <div class="col-md-6">
                   <div class="form-group">
                     <label for="fullName" class="form-label fw-medium"
                       >Full Name</label
@@ -173,6 +131,7 @@
                       type="text"
                       id="fullName"
                       name="fullName"
+                      (ngModel)="(verificationData.fullName)"
                       class="form-control"
                       required
                     />
@@ -181,7 +140,7 @@
                     </div>
                   </div>
                 </div>
-                <div class="col-6">
+                <div class="col-md-6">
                   <div class="form-group">
                     <label for="dateOfBirth" class="form-label fw-medium"
                       >Date of Birth</label
@@ -190,6 +149,7 @@
                       type="date"
                       id="dateOfBirth"
                       name="dateOfBirth"
+                      (ngModel)="(verificationData.dateOfBirth)"
                       class="form-control"
                       required
                     />
@@ -198,24 +158,60 @@
                     </div>
                   </div>
                 </div>
-                <div class="col-12">
+                <div class="col-md-6">
                   <div class="form-group">
-                    <label for="idNumber" class="form-label fw-medium"
-                      >CNIC Number</label
+                    <label for="issueDate" class="form-label fw-medium"
+                      >Issue Date</label
                     >
                     <input
-                      type="text"
-                      id="idNumber"
-                      name="idNumber"
+                      type="date"
+                      id="issueDate"
+                      name="issueDate"
+                      (ngModel)="(verificationData.issueDate)"
                       class="form-control"
                       required
                     />
                     <div class="invalid-feedback">
-                      Please enter your ID number.
+                      Please select CNIC issue date.
                     </div>
                   </div>
                 </div>
-
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label for="expiryDate" class="form-label fw-medium"
+                      >Expiry Date</label
+                    >
+                    <input
+                      type="date"
+                      id="expiryDate"
+                      name="expiryDate"
+                      (ngModel)="(verificationData.expiryDate)"
+                      class="form-control"
+                      required
+                    />
+                    <div class="invalid-feedback">
+                      Please select CNIC expiry date.
+                    </div>
+                  </div>
+                </div>
+                <div class="col-12">
+                  <div class="form-group">
+                    <label for="cnicNumber" class="form-label fw-medium"
+                      >CNIC Number</label
+                    >
+                    <input
+                      type="text"
+                      id="cnicNumber"
+                      name="cnicNumber"
+                      (ngModel)="(verificationData.cnicNumber)"
+                      class="form-control"
+                      required
+                    />
+                    <div class="invalid-feedback">
+                      Please enter your CNIC number.
+                    </div>
+                  </div>
+                </div>
                 <div class="col-12">
                   <div class="form-group">
                     <label for="address" class="form-label fw-medium"
@@ -224,6 +220,7 @@
                     <textarea
                       id="address"
                       name="address"
+                      (ngModel)="(verificationData.address)"
                       class="form-control"
                       rows="3"
                       required
@@ -239,6 +236,9 @@
             <!-- Step 3: Selfie -->
             <div *ngIf="currentStep === 3" class="step-content">
               <h5 class="fw-bold text-primary mb-3">Upload Selfie</h5>
+              <p class="fs-0.1 mb-5">
+                Please upload a clear selfie holding your ID card.
+              </p>
               <div class="form-group">
                 <label for="selfie" class="form-label fw-medium"
                   >Selfie Photo</label
@@ -267,31 +267,57 @@
               <div class="list-group">
                 <div class="list-group-item">
                   <strong>Full Name:</strong>
-                  <span class="text-muted">Not provided</span>
+                  <span class="text-muted">{{
+                    verificationData.fullName || "Not provided"
+                  }}</span>
                 </div>
                 <div class="list-group-item">
-                  <strong>ID Number:</strong>
-                  <span class="text-muted">Not provided</span>
+                  <strong>CNIC Number:</strong>
+                  <span class="text-muted">{{
+                    verificationData.cnicNumber || "Not provided"
+                  }}</span>
+                </div>
+                <div class="list-group-item">
+                  <strong>Issue Date:</strong>
+                  <span class="text-muted">{{
+                    verificationData.issueDate || "Not provided"
+                  }}</span>
+                </div>
+                <div class="list-group-item">
+                  <strong>Expiry Date:</strong>
+                  <span class="text-muted">{{
+                    verificationData.expiryDate || "Not provided"
+                  }}</span>
                 </div>
                 <div class="list-group-item">
                   <strong>Date of Birth:</strong>
-                  <span class="text-muted">Not provided</span>
+                  <span class="text-muted">{{
+                    verificationData.dateOfBirth || "Not provided"
+                  }}</span>
                 </div>
                 <div class="list-group-item">
                   <strong>Address:</strong>
-                  <span class="text-muted">Not provided</span>
+                  <span class="text-muted">{{
+                    verificationData.address || "Not provided"
+                  }}</span>
                 </div>
                 <div class="list-group-item">
                   <strong>ID Front:</strong>
-                  <span class="text-muted">Not uploaded</span>
+                  <span class="text-muted">{{
+                    idFrontName || "Not uploaded"
+                  }}</span>
                 </div>
                 <div class="list-group-item">
                   <strong>ID Back:</strong>
-                  <span class="text-muted">Not uploaded</span>
+                  <span class="text-muted">{{
+                    idBackName || "Not uploaded"
+                  }}</span>
                 </div>
                 <div class="list-group-item">
                   <strong>Selfie:</strong>
-                  <span class="text-muted">Not uploaded</span>
+                  <span class="text-muted">{{
+                    selfieName || "Not uploaded"
+                  }}</span>
                 </div>
               </div>
             </div>
@@ -319,6 +345,7 @@
                 'btn-success': currentStep === 4
               }"
               (click)="currentStep < 4 ? nextStep(verifyForm) : submit()"
+              [disabled]="verifyForm.invalid && currentStep < 4"
             >
               <span *ngIf="currentStep < 4"
                 >Next <i class="bi bi-arrow-right"></i

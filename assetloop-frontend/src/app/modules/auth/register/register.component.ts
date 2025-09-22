@@ -26,6 +26,8 @@ export class RegisterComponent {
     city: '',
     address: '',
     confirmPassword: '',
+    _id: '',
+    verificationStatus: 'pending',
   };
 
   countries: string[] = ['Pakistan', 'India', 'United States', 'UK', 'Canada'];

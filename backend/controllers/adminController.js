@@ -265,3 +265,57 @@ exports.updateSystemSettings = async (req, res) => {
       .json({ message: `Failed to update settings: ${error.message}` });
   }
 };
+
+// Review management
+exports.getAllReviews = async (req, res) => {
+  try {
+    const { search } = req.query;
+    const query = {};
+
+    if (search) {
+      query.$or = [
+        { "rental.name": { $regex: search, $options: "i" } },
+        { "renter.firstName": { $regex: search, $options: "i" } },
+        { "renter.middleName": { $regex: search, $options: "i" } },
+        { "renter.lastName": { $regex: search, $options: "i" } },
+        { "owner.firstName": { $regex: search, $options: "i" } },
+        { "owner.middleName": { $regex: search, $options: "i" } },
+        { "owner.lastName": { $regex: search, $options: "i" } },
+        { comment: { $regex: search, $options: "i" } },
+      ];
+    }
+
+    const reviews = await Review.find(query)
+      .populate("rental", "name")
+      .populate("renter", "firstName lastName email middleName")
+      .populate("owner", "firstName lastName email middleName")
+      .sort({ createdAt: -1 });
+
+    const total = await Review.countDocuments(query);
+
+    res.json({
+      reviews,
+      totalReviews: total,
+    });
+  } catch (error) {
+    console.error("Error in getAllReviews:", error);
+    res
+      .status(500)
+      .json({ message: `Failed to fetch reviews: ${error.message}` });
+  }
+};
+
+exports.deleteReview = async (req, res) => {
+  try {
+    const review = await Review.findByIdAndDelete(req.params.id);
+    if (!review) {
+      return res.status(404).json({ message: "Review not found" });
+    }
+    res.json({ message: "Review deleted successfully" });
+  } catch (error) {
+    console.error("Error in deleteReview:", error);
+    res
+      .status(500)
+      .json({ message: `Failed to delete review: ${error.message}` });
+  }
+};

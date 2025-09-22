@@ -161,4 +161,15 @@ export class AdminDashboardComponent implements OnInit {
       this.currentPage = page;
     }
   }
+
+  filterRecentUsers(users: User[]): User[] {
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+
+    return users.filter((user) => {
+      if (!user.createdAt) return false;
+      const createdAtDate = new Date(user.createdAt);
+      return createdAtDate >= thirtyDaysAgo;
+    });
+  }
 }

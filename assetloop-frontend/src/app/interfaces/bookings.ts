@@ -7,7 +7,7 @@ export interface Booking {
   description?: string;
   price: number;
   owner: Owner;
-  requester?: Renter;
+  renter?: Renter;
   startDate: string | Date; // Backend sends string
   endDate: string | Date; // Backend sends string
   status:
