@@ -49,9 +49,9 @@
         </div>
         <div class="card-body">
           <h5 class="mb-3">Recent Users</h5>
-          <div class="row g-3" *ngIf="paginatedUsers.length > 0">
-            <div class="col-md-6 col-lg-4" *ngFor="let user of paginatedUsers">
-              <div class="card h-100">
+          <div class="row g-3">
+            <div class="col-md-6 col-lg-4" *ngFor="let user of users">
+              <div class="card h-100 border" *ngIf="user.createdAt">
                 <div class="card-body">
                   <h6 class="card-title">
                     {{ user.firstName }} {{ user.lastName }}
@@ -126,7 +126,7 @@
               class="col-md-6 col-lg-4"
               *ngFor="let asset of paginatedAssets"
             >
-              <div class="card h-100">
+              <div class="card h-100 border">
                 <img
                   [src]="asset.images[0]"
                   class="card-img-top"
@@ -203,7 +203,7 @@
               class="col-md-6 col-lg-4"
               *ngFor="let booking of paginatedBookings"
             >
-              <div class="card h-100">
+              <div class="card h-100 border">
                 <div class="card-body">
                   <h6 class="card-title">{{ booking.name }}</h6>
                   <p class="card-text">{{ booking.address }}</p>
@@ -214,14 +214,23 @@
                     <small class="text-muted">{{ booking.owner.email }}</small>
                   </p>
                   <p class="card-text">
-                    <strong>Renter:</strong> {{ booking.requester?.firstName }}
-                    {{ booking.requester?.lastName }}<br />
+                    <strong>Renter:</strong> {{ booking.renter?.firstName }}
+                    {{ booking.renter?.lastName }}<br />
                     <small class="text-muted">{{
-                      booking.requester?.email
+                      booking.renter?.email
                     }}</small>
                   </p>
                   <p class="card-text">
-                    <strong>Status:</strong> {{ booking.status }}
+                    <strong>Status:</strong>
+                    <span
+                      class="badge me-1"
+                      [ngClass]="{
+                        'bg-success': booking.status === 'confirmed',
+                        'bg-warning': booking.status === 'pending',
+                        'bg-danger': booking.status === 'cancelled'
+                      }"
+                      >{{ booking.status }}</span
+                    >
                   </p>
                   <button
                     class="btn btn-sm btn-outline-info"
@@ -287,7 +296,7 @@
               class="col-md-6 col-lg-4"
               *ngFor="let review of paginatedReviews"
             >
-              <div class="card h-100">
+              <div class="card h-100 border">
                 <div class="card-body">
                   <h6 class="card-title">{{ review.rental?.name || "N/A" }}</h6>
                   <p class="card-text">

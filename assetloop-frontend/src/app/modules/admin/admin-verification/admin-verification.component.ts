@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { HeaderComponent } from '../../../components/header/header.component';
 import { AdminSidebarComponent } from '../admin-sidebar/admin-sidebar.component';
@@ -8,7 +8,7 @@ import { AdminService } from '../../../services/admin.service';
 import { User } from '../../../interfaces/user';
 
 @Component({
-  selector: 'app-user-management',
+  selector: 'app-admin-verification',
   standalone: true,
   imports: [
     CommonModule,
@@ -17,50 +17,47 @@ import { User } from '../../../interfaces/user';
     HeaderComponent,
     AdminSidebarComponent,
   ],
-  templateUrl: './user-management.component.html',
-  styleUrls: ['./user-management.component.css'],
+  templateUrl: './admin-verification.component.html',
+  styleUrls: ['./admin-verification.component.css'],
 })
-export class UserManagementComponent implements OnInit {
+export class AdminVerificationComponent implements OnInit {
   users: User[] = [];
   filteredUsers: User[] = [];
+  paginatedUsers: User[] = [];
   loading = true;
   error: string | null = null;
   searchTerm: string = '';
   currentPage = 1;
   itemsPerPage = 10;
 
-  constructor(private adminService: AdminService) {}
+  constructor(private adminService: AdminService, private router: Router) {}
 
   ngOnInit(): void {
-    this.loadUsers();
+    this.loadPendingUsers();
   }
 
-  loadUsers(): void {
+  loadPendingUsers(): void {
     this.loading = true;
     this.error = null;
 
-    this.adminService.getUsers().subscribe({
-      next: (data) => {
-        console.log('Raw API Response:', data);
-        this.users = Array.isArray(data.users)
-          ? data.users
-          : Array.isArray(data)
-          ? data
-          : [];
-        this.filteredUsers = this.users;
-        this.loading = false;
-        if (this.users.length === 0 && !this.error) {
-          this.error = 'No users found in the database';
-        }
-        this.updatePagination();
-        console.log('Loaded users:', this.users);
-      },
-      error: (err) => {
-        console.error('Error fetching users:', err);
-        this.error = err.error?.message || 'Failed to load users';
-        this.loading = false;
-      },
-    });
+    // this.adminService.getPendingUsers().subscribe({
+    //   next: (data: User[]) => {
+    //     console.log('Raw API Response:', data);
+    //     this.users = Array.isArray(data) ? data : [];
+    //     this.filteredUsers = this.users;
+    //     this.loading = false;
+    //     if (this.users.length === 0 && !this.error) {
+    //       this.error = 'No pending users found';
+    //     }
+    //     this.updatePagination();
+    //     console.log('Loaded pending users:', this.users);
+    //   },
+    //   error: (err: { error: { message: string; }; }) => {
+    //     console.error('Error fetching pending users:', err);
+    //     this.error = err.error?.message || 'Failed to load pending users';
+    //     this.loading = false;
+    //   },
+    // });
   }
 
   searchUsers(): void {
@@ -96,7 +93,42 @@ export class UserManagementComponent implements OnInit {
     this.filteredUsers = this.users;
     this.currentPage = 1;
     this.updatePagination();
-    console.log('Search cleared, showing all users:', this.filteredUsers);
+    console.log(
+      'Search cleared, showing all pending users:',
+      this.filteredUsers
+    );
+  }
+
+  approveUser(userId: any): void {
+    if (confirm('Are you sure you want to approve this user?')) {
+      // this.adminService.approveUser(userId).subscribe({
+      //   next: () => {
+      //     this.users = this.users.filter((u) => u._id !== userId);
+      //     this.searchUsers();
+      //     console.log(`User ${userId} approved`);
+      //   },
+      //   error: (err: { error: { message: string; }; }) => {
+      //     console.error('Error approving user:', err);
+      //     this.error = err.error?.message || 'Failed to approve user';
+      //   },
+      // });
+    }
+  }
+
+  rejectUser(userId: any): void {
+    if (confirm('Are you sure you want to reject this user?')) {
+      // this.adminService.rejectUser(userId).subscribe({
+      //   next: () => {
+      //     this.users = this.users.filter((u) => u._id !== userId);
+      //     this.searchUsers();
+      //     console.log(`User ${userId} rejected`);
+      //   },
+      //   error: (err: { error: { message: string; }; }) => {
+      //     console.error('Error rejecting user:', err);
+      //     this.error = err.error?.message || 'Failed to reject user';
+      //   },
+      // });
+    }
   }
 
   deleteUser(userId: any): void {
@@ -104,7 +136,7 @@ export class UserManagementComponent implements OnInit {
       this.adminService.deleteUser(userId).subscribe({
         next: () => {
           this.users = this.users.filter((u) => u._id !== userId);
-          this.searchUsers(); // Reapply search and pagination
+          this.searchUsers();
           console.log(`User ${userId} deleted`);
         },
         error: (err) => {
@@ -121,16 +153,6 @@ export class UserManagementComponent implements OnInit {
     this.paginatedUsers = this.filteredUsers.slice(start, end);
   }
 
-  get paginatedUsers(): User[] {
-    const start = (this.currentPage - 1) * this.itemsPerPage;
-    const end = start + this.itemsPerPage;
-    return this.filteredUsers.slice(start, end);
-  }
-
-  set paginatedUsers(value: User[]) {
-    // Setter required for Angular to update paginatedUsers
-  }
-
   get totalPages(): number {
     return Math.ceil(this.filteredUsers.length / this.itemsPerPage);
   }
@@ -145,6 +167,6 @@ export class UserManagementComponent implements OnInit {
   onLogout(): void {
     localStorage.removeItem('authToken');
     localStorage.removeItem('userId');
-    window.location.href = '/auth/login';
+    this.router.navigate(['/auth/login']);
   }
 }

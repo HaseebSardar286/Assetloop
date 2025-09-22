@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { tap } from 'rxjs/operators';
 import { AssetForm } from '../interfaces/asset';
 import { AssetResponse } from '../interfaces/asset';
 import { DashboardStats } from '../interfaces/ownerDashboard';
@@ -16,15 +17,15 @@ export class OwnerService {
   constructor(private http: HttpClient) {}
 
   private getHeaders(): HttpHeaders {
-    const items = { ...localStorage }; // Log all items for debugging
+    const items = { ...localStorage };
     console.log('localStorage contents:', items);
-    const token = localStorage.getItem('authToken'); // Changed from 'token' to 'authToken'
+    const token = localStorage.getItem('authToken');
     console.log('Retrieved token with "authToken":', token);
     return new HttpHeaders().set('Authorization', `Bearer ${token || ''}`);
   }
 
   createAsset(asset: AssetForm): Observable<AssetResponse> {
-    console.log('Raw asset payload before send:', asset); // Add this line
+    console.log('Raw asset payload before send:', asset);
     return this.http.post<AssetResponse>(`${this.apiUrl}/create-asset`, asset, {
       headers: this.getHeaders(),
     });
@@ -71,7 +72,6 @@ export class OwnerService {
   }
 
   getProfile(): Observable<User> {
-    // Update the return type based on your User interface
     return this.http.get<User>(`${this.apiUrl}/profile`, {
       headers: this.getHeaders(),
     });
@@ -89,10 +89,14 @@ export class OwnerService {
     });
   }
 
-  getActiveBookings(): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/active-bookings`, {
-      headers: this.getHeaders(),
-    });
+  getActiveBookings(): Observable<Booking[]> {
+    return this.http
+      .get<Booking[]>(`${this.apiUrl}/active-bookings`, {
+        headers: this.getHeaders(),
+      })
+      .pipe(
+        tap((bookings) => console.log('Received active bookings:', bookings))
+      );
   }
 
   getNotificationSettings(): Observable<any> {

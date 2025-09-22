@@ -4,10 +4,42 @@
     <app-admin-sidebar></app-admin-sidebar>
     <main class="flex-grow-1 p-4 bg-light">
       <h2 class="mb-4">User Management</h2>
-      <div class="card">
-        <div class="card-header">All Users ({{ users.length || 0 }})</div>
+      <!-- Search Card -->
+      <div class="card mb-4">
+        <div class="card-header">Search Users</div>
         <div class="card-body">
-          <table class="table table-striped">
+          <div class="input-group">
+            <input
+              type="text"
+              class="form-control"
+              placeholder="Search by name, email, or role..."
+              [(ngModel)]="searchTerm"
+              (input)="searchUsers()"
+            />
+            <button
+              class="btn btn-outline-secondary"
+              type="button"
+              (click)="clearSearch()"
+            >
+              Clear
+            </button>
+          </div>
+        </div>
+      </div>
+      <!-- Users Card -->
+      <div class="card">
+        <div class="card-header">
+          All Users ({{ filteredUsers.length || 0 }})
+        </div>
+        <div class="card-body">
+          <!-- Loading Spinner -->
+          <div *ngIf="loading" class="text-center mt-5">
+            <div class="spinner-border text-primary" role="status">
+              <span class="visually-hidden">Loading...</span>
+            </div>
+            <p class="mt-2">Loading users...</p>
+          </div>
+          <table class="table table-striped" *ngIf="!loading">
             <thead>
               <tr>
                 <th>ID</th>
@@ -21,21 +53,21 @@
               <tr *ngFor="let user of paginatedUsers">
                 <td>{{ user._id }}</td>
                 <td>
-                  {{ user.firstName }}
+                  {{ user.firstName || "N/A" }}
                   {{ user.middleName ? user.middleName + " " : ""
-                  }}{{ user.lastName }}
+                  }}{{ user.lastName || "N/A" }}
                 </td>
-                <td>{{ user.email }}</td>
+                <td>{{ user.email || "N/A" }}</td>
                 <td>
                   <span
                     class="badge"
                     [ngClass]="{
-                      'bg-danger': user.role === 'admin',
-                      'bg-info': user.role === 'owner',
-                      'bg-primary': user.role === 'renter'
+                      'bg-success': user.role.toLowerCase() === 'admin',
+                      'bg-info': user.role.toLowerCase() === 'owner',
+                      'bg-primary': user.role.toLowerCase() === 'renter'
                     }"
                   >
-                    {{ user.role | titlecase }}
+                    {{ user.role ? (user.role | titlecase) : "N/A" }}
                   </span>
                 </td>
                 <td>
@@ -60,7 +92,6 @@
               </tr>
             </tbody>
           </table>
-
           <!-- Pagination -->
           <nav aria-label="Users pagination" *ngIf="totalPages > 1">
             <ul class="pagination justify-content-center mt-3">
@@ -94,15 +125,6 @@
               </li>
             </ul>
           </nav>
-
-          <!-- Loading Spinner -->
-          <div *ngIf="loading" class="text-center mt-5">
-            <div class="spinner-border text-primary" role="status">
-              <span class="visually-hidden">Loading...</span>
-            </div>
-            <p class="mt-2">Loading users...</p>
-          </div>
-
           <!-- Error Message -->
           <div *ngIf="error" class="alert alert-danger mt-4" role="alert">
             {{ error }}

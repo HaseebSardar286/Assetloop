@@ -3,6 +3,7 @@ export interface Owner {
   middleName: string;
   lastName: string;
   email: string;
+  contact: string;
 }
 
 export interface Renter {
@@ -10,6 +11,7 @@ export interface Renter {
   middleName: string;
   lastName: string;
   email: string;
+  contact: string;
 }
 
 export interface Favourite {

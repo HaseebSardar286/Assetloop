@@ -26,6 +26,8 @@ export class RenterProfileComponent {
     country: '',
     city: '',
     address: '',
+    _id: '',
+    verificationStatus: 'pending',
   };
 
   settings: any = {

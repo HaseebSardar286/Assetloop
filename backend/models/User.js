@@ -3,8 +3,8 @@ const mongoose = require("mongoose");
 const userSchema = new mongoose.Schema(
   {
     firstName: { type: String, required: true },
-    lastName: { type: String, required: true },
     middleName: { type: String },
+    lastName: { type: String, required: true },
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true },
     role: { type: String, enum: ["owner", "renter", "admin"], required: true },
@@ -13,6 +13,7 @@ const userSchema = new mongoose.Schema(
     city: { type: String },
     address: { type: String },
     totalSpent: { type: Number, default: 0 },
+    terms: { type: Boolean, default: false },
     notificationSettings: {
       emailEnabled: { type: Boolean, default: true },
       smsEnabled: { type: Boolean, default: false },
@@ -35,6 +36,22 @@ const userSchema = new mongoose.Schema(
       reminderThreshold: { type: Number, default: 1 },
       email: { type: String },
       phoneNumber: { type: String },
+    },
+    verification: {
+      fullName: { type: String },
+      dateOfBirth: { type: Date },
+      issueDate: { type: Date },
+      expiryDate: { type: Date },
+      cnicNumber: { type: String },
+      address: { type: String },
+      idFront: { type: String }, // Base64 string
+      idBack: { type: String }, // Base64 string
+      selfie: { type: String }, // Base64 string
+    },
+    verificationStatus: {
+      type: String,
+      enum: ["pending", "approved", "rejected"],
+      default: "pending",
     },
   },
   { timestamps: true }

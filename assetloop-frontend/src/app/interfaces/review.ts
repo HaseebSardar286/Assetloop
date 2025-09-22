@@ -6,11 +6,13 @@ export interface Review {
   renter: {
     firstName: string;
     lastName: string;
+    middleName: string;
     email: string;
   } | null; // Reviewer (renter)
   owner: {
     firstName: string;
     lastName: string;
+    middleName: string;
     email: string;
   } | null; // Reviewed party (owner), optional if not all reviews target owners
   rating: number; // e.g., 1-5

@@ -113,8 +113,11 @@ exports.updateBookingStatus = async (req, res) => {
       price: booking.price,
       requester: booking.renter
         ? {
-            name: `${booking.renter.firstName} ${booking.renter.lastName}`,
-            contact: booking.renter.email,
+            firstName: booking.renter.firstName,
+            middleName: booking.renter.middleName,
+            lastName: booking.renter.lastName,
+            email: booking.renter.email,
+            contact: booking.renter.phoneNumber || booking.renter.email,
           }
         : undefined,
       startDate: booking.startDate,
@@ -194,10 +197,12 @@ exports.getOwnerBookings = async (req, res) => {
         name: booking.name,
         description: booking.description,
         price: booking.price,
-        requester: booking.renter
+        renter: booking.renter
           ? {
-              name: `${booking.renter.firstName} ${booking.renter.lastName}`,
-              contact: booking.renter.email,
+              _id: booking.renter._id,
+              firstName: booking.renter.firstName,
+              lastName: booking.renter.lastName,
+              email: booking.renter.email,
             }
           : undefined,
         startDate: booking.startDate,
@@ -216,6 +221,13 @@ exports.getOwnerBookings = async (req, res) => {
         category: booking.category,
         notes: booking.notes,
         createdAt: booking.createdAt,
+        asset: booking.asset
+          ? {
+              name: booking.asset.name,
+              address: booking.asset.address,
+              price: booking.asset.price,
+            }
+          : undefined,
       }))
     );
   } catch (error) {

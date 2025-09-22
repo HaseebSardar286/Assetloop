@@ -3,18 +3,18 @@
   <div class="d-flex flex-grow-1">
     <app-admin-sidebar></app-admin-sidebar>
     <main class="flex-grow-1 p-4 bg-light">
-      <h2 class="mb-4">Reviews Management</h2>
+      <h2 class="mb-4">User Verification Management</h2>
       <!-- Search Card -->
       <div class="card mb-4">
-        <div class="card-header">Search Reviews</div>
+        <div class="card-header">Search Pending Users</div>
         <div class="card-body">
           <div class="input-group">
             <input
               type="text"
               class="form-control"
-              placeholder="Search by reviewer, listing, or comment..."
+              placeholder="Search by name, email, or role..."
               [(ngModel)]="searchTerm"
-              (input)="searchReviews()"
+              (input)="searchUsers()"
             />
             <button
               class="btn btn-outline-secondary"
@@ -26,10 +26,10 @@
           </div>
         </div>
       </div>
-      <!-- Reviews Card -->
+      <!-- Users Card -->
       <div class="card">
         <div class="card-header">
-          All Reviews ({{ filteredReviews.length || 0 }})
+          Pending Verifications ({{ filteredUsers.length || 0 }})
         </div>
         <div class="card-body">
           <!-- Loading Spinner -->
@@ -37,83 +37,78 @@
             <div class="spinner-border text-primary" role="status">
               <span class="visually-hidden">Loading...</span>
             </div>
-            <p class="mt-2">Loading reviews...</p>
+            <p class="mt-2">Loading pending users...</p>
           </div>
-          <!-- Reviews Table -->
           <table class="table table-striped" *ngIf="!loading">
             <thead>
               <tr>
                 <th>ID</th>
-                <th>Reviewer</th>
-                <th>Listing/User</th>
-                <th>Rating</th>
-                <th>Comment</th>
-                <th>Date</th>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Role</th>
+                <th>Verification Info</th>
                 <th>Actions</th>
               </tr>
             </thead>
             <tbody>
-              <tr *ngFor="let review of displayedReviews">
-                <td>{{ review._id }}</td>
+              <tr *ngFor="let user of paginatedUsers">
+                <td>{{ user._id }}</td>
                 <td>
-                  {{
-                    review.renter
-                      ? (review.renter.firstName || "") +
-                        (review.renter.middleName
-                          ? " " + review.renter.middleName + " "
-                          : " ") +
-                        (review.renter.lastName || "")
-                      : "N/A"
-                  }}
+                  {{ user.firstName || "N/A" }}
+                  {{ user.middleName ? user.middleName + " " : ""
+                  }}{{ user.lastName || "N/A" }}
+                </td>
+                <td>{{ user.email || "N/A" }}</td>
+                <td>
+                  <span
+                    class="badge"
+                    [ngClass]="{
+                      'bg-success': user.role === 'admin',
+                      'bg-info': user.role === 'owner',
+                      'bg-primary': user.role === 'renter'
+                    }"
+                  >
+                    {{ user.role ? (user.role | titlecase) : "N/A" }}
+                  </span>
                 </td>
                 <td>
-                  {{ review.rental?.name || "N/A" }}
-                  <ng-container *ngIf="review.owner">
-                    ({{
-                      (review.owner.firstName || "") +
-                        (review.owner.middleName
-                          ? " " + review.owner.middleName + " "
-                          : " ") +
-                        (review.owner.lastName || "") || "Unknown Owner"
-                    }})
-                  </ng-container>
+                  <button
+                    class="btn btn-info btn-sm"
+                    [routerLink]="['/admin/verification/details', user._id]"
+                  >
+                    View Details
+                  </button>
                 </td>
-                <td>{{ review.rating || "N/A" }} ★</td>
-                <td>{{ review.comment || "No comment" }}</td>
-                <td>{{ (review.createdAt | date : "short") || "N/A" }}</td>
                 <td>
                   <button
-                    class="btn btn-info btn-sm me-2"
-                    [routerLink]="['/admin/view-review', review._id]"
+                    class="btn btn-success btn-sm me-2"
+                    (click)="approveUser(user._id)"
                   >
-                    View
+                    Approve
                   </button>
                   <button
-                    class="btn btn-warning btn-sm me-2"
-                    [routerLink]="['/admin/edit-review', review._id]"
+                    class="btn btn-danger btn-sm me-2"
+                    (click)="rejectUser(user._id)"
                   >
-                    Edit
+                    Reject
                   </button>
                   <button
-                    class="btn btn-danger btn-sm"
-                    (click)="deleteReview(review._id)"
+                    class="btn btn-warning btn-sm"
+                    (click)="deleteUser(user._id)"
                   >
                     Delete
                   </button>
                 </td>
               </tr>
-              <tr *ngIf="displayedReviews.length === 0">
-                <td colspan="7" class="text-center text-muted">
-                  No reviews found
+              <tr *ngIf="paginatedUsers.length === 0">
+                <td colspan="6" class="text-center text-muted">
+                  No pending users found
                 </td>
               </tr>
             </tbody>
           </table>
           <!-- Pagination -->
-          <nav
-            aria-label="Reviews pagination"
-            *ngIf="totalPages > 1 && !loading && !error"
-          >
+          <nav aria-label="Users pagination" *ngIf="totalPages > 1">
             <ul class="pagination justify-content-center mt-3">
               <li class="page-item" [class.disabled]="currentPage === 1">
                 <a
@@ -146,14 +141,14 @@
             </ul>
           </nav>
           <!-- Error Message -->
-          <!-- <div *ngIf="error" class="alert alert-danger mt-4" role="alert">
+          <div *ngIf="error" class="alert alert-danger mt-4" role="alert">
             {{ error }}
             <button
               type="button"
               class="btn-close"
               (click)="error = null"
             ></button>
-          </div> -->
+          </div>
         </div>
       </div>
     </main>

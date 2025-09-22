@@ -6,7 +6,7 @@
       (navigate)="onNavigate($event)"
     ></app-owner-side-bar>
     <main class="flex-grow-1 p-4 bg-light">
-      <h2 class="mb-4">Owner Dashboard</h2>
+      <h2 class="mb-3">👋 Welcome back, {{ userName }}!</h2>
       <div class="row">
         <div class="col-md-3 mb-4">
           <div class="card text-white bg-primary">
@@ -53,7 +53,7 @@
                 {{ booking.name }} - {{ booking.address }} ({{
                   booking.startDate | date : "MM/dd/yyyy"
                 }}, {{ booking.price | currency : "PKR " }},
-                {{ booking.status }})
+                {{ booking.status }}) - {{ booking.renter?.firstName }}
               </li>
             </ul>
           </div>

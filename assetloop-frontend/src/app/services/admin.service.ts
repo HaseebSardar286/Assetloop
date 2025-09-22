@@ -35,14 +35,14 @@ export class AdminService {
     );
   }
 
-  getAllReviews(): Observable<{ reviews: Review[]; totalReviews: number }> {
-    return this.http.get<{ reviews: Review[]; totalReviews: number }>(
-      `${this.apiUrl}/reviews`,
-      {
-        headers: this.getHeaders(),
-      }
-    );
-  }
+  // getAllReviews(): Observable<{ reviews: Review[]; totalReviews: number }> {
+  //   return this.http.get<{ reviews: Review[]; totalReviews: number }>(
+  //     `${this.apiUrl}/reviews`,
+  //     {
+  //       headers: this.getHeaders(),
+  //     }
+  //   );
+  // }
 
   getUsers(): Observable<{ users: User[]; totalUsers: number }> {
     return this.http.get<{ users: User[]; totalUsers: number }>(
@@ -82,6 +82,22 @@ export class AdminService {
 
   updateSystemSettings(settings: any): Observable<any> {
     return this.http.put(`${this.apiUrl}/settings`, settings, {
+      headers: this.getHeaders(),
+    });
+  }
+
+  getAllReviews(
+    search: string = ''
+  ): Observable<{ reviews: Review[]; totalReviews: number }> {
+    const params = { search };
+    return this.http.get<{ reviews: Review[]; totalReviews: number }>(
+      `${this.apiUrl}/reviews`,
+      { headers: this.getHeaders(), params }
+    );
+  }
+
+  deleteReview(id: string): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/reviews/${id}`, {
       headers: this.getHeaders(),
     });
   }

@@ -6,6 +6,7 @@ import { ListingManagementComponent } from './listing-management/listing-managem
 import { ReviewsManagementComponent } from './reviews-management/reviews-management.component';
 import { TransactionManagementComponent } from './transaction-management/transaction-management.component';
 import { SystemSettingsComponent } from './system-settings/system-settings.component';
+import { AdminVerificationComponent } from './admin-verification/admin-verification.component';
 
 export const ADMIN_ROUTES: Routes = [
   {
@@ -46,5 +47,11 @@ export const ADMIN_ROUTES: Routes = [
     path: 'system-settings',
     component: SystemSettingsComponent,
     data: { title: 'System Settings' },
+  },
+
+  {
+    path: 'account-verification',
+    component: AdminVerificationComponent,
+    data: { title: 'Account Verification' },
   },
 ];

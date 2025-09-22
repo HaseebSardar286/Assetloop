@@ -1,7 +1,8 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { Booking } from '../../../interfaces/bookings';
+import { Review } from '../../../interfaces/review';
 import { HeaderComponent } from '../../../components/header/header.component';
 import { OwnerSideBarComponent } from '../owner-side-bar/owner-side-bar.component';
 import { OwnerService } from '../../../services/owner.service';
@@ -14,7 +15,8 @@ import { DashboardStats } from '../../../interfaces/ownerDashboard';
   templateUrl: './owner-dashboard.component.html',
   styleUrls: ['./owner-dashboard.component.css'],
 })
-export class OwnerDashboardComponent {
+export class OwnerDashboardComponent implements OnInit {
+  userName = 'Haseeb';
   stats: DashboardStats = {
     totalAssets: 0,
     activeBookings: 0,
@@ -22,19 +24,24 @@ export class OwnerDashboardComponent {
     pendingReviews: 0,
   };
   activeBookings: Booking[] = [];
+  reviews: Review[] = [];
+  userId: string = localStorage.getItem('userId') || '';
 
-  constructor(private ownerService: OwnerService) {}
+  constructor(private ownerService: OwnerService, private router: Router) {}
+
   ngOnInit(): void {
     this.loadDashboardStats();
     this.loadActiveBookings();
+    // this.loadReviews();
   }
+
   loadDashboardStats(): void {
     this.ownerService.getDashboardStats().subscribe({
       next: (data: DashboardStats) => {
         this.stats = data;
         console.log('Dashboard stats:', data);
       },
-      error: (err: String) => {
+      error: (err) => {
         console.error('Error loading dashboard stats:', err);
         alert('Failed to load dashboard stats');
       },
@@ -47,11 +54,28 @@ export class OwnerDashboardComponent {
         this.activeBookings = bookings;
         console.log('Active bookings:', bookings);
       },
-      error: (err: String) => {
+      error: (err) => {
         console.error('Error loading active bookings:', err);
         alert('Failed to load active bookings');
       },
     });
+  }
+
+  // loadReviews(): void {
+  //   this.ownerService.getOwnerReviews(this.userId).subscribe({
+  //     next: (data: { reviews: Review[] }) => {
+  //       this.reviews = data.reviews;
+  //       console.log('Owner reviews:', data.reviews);
+  //     },
+  //     error: (err) => {
+  //       console.error('Error loading reviews:', err);
+  //       alert('Failed to load reviews');
+  //     },
+  //   });
+  // }
+
+  viewRenterProfile(renterId: string): void {
+    this.router.navigate([`/renter/profile/${renterId}`]);
   }
 
   getStatsArray(): { title: string; value: number }[] {
@@ -63,15 +87,18 @@ export class OwnerDashboardComponent {
     ];
   }
 
-  onLogout() {
-    // Handle logout
+  onLogout(): void {
+    localStorage.removeItem('authToken');
+    localStorage.removeItem('userId');
+    this.router.navigate(['/auth/login']);
   }
 
-  onNavigate(event: Event) {
+  onNavigate(event: Event): void {
     const target = event.target as HTMLAnchorElement;
     if (target && target.getAttribute('href')) {
       const path = target.getAttribute('href')!;
       console.log('Navigating to:', path);
+      this.router.navigate([path]);
     }
   }
 }

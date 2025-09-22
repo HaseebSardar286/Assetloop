@@ -45,10 +45,10 @@ export class AuthService {
   isAuthenticated(): boolean {
     const token = this.getToken();
     if (!token) return false;
-    
+
     const decoded = this.decodeToken(token);
     if (!decoded) return false;
-    
+
     // Check if token is expired
     const currentTime = Date.now() / 1000;
     return decoded.exp > currentTime;
@@ -61,7 +61,7 @@ export class AuthService {
   getUserRole(): string | null {
     const token = this.getToken();
     if (!token) return null;
-    
+
     const decoded = this.decodeToken(token);
     return decoded?.role || null;
   }
@@ -80,7 +80,9 @@ export class AuthService {
           firstName: decoded.firstName || '',
           lastName: decoded.lastName || '',
           email: decoded.email || '',
-          role: decoded.role
+          role: decoded.role,
+          terms: false,
+          verificationStatus: 'pending',
         });
       }
     }
