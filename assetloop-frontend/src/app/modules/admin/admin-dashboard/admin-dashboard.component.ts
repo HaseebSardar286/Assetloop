@@ -27,6 +27,8 @@ export class AdminDashboardComponent implements OnInit {
     pendingRequests: 0,
     totalBookings: 0,
     totalReviews: 0,
+    usersByRole: [],
+    bookingsByStatus: [],
   };
   bookings: Booking[] = [];
   reviews: Review[] = [];

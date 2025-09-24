@@ -10,6 +10,9 @@ exports.submitVerification = async (req, res) => {
       expiryDate,
       cnicNumber,
       address,
+      idFront,
+      idBack,
+      selfie,
     } = req.body;
 
     // Validate required fields
@@ -19,23 +22,12 @@ exports.submitVerification = async (req, res) => {
       !issueDate ||
       !expiryDate ||
       !cnicNumber ||
-      !address
+      !address ||
+      !idFront ||
+      !idBack ||
+      !selfie
     ) {
       return res.status(400).json({ message: "All fields are required" });
-    }
-
-    // Validate uploaded files
-    if (
-      !req.files ||
-      !req.files.idFront ||
-      !req.files.idBack ||
-      !req.files.selfie
-    ) {
-      return res
-        .status(400)
-        .json({
-          message: "All files (ID front, ID back, selfie) are required",
-        });
     }
 
     const verificationData = {
@@ -45,9 +37,9 @@ exports.submitVerification = async (req, res) => {
       expiryDate: new Date(expiryDate),
       cnicNumber,
       address,
-      idFront: req.files.idFront[0].path,
-      idBack: req.files.idBack[0].path,
-      selfie: req.files.selfie[0].path,
+      idFront,
+      idBack,
+      selfie,
     };
 
     const user = await User.findByIdAndUpdate(

@@ -3,8 +3,8 @@ const mongoose = require("mongoose");
 const userSchema = new mongoose.Schema(
   {
     firstName: { type: String, required: true },
-    middleName: { type: String },
     lastName: { type: String, required: true },
+    middleName: { type: String },
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true },
     role: { type: String, enum: ["owner", "renter", "admin"], required: true },
@@ -13,7 +13,6 @@ const userSchema = new mongoose.Schema(
     city: { type: String },
     address: { type: String },
     totalSpent: { type: Number, default: 0 },
-    terms: { type: Boolean, default: false },
     notificationSettings: {
       emailEnabled: { type: Boolean, default: true },
       smsEnabled: { type: Boolean, default: false },

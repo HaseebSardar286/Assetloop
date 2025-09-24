@@ -18,6 +18,7 @@ export interface AssetForm {
 
 export interface AssetResponse {
   _id: string;
+  // Backend may send owner as string id or populated object
   owner: Owner;
   name: string;
   address: string;

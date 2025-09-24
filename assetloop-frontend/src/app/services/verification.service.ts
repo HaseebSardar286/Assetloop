@@ -17,10 +17,11 @@ export class VerificationService {
     expiryDate: string;
     cnicNumber: string;
     address: string;
-    idFront: string;
-    idBack: string;
-    selfie: string;
+    idFront: string; // base64 data URL
+    idBack: string; // base64 data URL
+    selfie: string; // base64 data URL
   }): Observable<any> {
+    // Send JSON with base64 strings
     return this.authService.post(this.apiUrl, data);
   }
 }

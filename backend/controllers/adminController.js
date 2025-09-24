@@ -110,12 +110,40 @@ exports.getAssets = async (req, res) => {
 
     const assets = await Asset.find(query)
       .populate("owner", "firstName lastName email middleName")
-      .sort({ createdAt: -1 });
+      .sort({ createdAt: -1 })
+      .lean();
 
     const total = await Asset.countDocuments(query);
 
+    const response = assets.map((asset) => ({
+      _id: asset._id.toString(),
+      id: asset._id.toString(),
+      owner: asset.owner,
+      name: asset.name,
+      address: asset.address,
+      description: asset.description,
+      price: asset.price,
+      status: asset.status,
+      availability: asset.availability,
+      category: asset.category,
+      capacity: asset.capacity,
+      startDate: asset.startDate,
+      endDate: asset.endDate,
+      images: Array.isArray(asset.images)
+        ? asset.images.map((img) =>
+            typeof img === "string"
+              ? img
+              : `data:image/png;base64,${Buffer.from(img).toString("base64")}`
+          )
+        : [],
+      features: asset.features || [],
+      amenities: asset.amenities || [],
+      createdAt: asset.createdAt?.toISOString?.() || asset.createdAt,
+      updatedAt: asset.updatedAt?.toISOString?.() || asset.updatedAt,
+    }));
+
     res.json({
-      assets,
+      assets: response,
       totalAssets: total,
     });
   } catch (error) {

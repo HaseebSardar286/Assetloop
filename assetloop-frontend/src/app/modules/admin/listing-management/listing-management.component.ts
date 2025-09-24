@@ -66,7 +66,7 @@ export class ListingManagementComponent implements OnInit {
           ? [
               listing.owner.firstName || '',
               listing.owner.middleName || '',
-              listing.owner.lastName || '',
+              listing.owner?.lastName || '',
             ]
               .filter(Boolean)
               .join(' ')

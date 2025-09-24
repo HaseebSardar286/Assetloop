@@ -6,8 +6,12 @@ export interface Booking {
   name: string;
   description?: string;
   price: number;
+  // Backend sends owner as { name, contact } in renter views
+  // and renter as minimal object in owner views
   owner: Owner;
-  renter?: Renter;
+  renter?:
+    | Renter
+    | { _id?: string; firstName?: string; lastName?: string; email?: string };
   startDate: string | Date; // Backend sends string
   endDate: string | Date; // Backend sends string
   status:
