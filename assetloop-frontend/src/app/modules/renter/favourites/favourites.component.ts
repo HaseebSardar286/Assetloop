@@ -45,10 +45,7 @@ export class FavouritesComponent implements OnInit {
         this.favouriteItems = items.map((item) => ({
           ...item,
           id: item.id || item._id || '',
-          imageUrl:
-            item.imageUrl && item.imageUrl.length > 0
-              ? item.imageUrl[0] // Use the first image
-              : '/images/default.jpg', // Fallback to default image
+          imageUrl: item.imageUrl || '/images/download.jpg',
           startDate: item.startDate || new Date(),
           endDate: item.endDate || new Date(),
           status: item.status || 'pending',

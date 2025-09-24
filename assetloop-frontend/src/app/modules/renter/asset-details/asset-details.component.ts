@@ -89,7 +89,7 @@ export class AssetDetailsComponent {
         pricePerNight: String(this.asset.price),
         description: this.asset.description,
         amenities: this.asset.amenities || [],
-        imageUrl: this.asset.images?.[0] || '',
+        imageUrl: this.asset.images?.[0] || '/images/download.jpg',
       })
       .subscribe({
         next: () => alert('Added to cart'),
