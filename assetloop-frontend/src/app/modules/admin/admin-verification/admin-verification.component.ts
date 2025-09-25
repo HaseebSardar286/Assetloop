@@ -39,25 +39,23 @@ export class AdminVerificationComponent implements OnInit {
   loadPendingUsers(): void {
     this.loading = true;
     this.error = null;
-
-    // this.adminService.getPendingUsers().subscribe({
-    //   next: (data: User[]) => {
-    //     console.log('Raw API Response:', data);
-    //     this.users = Array.isArray(data) ? data : [];
-    //     this.filteredUsers = this.users;
-    //     this.loading = false;
-    //     if (this.users.length === 0 && !this.error) {
-    //       this.error = 'No pending users found';
-    //     }
-    //     this.updatePagination();
-    //     console.log('Loaded pending users:', this.users);
-    //   },
-    //   error: (err: { error: { message: string; }; }) => {
-    //     console.error('Error fetching pending users:', err);
-    //     this.error = err.error?.message || 'Failed to load pending users';
-    //     this.loading = false;
-    //   },
-    // });
+    this.adminService.getPendingUsers().subscribe({
+      next: (data) => {
+        const list = data?.pendingUsers || [];
+        this.users = list as any;
+        this.filteredUsers = this.users;
+        this.loading = false;
+        if (this.users.length === 0 && !this.error) {
+          this.error = 'No pending users found';
+        }
+        this.updatePagination();
+      },
+      error: (err: { error: { message: string } }) => {
+        console.error('Error fetching pending users:', err);
+        this.error = err.error?.message || 'Failed to load pending users';
+        this.loading = false;
+      },
+    });
   }
 
   searchUsers(): void {
@@ -101,33 +99,31 @@ export class AdminVerificationComponent implements OnInit {
 
   approveUser(userId: any): void {
     if (confirm('Are you sure you want to approve this user?')) {
-      // this.adminService.approveUser(userId).subscribe({
-      //   next: () => {
-      //     this.users = this.users.filter((u) => u._id !== userId);
-      //     this.searchUsers();
-      //     console.log(`User ${userId} approved`);
-      //   },
-      //   error: (err: { error: { message: string; }; }) => {
-      //     console.error('Error approving user:', err);
-      //     this.error = err.error?.message || 'Failed to approve user';
-      //   },
-      // });
+      this.adminService.approvePendingUser(userId).subscribe({
+        next: () => {
+          this.users = this.users.filter((u) => (u as any)._id !== userId);
+          this.searchUsers();
+        },
+        error: (err: { error: { message: string } }) => {
+          console.error('Error approving user:', err);
+          this.error = err.error?.message || 'Failed to approve user';
+        },
+      });
     }
   }
 
   rejectUser(userId: any): void {
     if (confirm('Are you sure you want to reject this user?')) {
-      // this.adminService.rejectUser(userId).subscribe({
-      //   next: () => {
-      //     this.users = this.users.filter((u) => u._id !== userId);
-      //     this.searchUsers();
-      //     console.log(`User ${userId} rejected`);
-      //   },
-      //   error: (err: { error: { message: string; }; }) => {
-      //     console.error('Error rejecting user:', err);
-      //     this.error = err.error?.message || 'Failed to reject user';
-      //   },
-      // });
+      this.adminService.rejectPendingUser(userId).subscribe({
+        next: () => {
+          // keep but refresh status by reloading list
+          this.loadPendingUsers();
+        },
+        error: (err: { error: { message: string } }) => {
+          console.error('Error rejecting user:', err);
+          this.error = err.error?.message || 'Failed to reject user';
+        },
+      });
     }
   }
 

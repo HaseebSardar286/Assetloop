@@ -15,6 +15,9 @@ const {
   deleteReview,
   getSystemSettings,
   updateSystemSettings,
+  getPendingUsers,
+  approvePendingUser,
+  rejectPendingUser,
 } = require("../controllers/adminController");
 
 const router = express.Router();
@@ -31,6 +34,11 @@ router.get("/users", getUsers);
 router.get("/users/:id", getUserById);
 router.put("/users/:id", updateUser);
 router.delete("/users/:id", deleteUser);
+
+// Pending users management
+router.get("/pending-users", getPendingUsers);
+router.post("/pending-users/:id/approve", approvePendingUser);
+router.post("/pending-users/:id/reject", rejectPendingUser);
 
 // Asset management
 router.get("/assets", getAssets);

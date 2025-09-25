@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormsModule, NgForm } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import { User } from '../../../interfaces/user';
 import { VerificationService } from '../../../services/verification.service';
 import { AuthService } from '../../../services/auth.service';
@@ -39,12 +40,21 @@ export class UserVerificationComponent implements OnInit {
   constructor(
     private verificationService: VerificationService,
     private authService: AuthService,
-    private router: Router
+    private router: Router,
+    private route: ActivatedRoute
   ) {}
 
   ngOnInit(): void {
     this.user = this.authService.getCurrentUser();
     this.role = this.authService.getUserRole() || 'user';
+    // If redirected from register, capture pendingUserId
+    this.route.queryParams.subscribe((params) => {
+      const pendingUserId = params['pendingUserId'];
+      if (pendingUserId) {
+        // Attach to payload on submit via closure variable
+        (this.verificationData as any).pendingUserId = pendingUserId;
+      }
+    });
     if (this.user) {
       this.verificationData.fullName = `${this.user.firstName} ${
         this.user.middleName ? this.user.middleName + ' ' : ''
@@ -149,12 +159,8 @@ export class UserVerificationComponent implements OnInit {
       .submitVerification(this.verificationData)
       .subscribe({
         next: () => {
-          alert(
-            'Verification submitted successfully! Awaiting admin approval.'
-          );
-          this.router.navigate([
-            this.role === 'owner' ? '/owner-dashboard' : '/renter-dashboard',
-          ]);
+          alert('Verification submitted. Await admin approval, then login.');
+          this.router.navigate(['/auth/login']);
         },
         error: (err) => {
           console.error('Error submitting verification:', err);

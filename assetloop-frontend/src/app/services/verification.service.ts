@@ -20,6 +20,7 @@ export class VerificationService {
     idFront: string; // base64 data URL
     idBack: string; // base64 data URL
     selfie: string; // base64 data URL
+    pendingUserId?: string;
   }): Observable<any> {
     // Send JSON with base64 strings
     return this.authService.post(this.apiUrl, data);

@@ -64,7 +64,11 @@ export class RegisterComponent {
 
     this.authService.register(this.user).subscribe({
       next: (res) => {
-        this.router.navigate(['/auth/login']);
+        // Redirect to verification with pendingUserId to complete KYC
+        const pendingUserId = res?.pendingUserId;
+        this.router.navigate(['/auth/verification'], {
+          queryParams: { pendingUserId },
+        });
       },
       error: (err) => {
         alert(err.error.message || 'Registration failed. Please try again!');

@@ -10,6 +10,7 @@ router.post("/register", register);
 router.post("/login", login);
 
 // Protected verification submission (expects JSON with base64 images)
-router.post("/verification", authMiddleware, submitVerification);
+// Allow either authenticated user or pendingUserId in body to submit verification
+router.post("/verification", submitVerification);
 
 module.exports = router;
