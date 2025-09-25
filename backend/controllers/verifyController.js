@@ -1,8 +1,9 @@
 const User = require("../models/User");
+const PendingUser = require("../models/PendingUser");
 
 exports.submitVerification = async (req, res) => {
   try {
-    const userId = req.user.id; // From authMiddleware
+    const userId = req.body.pendingUserId || req.user?.id; // Allow unauthenticated verification via pendingUserId
     const {
       fullName,
       dateOfBirth,
@@ -42,7 +43,8 @@ exports.submitVerification = async (req, res) => {
       selfie,
     };
 
-    const user = await User.findByIdAndUpdate(
+    // If user exists in active users, update there; else update PendingUser
+    let updated = await User.findByIdAndUpdate(
       userId,
       {
         verification: verificationData,
@@ -51,8 +53,16 @@ exports.submitVerification = async (req, res) => {
       { new: true }
     );
 
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
+    if (!updated) {
+      updated = await PendingUser.findByIdAndUpdate(
+        userId,
+        { verification: verificationData, status: "pending" },
+        { new: true }
+      );
+    }
+
+    if (!updated) {
+      return res.status(404).json({ message: "Pending user not found" });
     }
 
     res.status(200).json({ message: "Verification submitted successfully" });

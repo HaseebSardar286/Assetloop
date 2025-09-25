@@ -53,6 +53,30 @@ export class AdminService {
     );
   }
 
+  // Pending users
+  getPendingUsers(): Observable<{ pendingUsers: any[]; total: number }> {
+    return this.http.get<{ pendingUsers: any[]; total: number }>(
+      `${this.apiUrl}/pending-users`,
+      { headers: this.getHeaders() }
+    );
+  }
+
+  approvePendingUser(id: string): Observable<any> {
+    return this.http.post(
+      `${this.apiUrl}/pending-users/${id}/approve`,
+      {},
+      { headers: this.getHeaders() }
+    );
+  }
+
+  rejectPendingUser(id: string): Observable<any> {
+    return this.http.post(
+      `${this.apiUrl}/pending-users/${id}/reject`,
+      {},
+      { headers: this.getHeaders() }
+    );
+  }
+
   getAssets(): Observable<{ assets: AssetResponse[]; totalAssets: number }> {
     return this.http.get<{ assets: AssetResponse[]; totalAssets: number }>(
       `${this.apiUrl}/assets`,
