@@ -80,6 +80,24 @@ exports.getPendingUsers = async (req, res) => {
   }
 };
 
+exports.getPendingUserById = async (req, res) => {
+  try {
+    const pending = await PendingUser.findById(req.params.id).select(
+      "-password -__v"
+    );
+
+    if (!pending) {
+      return res.status(404).json({ message: "Pending user not found" });
+    }
+
+    res.status(200).json(pending);
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: `Failed to fetch pending user: ${error.message}` });
+  }
+};
+
 exports.approvePendingUser = async (req, res) => {
   try {
     const { id } = req.params;

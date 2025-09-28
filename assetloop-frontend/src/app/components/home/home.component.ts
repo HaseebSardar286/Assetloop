@@ -47,7 +47,7 @@ export class HomeComponent {
   minPrice: string = '';
   sort: string = '';
 
-  assets: Booking[] = [];
+  assets: AssetResponse[] = [];
 
   searchForm: FormGroup;
   allAssets: AssetResponse[] = [];

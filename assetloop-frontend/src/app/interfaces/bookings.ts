@@ -1,19 +1,25 @@
 import { Owner, Renter } from './rental';
 
 export interface Booking {
-  id: string;
-  _id?: string; // For compatibility
+  _id: string;
+  id: string; // For compatibility
   name: string;
   description?: string;
   price: number;
-  // Backend sends owner as { name, contact } in renter views
-  // and renter as minimal object in owner views
+  // Backend sends owner as populated object or ObjectId
   owner: Owner;
-  renter?:
-    | Renter
-    | { _id?: string; firstName?: string; lastName?: string; email?: string };
-  startDate: string | Date; // Backend sends string
-  endDate: string | Date; // Backend sends string
+  // Backend sends renter as populated object or ObjectId
+  renter?: Renter;
+  // Backend sends asset as populated object or ObjectId
+  asset?:
+    | {
+        _id: string;
+        name: string;
+        address?: string;
+      }
+    | string;
+  startDate: string | Date; // Backend sends Date but frontend may receive string
+  endDate: string | Date; // Backend sends Date but frontend may receive string
   status:
     | 'pending'
     | 'confirmed'
@@ -23,13 +29,14 @@ export interface Booking {
     | 'completed'
     | 'cancelled';
   totalPaid?: number;
-  review?: { rating: number; comment?: string };
-  address: string;
+  review?: string; // ObjectId reference to Review
+  address?: string;
   imageUrl?: string;
   category?: string;
   notes?: string;
+  requestDate?: string | Date;
   createdAt?: string;
-  requestDate?: string;
+  updatedAt?: string;
 }
 
 export interface Message {

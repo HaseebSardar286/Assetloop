@@ -11,15 +11,16 @@ export interface AssetForm {
   status: 'Active' | 'Inactive';
   category: 'car' | 'apartment' | 'house' | 'tool';
   capacity: string | number;
-  images: string[]; // Changed from File[] to string[] for base64
+  images: File[]; // For form upload
   features: string[];
   amenities: string[];
 }
 
 export interface AssetResponse {
   _id: string;
+  id?: string; // For compatibility
   // Backend may send owner as string id or populated object
-  owner: Owner;
+  owner: Owner | string;
   name: string;
   address: string;
   description: string;
@@ -30,9 +31,10 @@ export interface AssetResponse {
   status: 'Active' | 'Inactive';
   category: 'car' | 'apartment' | 'house' | 'tool';
   capacity: number;
-  images: string[]; // Paths stored in the database
+  images: string[]; // Base64 strings or URLs
   features: string[];
   amenities: string[];
+  notes?: string; // For user notes
   createdAt: string;
   updatedAt: string;
 }

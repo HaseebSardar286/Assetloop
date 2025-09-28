@@ -65,7 +65,11 @@ exports.submitVerification = async (req, res) => {
       return res.status(404).json({ message: "Pending user not found" });
     }
 
-    res.status(200).json({ message: "Verification submitted successfully" });
+    res.status(200).json({
+      message:
+        "Verification submitted successfully. Please wait for admin approval.",
+      redirectToLogin: true,
+    });
   } catch (error) {
     console.error("Error in submitVerification:", error);
     res.status(500).json({ message: error.message });

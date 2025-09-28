@@ -1,0 +1,52 @@
+/* Verification Details Component Styles */
+.card {
+  box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+  border: 1px solid rgba(0, 0, 0, 0.125);
+}
+
+.card-header {
+  background-color: #f8f9fa;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.125);
+  font-weight: 600;
+}
+
+.img-fluid {
+  border: 1px solid #dee2e6;
+  transition: transform 0.2s ease-in-out;
+}
+
+.img-fluid:hover {
+  transform: scale(1.02);
+  cursor: pointer;
+}
+
+.badge {
+  font-size: 0.875em;
+}
+
+.btn-lg {
+  padding: 0.75rem 1.5rem;
+  font-size: 1.1rem;
+}
+
+.alert {
+  border: none;
+  border-radius: 0.5rem;
+}
+
+.spinner-border {
+  width: 3rem;
+  height: 3rem;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .btn-lg {
+    padding: 0.5rem 1rem;
+    font-size: 1rem;
+  }
+
+  .img-fluid {
+    max-height: 200px !important;
+  }
+}

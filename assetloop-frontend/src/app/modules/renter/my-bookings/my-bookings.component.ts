@@ -49,7 +49,7 @@ export class MyBookingsComponent implements OnInit {
             b.status === 'expiring soon' ||
             b.status === 'overdue' ||
             b.status === 'confirmed') &&
-          new Date(b.endDate) > currentDate
+          new Date(b.endDate || currentDate) > currentDate
       ),
       past: bookingsWithId.filter((b) => b.status === 'completed'),
       cancelled: bookingsWithId.filter((b) => b.status === 'cancelled'),

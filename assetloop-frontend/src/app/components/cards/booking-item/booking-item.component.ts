@@ -36,31 +36,31 @@ export class BookingItemComponent {
   faTrash = faTrash;
 
   onViewListing() {
-    this.viewListing.emit(this.booking.id);
+    this.viewListing.emit(this.booking.id || this.booking._id);
   }
 
   onRemoveFavourite() {
-    this.removeFavourite.emit(this.booking.id);
+    this.removeFavourite.emit(this.booking.id || this.booking._id);
   }
 
   onAddToCart() {
-    this.addToCart.emit(this.booking.id);
+    this.addToCart.emit(this.booking.id || this.booking._id);
   }
 
   onShare() {
-    this.share.emit(this.booking.id);
+    this.share.emit(this.booking.id || this.booking._id);
   }
 
   onCancelBooking() {
-    this.cancelBooking.emit(this.booking.id);
+    this.cancelBooking.emit(this.booking.id || this.booking._id);
   }
 
   onLeaveReview() {
-    this.leaveReview.emit(this.booking.id);
+    this.leaveReview.emit(this.booking.id || this.booking._id);
   }
 
   onNotesChange(event: Event) {
     const notes = (event.target as HTMLInputElement).value;
-    this.updateNotes.emit({ id: this.booking.id, notes });
+    this.updateNotes.emit({ id: this.booking.id || this.booking._id, notes });
   }
 }

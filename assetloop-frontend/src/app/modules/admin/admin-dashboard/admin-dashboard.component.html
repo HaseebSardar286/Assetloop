@@ -208,17 +208,12 @@
                   <h6 class="card-title">{{ booking.name }}</h6>
                   <p class="card-text">{{ booking.address }}</p>
                   <p class="card-text">
-                    <strong>Owner:</strong> {{ booking.owner.firstName }}
-                    {{ booking.owner.middleName }} {{ booking.owner.lastName
-                    }}<br />
-                    <small class="text-muted">{{ booking.owner.email }}</small>
+                    <strong>Owner:</strong> {{ getOwnerName(booking.owner) }}<br />
+                    <small class="text-muted">{{ getOwnerEmail(booking.owner) }}</small>
                   </p>
                   <p class="card-text">
-                    <strong>Renter:</strong> {{ booking.renter?.firstName }}
-                    {{ booking.renter?.lastName }}<br />
-                    <small class="text-muted">{{
-                      booking.renter?.email
-                    }}</small>
+                    <strong>Renter:</strong> {{ getRenterName(booking.renter) }}<br />
+                    <small class="text-muted">{{ getRenterEmail(booking.renter) }}</small>
                   </p>
                   <p class="card-text">
                     <strong>Status:</strong>
