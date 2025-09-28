@@ -6,6 +6,7 @@ import { HeaderComponent } from '../../../components/header/header.component';
 import { AdminSidebarComponent } from '../admin-sidebar/admin-sidebar.component';
 import { AdminService } from '../../../services/admin.service';
 import { AssetResponse } from '../../../interfaces/asset';
+import { getOwnerName } from '../../../utils/type-guards';
 
 @Component({
   selector: 'app-listing-management',

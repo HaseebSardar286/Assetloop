@@ -1,0 +1,274 @@
+<div class="d-flex flex-column vh-100">
+  <app-header (logout)="onLogout()"></app-header>
+  <div class="d-flex flex-grow-1">
+    <app-admin-sidebar></app-admin-sidebar>
+    <main class="flex-grow-1 p-4 bg-light">
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Verification Details</h2>
+        <button class="btn btn-outline-secondary" (click)="goBack()">
+          <i class="bi bi-arrow-left"></i> Back to Verification List
+        </button>
+      </div>
+
+      <!-- Loading Spinner -->
+      <div *ngIf="loading" class="text-center mt-5">
+        <div class="spinner-border text-primary" role="status">
+          <span class="visually-hidden">Loading...</span>
+        </div>
+        <p class="mt-2">Loading user details...</p>
+      </div>
+
+      <!-- Error Message -->
+      <div *ngIf="error" class="alert alert-danger" role="alert">
+        {{ error }}
+        <button type="button" class="btn-close" (click)="error = null"></button>
+      </div>
+
+      <!-- User Details -->
+      <div *ngIf="!loading && !error && user" class="row">
+        <!-- Basic Information -->
+        <div class="col-md-6 mb-4">
+          <div class="card">
+            <div class="card-header">
+              <h5 class="mb-0">Basic Information</h5>
+            </div>
+            <div class="card-body">
+              <div class="row mb-3">
+                <div class="col-sm-4"><strong>Name:</strong></div>
+                <div class="col-sm-8">
+                  {{ user.firstName || "N/A" }}
+                  {{ user.middleName ? user.middleName + " " : "" }}
+                  {{ user.lastName || "N/A" }}
+                </div>
+              </div>
+              <div class="row mb-3">
+                <div class="col-sm-4"><strong>Email:</strong></div>
+                <div class="col-sm-8">{{ user.email || "N/A" }}</div>
+              </div>
+              <div class="row mb-3">
+                <div class="col-sm-4"><strong>Phone:</strong></div>
+                <div class="col-sm-8">{{ user.phoneNumber || "N/A" }}</div>
+              </div>
+              <div class="row mb-3">
+                <div class="col-sm-4"><strong>Role:</strong></div>
+                <div class="col-sm-8">
+                  <span
+                    class="badge"
+                    [ngClass]="{
+                      'bg-success': user.role === 'admin',
+                      'bg-info': user.role === 'owner',
+                      'bg-primary': user.role === 'renter'
+                    }"
+                  >
+                    {{ user.role ? (user.role | titlecase) : "N/A" }}
+                  </span>
+                </div>
+              </div>
+              <div class="row mb-3">
+                <div class="col-sm-4"><strong>Country:</strong></div>
+                <div class="col-sm-8">{{ user.country || "N/A" }}</div>
+              </div>
+              <div class="row mb-3">
+                <div class="col-sm-4"><strong>City:</strong></div>
+                <div class="col-sm-8">{{ user.city || "N/A" }}</div>
+              </div>
+              <div class="row mb-3">
+                <div class="col-sm-4"><strong>Address:</strong></div>
+                <div class="col-sm-8">{{ user.address || "N/A" }}</div>
+              </div>
+              <div class="row mb-3">
+                <div class="col-sm-4"><strong>Status:</strong></div>
+                <div class="col-sm-8">
+                  <span
+                    class="badge"
+                    [ngClass]="{
+                      'bg-warning': user.status === 'pending',
+                      'bg-success': user.status === 'approved',
+                      'bg-danger': user.status === 'rejected'
+                    }"
+                  >
+                    {{ user.status ? (user.status | titlecase) : "N/A" }}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Verification Information -->
+        <div class="col-md-6 mb-4" *ngIf="user.verification">
+          <div class="card">
+            <div class="card-header">
+              <h5 class="mb-0">Verification Information</h5>
+            </div>
+            <div class="card-body">
+              <div class="row mb-3">
+                <div class="col-sm-4"><strong>Full Name:</strong></div>
+                <div class="col-sm-8">
+                  {{ user.verification.fullName || "N/A" }}
+                </div>
+              </div>
+              <div class="row mb-3">
+                <div class="col-sm-4"><strong>CNIC Number:</strong></div>
+                <div class="col-sm-8">
+                  {{ user.verification.cnicNumber || "N/A" }}
+                </div>
+              </div>
+              <div class="row mb-3">
+                <div class="col-sm-4"><strong>Date of Birth:</strong></div>
+                <div class="col-sm-8">
+                  {{
+                    user.verification.dateOfBirth
+                      ? (user.verification.dateOfBirth | date : "mediumDate")
+                      : "N/A"
+                  }}
+                </div>
+              </div>
+              <div class="row mb-3">
+                <div class="col-sm-4"><strong>Issue Date:</strong></div>
+                <div class="col-sm-8">
+                  {{
+                    user.verification.issueDate
+                      ? (user.verification.issueDate | date : "mediumDate")
+                      : "N/A"
+                  }}
+                </div>
+              </div>
+              <div class="row mb-3">
+                <div class="col-sm-4"><strong>Expiry Date:</strong></div>
+                <div class="col-sm-8">
+                  {{
+                    user.verification.expiryDate
+                      ? (user.verification.expiryDate | date : "mediumDate")
+                      : "N/A"
+                  }}
+                </div>
+              </div>
+              <div class="row mb-3">
+                <div class="col-sm-4"><strong>Address:</strong></div>
+                <div class="col-sm-8">
+                  {{ user.verification.address || "N/A" }}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Verification Images -->
+        <div class="col-12 mb-4" *ngIf="user.verification">
+          <div class="card">
+            <div class="card-header">
+              <h5 class="mb-0">Verification Documents</h5>
+            </div>
+            <div class="card-body">
+              <div class="row">
+                <!-- ID Front -->
+                <div class="col-md-4 mb-3" *ngIf="user.verification.idFront">
+                  <div class="card">
+                    <div class="card-header text-center">
+                      <strong>ID Front</strong>
+                    </div>
+                    <div class="card-body p-2">
+                      <img
+                        [src]="
+                          'data:image/jpeg;base64,' + user.verification.idFront
+                        "
+                        class="img-fluid rounded"
+                        alt="ID Front"
+                        style="
+                          max-height: 300px;
+                          width: 100%;
+                          object-fit: contain;
+                        "
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <!-- ID Back -->
+                <div class="col-md-4 mb-3" *ngIf="user.verification.idBack">
+                  <div class="card">
+                    <div class="card-header text-center">
+                      <strong>ID Back</strong>
+                    </div>
+                    <div class="card-body p-2">
+                      <img
+                        [src]="
+                          'data:image/jpeg;base64,' + user.verification.idBack
+                        "
+                        class="img-fluid rounded"
+                        alt="ID Back"
+                        style="
+                          max-height: 300px;
+                          width: 100%;
+                          object-fit: contain;
+                        "
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Selfie -->
+                <div class="col-md-4 mb-3" *ngIf="user.verification.selfie">
+                  <div class="card">
+                    <div class="card-header text-center">
+                      <strong>Selfie</strong>
+                    </div>
+                    <div class="card-body p-2">
+                      <img
+                        [src]="
+                          'data:image/jpeg;base64,' + user.verification.selfie
+                        "
+                        class="img-fluid rounded"
+                        alt="Selfie"
+                        style="
+                          max-height: 300px;
+                          width: 100%;
+                          object-fit: contain;
+                        "
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- No Verification Data -->
+        <div class="col-12" *ngIf="!user.verification">
+          <div class="alert alert-warning" role="alert">
+            <h5 class="alert-heading">No Verification Data</h5>
+            <p>This user has not submitted verification documents yet.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="row mt-4" *ngIf="!loading && !error && user">
+        <div class="col-12">
+          <div class="card">
+            <div class="card-body">
+              <div class="d-flex justify-content-center gap-3">
+                <button
+                  class="btn btn-success btn-lg"
+                  (click)="approveUser()"
+                  [disabled]="user.status === 'approved'"
+                >
+                  <i class="bi bi-check-circle"></i> Approve User
+                </button>
+                <button
+                  class="btn btn-danger btn-lg"
+                  (click)="rejectUser()"
+                  [disabled]="user.status === 'rejected'"
+                >
+                  <i class="bi bi-x-circle"></i> Reject User
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>

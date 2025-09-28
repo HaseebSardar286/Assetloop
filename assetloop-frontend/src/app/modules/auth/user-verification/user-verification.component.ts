@@ -158,8 +158,11 @@ export class UserVerificationComponent implements OnInit {
     this.verificationService
       .submitVerification(this.verificationData)
       .subscribe({
-        next: () => {
-          alert('Verification submitted. Await admin approval, then login.');
+        next: (response) => {
+          alert(
+            response.message ||
+              'Verification submitted successfully. Please wait for admin approval.'
+          );
           this.router.navigate(['/auth/login']);
         },
         error: (err) => {

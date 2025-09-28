@@ -16,6 +16,7 @@ const {
   getSystemSettings,
   updateSystemSettings,
   getPendingUsers,
+  getPendingUserById,
   approvePendingUser,
   rejectPendingUser,
 } = require("../controllers/adminController");
@@ -37,6 +38,7 @@ router.delete("/users/:id", deleteUser);
 
 // Pending users management
 router.get("/pending-users", getPendingUsers);
+router.get("/pending-users/:id", getPendingUserById);
 router.post("/pending-users/:id/approve", approvePendingUser);
 router.post("/pending-users/:id/reject", rejectPendingUser);
 

@@ -27,27 +27,49 @@ export interface User {
   phoneNumber?: string;
   country?: string;
   password?: string;
-  terms: boolean;
   city?: string;
   address?: string;
   totalSpent?: number;
   createdAt?: string;
+  updatedAt?: string;
+  terms?: boolean; // For registration form compatibility
+
+  notificationSettings?: {
+    emailEnabled: boolean;
+    smsEnabled: boolean;
+    inAppEnabled: boolean;
+    pushEnabled: boolean;
+    newBookings: boolean;
+    bookingConfirmations: boolean;
+    bookingCancellations: boolean;
+    activeReminders: boolean;
+    completedBookings: boolean;
+    pendingReviews: boolean;
+    assetStatusChanges: boolean;
+    paymentUpdates: boolean;
+    systemUpdates: boolean;
+    frequency: 'immediate' | 'daily' | 'weekly';
+    reminderThreshold: number;
+    email?: string;
+    phoneNumber?: string;
+  };
 
   verification?: {
     fullName: string;
-    dateOfBirth: string;
-    issueDate: string;
-    expiryDate: string;
+    dateOfBirth: string | Date;
+    issueDate: string | Date;
+    expiryDate: string | Date;
     cnicNumber: string;
     address: string;
     idFront: string;
     idBack: string;
     selfie: string;
   };
-  verificationStatus: 'pending' | 'approved' | 'rejected';
+  verificationStatus?: 'pending' | 'approved' | 'rejected';
 }
 export interface RegisterForm extends User {
   confirmPassword: string;
+  terms: boolean;
 }
 
 export interface LoginForm {

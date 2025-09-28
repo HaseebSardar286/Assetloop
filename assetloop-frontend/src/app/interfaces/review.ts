@@ -1,21 +1,34 @@
 export interface Review {
   _id: string;
-  rental: {
-    name: string;
-  } | null; // Reference to an asset or booking, with at least a name
-  renter: {
-    firstName: string;
-    lastName: string;
-    middleName: string;
-    email: string;
-  } | null; // Reviewer (renter)
-  owner: {
-    firstName: string;
-    lastName: string;
-    middleName: string;
-    email: string;
-  } | null; // Reviewed party (owner), optional if not all reviews target owners
-  rating: number; // e.g., 1-5
-  comment?: string; // Optional comment
-  createdAt: Date; // Timestamp of review creation
+  // Backend sends rental as populated object or ObjectId
+  rental:
+    | {
+        _id: string;
+        name: string;
+      }
+    | string;
+  // Backend sends renter as populated object or ObjectId
+  renter:
+    | {
+        _id: string;
+        firstName: string;
+        lastName: string;
+        middleName?: string;
+        email: string;
+      }
+    | string;
+  // Backend sends owner as populated object or ObjectId (optional)
+  owner?:
+    | {
+        _id: string;
+        firstName: string;
+        lastName: string;
+        middleName?: string;
+        email: string;
+      }
+    | string;
+  rating: number; // 1-5
+  comment?: string;
+  createdAt?: string;
+  updatedAt?: string;
 }

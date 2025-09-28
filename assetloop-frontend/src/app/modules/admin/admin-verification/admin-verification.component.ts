@@ -101,7 +101,7 @@ export class AdminVerificationComponent implements OnInit {
     if (confirm('Are you sure you want to approve this user?')) {
       this.adminService.approvePendingUser(userId).subscribe({
         next: () => {
-          this.users = this.users.filter((u) => (u as any)._id !== userId);
+          this.users = this.users.filter((u) => u._id !== userId);
           this.searchUsers();
         },
         error: (err: { error: { message: string } }) => {
