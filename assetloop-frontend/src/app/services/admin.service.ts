@@ -54,8 +54,8 @@ export class AdminService {
   }
 
   // Pending users
-  getPendingUsers(): Observable<{ pendingUsers: any[]; total: number }> {
-    return this.http.get<{ pendingUsers: any[]; total: number }>(
+  getPendingUsers(): Observable<{ pendingUsers: User[]; total: number }> {
+    return this.http.get<{ pendingUsers: User[]; total: number }>(
       `${this.apiUrl}/pending-users`,
       { headers: this.getHeaders() }
     );

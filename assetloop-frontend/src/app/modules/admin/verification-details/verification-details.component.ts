@@ -4,6 +4,7 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { HeaderComponent } from '../../../components/header/header.component';
 import { AdminSidebarComponent } from '../admin-sidebar/admin-sidebar.component';
 import { AdminService } from '../../../services/admin.service';
+import { User } from '../../../interfaces/user';
 
 @Component({
   selector: 'app-verification-details',
@@ -13,7 +14,7 @@ import { AdminService } from '../../../services/admin.service';
   styleUrls: ['./verification-details.component.css'],
 })
 export class VerificationDetailsComponent implements OnInit {
-  user: any = null;
+  user: User = {} as User;
   loading = true;
   error: string | null = null;
   userId: string | null = null;

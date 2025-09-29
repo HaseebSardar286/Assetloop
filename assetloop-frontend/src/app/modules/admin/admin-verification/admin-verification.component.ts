@@ -41,8 +41,13 @@ export class AdminVerificationComponent implements OnInit {
     this.error = null;
     this.adminService.getPendingUsers().subscribe({
       next: (data) => {
-        const list = data?.pendingUsers || [];
-        this.users = list as any;
+        console.log('Pending users data:', data);
+        // const list = data?.pendingUsers || [];
+        this.users = Array.isArray(data.pendingUsers)
+          ? data.pendingUsers
+          : Array.isArray(data)
+          ? data
+          : [];
         this.filteredUsers = this.users;
         this.loading = false;
         if (this.users.length === 0 && !this.error) {

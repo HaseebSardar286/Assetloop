@@ -11,6 +11,11 @@
             required for {{ role | titlecase }} users.
           </p>
 
+          <!-- Error Message Display -->
+          <div *ngIf="error" class="alert alert-danger" role="alert">
+            {{ error }}
+          </div>
+
           <!-- Progress Bar -->
           <div class="progress mb-4" style="height: 8px">
             <div
@@ -84,14 +89,20 @@
                     <input
                       type="file"
                       id="idFront"
+                      name="idFront"
                       (change)="onFileChange($event, 'idFront')"
-                      accept="image/*"
+                      accept="image/jpeg,image/jpg,image/png"
                       class="form-control"
                       required
                     />
                     <div class="invalid-feedback">
                       Please upload the front of your ID.
                     </div>
+                    <img
+                      *ngIf="idFrontFile"
+                      [src]="getFilePreview(idFrontFile)"
+                      class="img-preview mt-2"
+                    />
                   </div>
                 </div>
                 <div class="col-md-6">
@@ -102,14 +113,20 @@
                     <input
                       type="file"
                       id="idBack"
+                      name="idBack"
                       (change)="onFileChange($event, 'idBack')"
-                      accept="image/*"
+                      accept="image/jpeg,image/jpg,image/png"
                       class="form-control"
                       required
                     />
                     <div class="invalid-feedback">
                       Please upload the back of your ID.
                     </div>
+                    <img
+                      *ngIf="idBackFile"
+                      [src]="getFilePreview(idBackFile)"
+                      class="img-preview mt-2"
+                    />
                   </div>
                 </div>
               </div>
@@ -131,7 +148,7 @@
                       type="text"
                       id="fullName"
                       name="fullName"
-                      (ngModel)="(verificationData.fullName)"
+                      [(ngModel)]="verificationData.fullName"
                       class="form-control"
                       required
                     />
@@ -149,7 +166,7 @@
                       type="date"
                       id="dateOfBirth"
                       name="dateOfBirth"
-                      (ngModel)="(verificationData.dateOfBirth)"
+                      [(ngModel)]="verificationData.dateOfBirth"
                       class="form-control"
                       required
                     />
@@ -167,7 +184,7 @@
                       type="date"
                       id="issueDate"
                       name="issueDate"
-                      (ngModel)="(verificationData.issueDate)"
+                      [(ngModel)]="verificationData.issueDate"
                       class="form-control"
                       required
                     />
@@ -185,7 +202,7 @@
                       type="date"
                       id="expiryDate"
                       name="expiryDate"
-                      (ngModel)="(verificationData.expiryDate)"
+                      [(ngModel)]="verificationData.expiryDate"
                       class="form-control"
                       required
                     />
@@ -203,7 +220,7 @@
                       type="text"
                       id="cnicNumber"
                       name="cnicNumber"
-                      (ngModel)="(verificationData.cnicNumber)"
+                      [(ngModel)]="verificationData.cnicNumber"
                       class="form-control"
                       required
                     />
@@ -220,7 +237,7 @@
                     <textarea
                       id="address"
                       name="address"
-                      (ngModel)="(verificationData.address)"
+                      [(ngModel)]="verificationData.address"
                       class="form-control"
                       rows="3"
                       required
@@ -246,12 +263,18 @@
                 <input
                   type="file"
                   id="selfie"
+                  name="selfie"
                   (change)="onFileChange($event, 'selfie')"
-                  accept="image/*"
+                  accept="image/jpeg,image/jpg,image/png"
                   class="form-control"
                   required
                 />
                 <div class="invalid-feedback">Please upload your selfie.</div>
+                <img
+                  *ngIf="selfieFile"
+                  [src]="getFilePreview(selfieFile)"
+                  class="img-preview mt-2"
+                />
               </div>
               <div class="alert alert-info mt-3 p-2">
                 <small
@@ -313,40 +336,40 @@
                 </div>
               </div>
             </div>
+
+            <!-- Navigation Buttons -->
+            <div class="d-flex justify-content-between mt-4">
+              <!-- Previous Button (only shown if currentStep > 1) -->
+              <button
+                class="btn btn-outline-secondary btn-small"
+                (click)="previousStep()"
+                *ngIf="currentStep > 1"
+              >
+                <i class="bi bi-arrow-left"></i> Previous
+              </button>
+
+              <!-- Spacer to maintain layout consistency -->
+              <div *ngIf="currentStep === 1" class="flex-grow-1"></div>
+
+              <!-- Next or Submit Button (always on the right) -->
+              <button
+                class="btn btn-small"
+                [ngClass]="{
+                  'btn-primary': currentStep < 4,
+                  'btn-success': currentStep === 4
+                }"
+                (click)="currentStep < 4 ? nextStep(verifyForm) : submit()"
+                [disabled]="verifyForm.invalid && currentStep < 4"
+              >
+                <span *ngIf="currentStep < 4"
+                  >Next <i class="bi bi-arrow-right"></i
+                ></span>
+                <span *ngIf="currentStep === 4"
+                  >Submit <i class="bi bi-check-circle"></i
+                ></span>
+              </button>
+            </div>
           </form>
-
-          <!-- Navigation Buttons -->
-          <div class="d-flex justify-content-between mt-4">
-            <!-- Previous Button (only shown if currentStep > 1) -->
-            <button
-              class="btn btn-outline-secondary btn-small"
-              (click)="previousStep()"
-              *ngIf="currentStep > 1"
-            >
-              <i class="bi bi-arrow-left"></i> Previous
-            </button>
-
-            <!-- Spacer to maintain layout consistency -->
-            <div *ngIf="currentStep === 1" class="flex-grow-1"></div>
-
-            <!-- Next or Submit Button (always on the right) -->
-            <button
-              class="btn btn-small"
-              [ngClass]="{
-                'btn-primary': currentStep < 4,
-                'btn-success': currentStep === 4
-              }"
-              (click)="currentStep < 4 ? nextStep(verifyForm) : submit()"
-              [disabled]="verifyForm.invalid && currentStep < 4"
-            >
-              <span *ngIf="currentStep < 4"
-                >Next <i class="bi bi-arrow-right"></i
-              ></span>
-              <span *ngIf="currentStep === 4"
-                >Submit <i class="bi bi-check-circle"></i
-              ></span>
-            </button>
-          </div>
         </div>
       </div>
     </div>
