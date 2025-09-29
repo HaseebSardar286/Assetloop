@@ -8,6 +8,8 @@ import { TransactionManagementComponent } from './transaction-management/transac
 import { SystemSettingsComponent } from './system-settings/system-settings.component';
 import { AdminVerificationComponent } from './admin-verification/admin-verification.component';
 import { VerificationDetailsComponent } from './verification-details/verification-details.component';
+import { AssetDetailsComponent } from './asset-details/asset-details.component';
+import { UserDetailsComponent } from './user-details/user-details.component';
 
 export const ADMIN_ROUTES: Routes = [
   {
@@ -59,5 +61,15 @@ export const ADMIN_ROUTES: Routes = [
     path: 'verification/details/:id',
     component: VerificationDetailsComponent,
     data: { title: 'Verification Details' },
+  },
+  {
+    path: 'listings/details/:id',
+    component: AssetDetailsComponent,
+    data: { title: 'Listing Details' },
+  },
+  {
+    path: 'users/details/:id',
+    component: UserDetailsComponent,
+    data: { title: 'User Details' },
   },
 ];

@@ -1,0 +1,29 @@
+/* Fix the sidebar */
+.d-flex.flex-column.flex-shrink-0.p-3.bg-dark.text-white {
+  position: fixed;
+  top: 60px; /* Height of the header */
+  left: 0;
+  bottom: 0;
+  width: 230px;
+  overflow-y: auto;
+}
+
+/* Ensure main content adjusts for fixed header and sidebar */
+main {
+  margin-left: 230px;
+  margin-top: 60px; /* Height of the header */
+  padding: 20px;
+  background-color: #f8f9fa;
+  overflow-y: auto;
+  height: calc(100vh - 56px); /* Full viewport height minus header height */
+}
+
+/* Adjust row and columns to account for padding and margins */
+.row {
+  margin: 0;
+}
+
+.col-md-3,
+.col-md-9 {
+  padding: 0 15px;
+}
