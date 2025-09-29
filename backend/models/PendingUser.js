@@ -43,9 +43,9 @@ const pendingUserSchema = new mongoose.Schema(
       expiryDate: { type: Date },
       cnicNumber: { type: String },
       address: { type: String },
-      idFront: { type: String }, // Base64 string
-      idBack: { type: String }, // Base64 string
-      selfie: { type: String }, // Base64 string
+      idFront: { type: String },
+      idBack: { type: String },
+      selfie: { type: String },
     },
     verificationStatus: {
       type: String,
@@ -56,4 +56,4 @@ const pendingUserSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-module.exports = mongoose.model("PendingUser", pendingUserSchema);
+module.exports = mongoose.model("pendingusers", pendingUserSchema);

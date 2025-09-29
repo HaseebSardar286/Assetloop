@@ -64,16 +64,18 @@ exports.getUserById = async (req, res) => {
   }
 };
 
-// Pending user verification management
+// Pending user management
 exports.getPendingUsers = async (req, res) => {
   try {
-    const pending = await PendingUser.find({
-      status: { $in: ["pending", "rejected"] },
-    })
+    console.log("PendingUser collection name:", PendingUser.collection.name);
+    const pending = await PendingUser.find()
       .select("-password -__v")
       .sort({ createdAt: -1 });
+    console.log("Found docs:", pending);
+    console.log("Fetched pending users:", pending); // Debug log
     res.status(200).json({ pendingUsers: pending, total: pending.length });
   } catch (error) {
+    console.error("Error fetching pending users:", error);
     res
       .status(500)
       .json({ message: `Failed to fetch pending users: ${error.message}` });
@@ -85,13 +87,13 @@ exports.getPendingUserById = async (req, res) => {
     const pending = await PendingUser.findById(req.params.id).select(
       "-password -__v"
     );
-
     if (!pending) {
       return res.status(404).json({ message: "Pending user not found" });
     }
-
+    console.log("Fetched pending user:", pending); // Debug log
     res.status(200).json(pending);
   } catch (error) {
+    console.error("Error fetching pending user:", error);
     res
       .status(500)
       .json({ message: `Failed to fetch pending user: ${error.message}` });
@@ -105,11 +107,10 @@ exports.approvePendingUser = async (req, res) => {
     if (!pending) {
       return res.status(404).json({ message: "Pending user not found" });
     }
-    if (pending.status === "approved") {
+    if (pending.verificationStatus === "approved") {
       return res.status(400).json({ message: "User already approved" });
     }
 
-    // Move to active User collection
     const user = await User.create({
       firstName: pending.firstName,
       middleName: pending.middleName,
@@ -121,17 +122,20 @@ exports.approvePendingUser = async (req, res) => {
       city: pending.city,
       address: pending.address,
       role: pending.role,
-      verification: pending.verification || undefined,
+      terms: pending.terms,
+      totalSpent: pending.totalSpent,
+      notificationSettings: pending.notificationSettings,
+      verification: pending.verification,
       verificationStatus: "approved",
     });
 
-    // Delete pending record
     await PendingUser.findByIdAndDelete(id);
-
+    console.log("Approved user:", user._id); // Debug log
     res
       .status(200)
       .json({ message: "User approved and activated", userId: user._id });
   } catch (error) {
+    console.error("Error approving user:", error);
     res.status(500).json({ message: `Approval failed: ${error.message}` });
   }
 };
@@ -143,11 +147,12 @@ exports.rejectPendingUser = async (req, res) => {
     if (!pending) {
       return res.status(404).json({ message: "Pending user not found" });
     }
-    // Mark as rejected and keep record for audit; do not create active user
-    pending.status = "rejected";
+    pending.verificationStatus = "rejected";
     await pending.save();
+    console.log("Rejected user:", id); // Debug log
     res.status(200).json({ message: "Pending user rejected" });
   } catch (error) {
+    console.error("Error rejecting user:", error);
     res.status(500).json({ message: `Rejection failed: ${error.message}` });
   }
 };

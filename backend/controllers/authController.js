@@ -16,17 +16,40 @@ exports.register = async (req, res) => {
       city,
       address,
       role,
+      terms,
     } = req.body;
+
+    // Validate required fields
+    if (!firstName || !lastName || !email || !password || !role || !terms) {
+      return res
+        .status(400)
+        .json({
+          message:
+            "All required fields must be provided, including agreeing to terms",
+        });
+    }
+
+    // Check if terms is true
+    if (terms !== true) {
+      return res.status(400).json({ message: "You must agree to the terms" });
+    }
 
     // Check if user already exists
     const userExists = await User.findOne({ email });
-    if (userExists)
+    if (userExists) {
       return res.status(400).json({ message: "User already exists" });
+    }
+
+    // Check if pending user already exists
+    const pendingUserExists = await PendingUser.findOne({ email });
+    if (pendingUserExists) {
+      return res.status(400).json({ message: "Registration already pending" });
+    }
 
     // Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Create new pending user instead of active user
+    // Create new pending user with all fields
     const pendingUser = await PendingUser.create({
       firstName,
       middleName,
@@ -38,7 +61,28 @@ exports.register = async (req, res) => {
       city,
       address,
       role,
-      status: "pending",
+      terms,
+      verificationStatus: "pending",
+      totalSpent: 0, // Explicitly set default
+      notificationSettings: {
+        emailEnabled: true,
+        smsEnabled: false,
+        inAppEnabled: true,
+        pushEnabled: false,
+        newBookings: true,
+        bookingConfirmations: true,
+        bookingCancellations: true,
+        activeReminders: true,
+        completedBookings: true,
+        pendingReviews: true,
+        assetStatusChanges: true,
+        paymentUpdates: true,
+        systemUpdates: true,
+        frequency: "immediate",
+        reminderThreshold: 1,
+        email: email, // Use provided email
+        phoneNumber: phoneNumber || undefined,
+      },
     });
 
     res.status(201).json({
@@ -56,19 +100,28 @@ exports.login = async (req, res) => {
 
     // Find active user
     const user = await User.findOne({ email });
-    if (!user)
+    if (!user) {
       return res
         .status(403)
         .json({ message: "Account not approved yet or does not exist" });
+    }
 
     // Compare password
     const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch)
+    if (!isMatch) {
       return res.status(400).json({ message: "Invalid credentials" });
+    }
 
-    // Generate JWT
+    // Generate JWT with additional fields
     const token = jwt.sign(
-      { id: user._id, role: user.role },
+      {
+        id: user._id,
+        firstName: user.firstName,
+        middleName: user.middleName,
+        lastName: user.lastName,
+        email: user.email,
+        role: user.role,
+      },
       process.env.JWT_SECRET,
       { expiresIn: "7d" }
     );
@@ -77,11 +130,21 @@ exports.login = async (req, res) => {
       message: "Login successful",
       token,
       user: {
-        id: user._id,
+        _id: user._id,
         firstName: user.firstName,
+        middleName: user.middleName,
         lastName: user.lastName,
         email: user.email,
         role: user.role,
+        phoneNumber: user.phoneNumber,
+        country: user.country,
+        city: user.city,
+        address: user.address,
+        totalSpent: user.totalSpent,
+        createdAt: user.createdAt,
+        updatedAt: user.updatedAt,
+        terms: user.terms,
+        verificationStatus: user.verificationStatus,
       },
     });
   } catch (error) {

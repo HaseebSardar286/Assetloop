@@ -10,19 +10,7 @@ export class VerificationService {
 
   constructor(private authService: AuthService) {}
 
-  submitVerification(data: {
-    fullName: string;
-    dateOfBirth: string;
-    issueDate: string;
-    expiryDate: string;
-    cnicNumber: string;
-    address: string;
-    idFront: string; // base64 data URL
-    idBack: string; // base64 data URL
-    selfie: string; // base64 data URL
-    pendingUserId?: string;
-  }): Observable<any> {
-    // Send JSON with base64 strings
-    return this.authService.post(this.apiUrl, data);
+  submitVerification(formData: FormData): Observable<any> {
+    return this.authService.post(this.apiUrl, formData); // AuthService.post should handle FormData
   }
 }

@@ -82,12 +82,16 @@
                   <span
                     class="badge"
                     [ngClass]="{
-                      'bg-warning': user.status === 'pending',
-                      'bg-success': user.status === 'approved',
-                      'bg-danger': user.status === 'rejected'
+                      'bg-warning': user.verificationStatus === 'pending',
+                      'bg-success': user.verificationStatus === 'approved',
+                      'bg-danger': user.verificationStatus === 'rejected'
                     }"
                   >
-                    {{ user.status ? (user.status | titlecase) : "N/A" }}
+                    {{
+                      user.verificationStatus
+                        ? (user.verificationStatus | titlecase)
+                        : "N/A"
+                    }}
                   </span>
                 </div>
               </div>
@@ -253,14 +257,14 @@
                 <button
                   class="btn btn-success btn-lg"
                   (click)="approveUser()"
-                  [disabled]="user.status === 'approved'"
+                  [disabled]="user.verificationStatus === 'approved'"
                 >
                   <i class="bi bi-check-circle"></i> Approve User
                 </button>
                 <button
                   class="btn btn-danger btn-lg"
                   (click)="rejectUser()"
-                  [disabled]="user.status === 'rejected'"
+                  [disabled]="user.verificationStatus === 'rejected'"
                 >
                   <i class="bi bi-x-circle"></i> Reject User
                 </button>
