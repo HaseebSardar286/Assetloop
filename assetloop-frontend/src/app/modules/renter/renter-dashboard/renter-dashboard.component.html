@@ -136,11 +136,9 @@
                   <div *ngIf="booking.review">
                     <p class="card-text">
                       <strong>Your Review:</strong>
-                      {{ booking.review.rating }}/5
-                      <span
-                        *ngIf="booking.review.comment"
-                        class="text-muted ms-2"
-                        >"{{ booking.review.comment }}"</span
+                      {{ booking.review }}/5
+                      <span *ngIf="booking.review" class="text-muted ms-2"
+                        >"{{ booking.review }}"</span
                       >
                     </p>
                   </div>

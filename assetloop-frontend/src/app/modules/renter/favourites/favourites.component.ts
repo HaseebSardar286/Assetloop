@@ -79,7 +79,7 @@ export class FavouritesComponent implements OnInit {
     this.renterService.addToCart({
       id: fav.id,
       name: fav.name,
-      address: fav.address,
+      address: fav.address || '',
       pricePerNight: String(fav.price || fav.totalPaid || 0),
       description: fav.description || '',
       amenities: [],

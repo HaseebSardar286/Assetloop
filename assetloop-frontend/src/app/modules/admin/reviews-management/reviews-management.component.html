@@ -56,26 +56,12 @@
               <tr *ngFor="let review of displayedReviews">
                 <td>{{ review._id }}</td>
                 <td>
-                  {{
-                    review.renter
-                      ? (review.renter.firstName || "") +
-                        (review.renter.middleName
-                          ? " " + review.renter.middleName + " "
-                          : " ") +
-                        (review.renter.lastName || "")
-                      : "N/A"
-                  }}
+                  {{ review.renter.firstName }} {{ review.renter.lastName }}
                 </td>
                 <td>
-                  {{ review.rental?.name || "N/A" }}
+                  {{ review.rental.name || "N/A" }}
                   <ng-container *ngIf="review.owner">
-                    ({{
-                      (review.owner.firstName || "") +
-                        (review.owner.middleName
-                          ? " " + review.owner.middleName + " "
-                          : " ") +
-                        (review.owner.lastName || "") || "Unknown Owner"
-                    }})
+                    ({{ review.owner.firstName }} {{ review.owner.lastName }})
                   </ng-container>
                 </td>
                 <td>{{ review.rating || "N/A" }} ★</td>

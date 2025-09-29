@@ -1,3 +1,4 @@
+import { AssetResponse } from './asset';
 import { Owner, Renter } from './rental';
 
 export interface Booking {
@@ -11,13 +12,7 @@ export interface Booking {
   // Backend sends renter as populated object or ObjectId
   renter?: Renter;
   // Backend sends asset as populated object or ObjectId
-  asset?:
-    | {
-        _id: string;
-        name: string;
-        address?: string;
-      }
-    | string;
+  asset?: AssetResponse;
   startDate: string | Date; // Backend sends Date but frontend may receive string
   endDate: string | Date; // Backend sends Date but frontend may receive string
   status:

@@ -208,12 +208,16 @@
                   <h6 class="card-title">{{ booking.name }}</h6>
                   <p class="card-text">{{ booking.address }}</p>
                   <p class="card-text">
-                    <strong>Owner:</strong> {{ getOwnerName(booking.owner) }}<br />
-                    <small class="text-muted">{{ getOwnerEmail(booking.owner) }}</small>
+                    <strong>Owner:</strong> {{ booking.owner.firstName }}
+                    {{ booking.owner.lastName }}<br />
+                    <small class="text-muted">{{ booking.owner.email }}</small>
                   </p>
                   <p class="card-text">
-                    <strong>Renter:</strong> {{ getRenterName(booking.renter) }}<br />
-                    <small class="text-muted">{{ getRenterEmail(booking.renter) }}</small>
+                    <strong>Renter:</strong> {{ booking.renter?.firstName }}
+                    {{ booking.renter?.lastName }}<br />
+                    <small class="text-muted">{{
+                      booking.renter?.email
+                    }}</small>
                   </p>
                   <p class="card-text">
                     <strong>Status:</strong>
@@ -293,11 +297,11 @@
             >
               <div class="card h-100 border">
                 <div class="card-body">
-                  <h6 class="card-title">{{ review.rental?.name || "N/A" }}</h6>
+                  <h6 class="card-title">{{ review.rental.name || "N/A" }}</h6>
                   <p class="card-text">
-                    <strong>Renter:</strong> {{ review.renter?.firstName }}
-                    {{ review.renter?.lastName }}<br />
-                    <small class="text-muted">{{ review.renter?.email }}</small>
+                    <strong>Renter:</strong> {{ review.renter.firstName }}
+                    {{ review.renter.lastName }}<br />
+                    <small class="text-muted">{{ review.renter.email }}</small>
                   </p>
                   <p class="card-text">
                     <strong>Owner:</strong> {{ review.owner?.firstName }}

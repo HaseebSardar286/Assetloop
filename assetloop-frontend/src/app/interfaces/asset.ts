@@ -11,7 +11,7 @@ export interface AssetForm {
   status: 'Active' | 'Inactive';
   category: 'car' | 'apartment' | 'house' | 'tool';
   capacity: string | number;
-  images: File[]; // For form upload
+  images: string[]; // For form upload
   features: string[];
   amenities: string[];
 }
@@ -19,8 +19,7 @@ export interface AssetForm {
 export interface AssetResponse {
   _id: string;
   id?: string; // For compatibility
-  // Backend may send owner as string id or populated object
-  owner: Owner | string;
+  owner: Owner;
   name: string;
   address: string;
   description: string;

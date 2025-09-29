@@ -55,17 +55,7 @@
                 <td>{{ listing._id }}</td>
                 <td>{{ listing.name || "N/A" }}</td>
                 <td>
-                  {{
-                    listing.owner
-                      ? (
-                          (listing.owner.firstName || "") +
-                          " " +
-                          (listing.owner.middleName || "") +
-                          " " +
-                          (listing.owner.lastName || "")
-                        ).trim() || "Unknown Owner"
-                      : "N/A"
-                  }}
+                  {{ listing.owner.firstName }} {{ listing.owner.lastName }}
                 </td>
                 <td>
                   <span
@@ -81,10 +71,10 @@
                 <td>{{ listing.price || "N/A" }}</td>
                 <td>
                   <button
-                    class="btn btn-info btn-sm me-2"
-                    [routerLink]="['/admin/view-listing', listing._id]"
+                    class="btn btn-info btn-sm"
+                    [routerLink]="['/admin/listings/details', listing._id]"
                   >
-                    View
+                    View Details
                   </button>
                   <button
                     class="btn btn-warning btn-sm me-2"

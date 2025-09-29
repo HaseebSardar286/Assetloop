@@ -50,3 +50,33 @@
     max-height: 200px !important;
   }
 }
+
+/* Style the main content area */
+main {
+  margin-left: 230px; /* Match sidebar width */
+  flex-grow: 1;
+  overflow-y: auto; /* Enable scrolling if content overflows */
+  padding: 1rem;
+  background-color: #f8f9fa; /* Light background for consistency */
+  transition: margin-left 0.3s ease; /* Smooth transition for responsive adjustment */
+}
+
+/* Adjust for header height (assuming 60px, adjust if different) */
+main {
+  margin-top: 60px; /* Offset for header */
+  height: calc(100vh - 60px); /* Full height minus header */
+}
+
+/* Responsive design: Collapse sidebar on small screens */
+@media (max-width: 768px) {
+  main {
+    margin-left: 0; /* Remove sidebar margin on small screens */
+    width: 100%; /* Full width */
+    margin-top: 60px; /* Maintain header offset */
+    height: calc(100vh - 60px); /* Adjust height */
+  }
+
+  .d-flex .flex-grow-1 {
+    flex-direction: column; /* Stack content vertically */
+  }
+}

@@ -1,22 +1,22 @@
-export interface notificationSettings {
-  emailEnabled: boolean;
-  smsEnabled: boolean;
-  inAppEnabled: boolean;
-  pushEnabled: boolean;
-  newBookings: boolean;
-  bookingConfirmations: boolean;
-  bookingCancellations: boolean;
-  activeReminders: boolean;
-  completedBookings: boolean;
-  pendingReviews: boolean;
-  assetStatusChanges: boolean;
-  paymentUpdates: boolean;
-  systemUpdates: boolean;
-  frequency: 'immediate' | 'daily' | 'weekly';
-  reminderThreshold: number;
-  email?: string;
-  phoneNumber?: string;
-}
+// export interface notificationSettings {
+//   emailEnabled: boolean;
+//   smsEnabled: boolean;
+//   inAppEnabled: boolean;
+//   pushEnabled: boolean;
+//   newBookings: boolean;
+//   bookingConfirmations: boolean;
+//   bookingCancellations: boolean;
+//   activeReminders: boolean;
+//   completedBookings: boolean;
+//   pendingReviews: boolean;
+//   assetStatusChanges: boolean;
+//   paymentUpdates: boolean;
+//   systemUpdates: boolean;
+//   frequency: 'immediate' | 'daily' | 'weekly';
+//   reminderThreshold: number;
+//   email?: string;
+//   phoneNumber?: string;
+// }
 export interface User {
   _id: string;
   firstName: string;
