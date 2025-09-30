@@ -99,8 +99,8 @@
                       Please upload the front of your ID.
                     </div>
                     <img
-                      *ngIf="idFrontFile"
-                      [src]="getFilePreview(idFrontFile)"
+                      *ngIf="idFrontPreview"
+                      [src]="idFrontPreview"
                       class="img-preview mt-2"
                     />
                   </div>
@@ -123,8 +123,8 @@
                       Please upload the back of your ID.
                     </div>
                     <img
-                      *ngIf="idBackFile"
-                      [src]="getFilePreview(idBackFile)"
+                      *ngIf="idBackPreview"
+                      [src]="idBackPreview"
                       class="img-preview mt-2"
                     />
                   </div>
@@ -271,8 +271,8 @@
                 />
                 <div class="invalid-feedback">Please upload your selfie.</div>
                 <img
-                  *ngIf="selfieFile"
-                  [src]="getFilePreview(selfieFile)"
+                  *ngIf="selfiePreview"
+                  [src]="selfiePreview"
                   class="img-preview mt-2"
                 />
               </div>

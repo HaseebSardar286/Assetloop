@@ -175,7 +175,10 @@
                     <div class="card-body p-2">
                       <img
                         [src]="
-                          'data:image/jpeg;base64,' + user.verification.idFront
+                          user.verification.idFront.startsWith('http')
+                            ? user.verification.idFront
+                            : 'data:image/jpeg;base64,' +
+                              user.verification.idFront
                         "
                         class="img-fluid rounded"
                         alt="ID Front"
@@ -198,7 +201,10 @@
                     <div class="card-body p-2">
                       <img
                         [src]="
-                          'data:image/jpeg;base64,' + user.verification.idBack
+                          user.verification.idBack.startsWith('http')
+                            ? user.verification.idBack
+                            : 'data:image/jpeg;base64,' +
+                              user.verification.idBack
                         "
                         class="img-fluid rounded"
                         alt="ID Back"
@@ -221,7 +227,10 @@
                     <div class="card-body p-2">
                       <img
                         [src]="
-                          'data:image/jpeg;base64,' + user.verification.selfie
+                          user.verification.selfie.startsWith('http')
+                            ? user.verification.selfie
+                            : 'data:image/jpeg;base64,' +
+                              user.verification.selfie
                         "
                         class="img-fluid rounded"
                         alt="Selfie"

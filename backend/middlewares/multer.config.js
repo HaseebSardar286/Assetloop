@@ -1,9 +1,16 @@
 const multer = require("multer");
+const fs = require("fs");
+const path = require("path");
 
 // Store files temporarily on disk
+const uploadDir = path.join(process.cwd(), "uploads");
+if (!fs.existsSync(uploadDir)) {
+  fs.mkdirSync(uploadDir, { recursive: true });
+}
+
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, "uploads/"); // Create 'uploads' folder in project root
+    cb(null, uploadDir); // Ensure 'uploads' folder exists in project root
   },
   filename: (req, file, cb) => {
     cb(null, Date.now() + "-" + file.originalname);
