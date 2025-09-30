@@ -4,6 +4,8 @@ const Booking = require("../models/Bookings");
 const Review = require("../models/Review");
 const SystemSettings = require("../models/SystemSettings");
 const PendingUser = require("../models/PendingUser");
+const Wishlist = require("../models/Wishlist");
+const Cart = require("../models/Cart");
 
 // Dashboard statistics
 exports.getDashboardStats = async (req, res) => {
@@ -61,6 +63,59 @@ exports.getUserById = async (req, res) => {
     res.json(user);
   } catch (error) {
     res.status(500).json({ message: error.message });
+  }
+};
+
+// Role-based user summary (owner/renter)
+exports.getUserSummary = async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id).select("-password");
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    const userId = user._id;
+    const base = {
+      role: user.role,
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt,
+    };
+
+    if (user.role === "owner") {
+      const [assetsCount, activeAssets, bookingsAsOwner] = await Promise.all([
+        Asset.countDocuments({ owner: userId }),
+        Asset.countDocuments({ owner: userId, status: "Active" }),
+        Booking.countDocuments({ owner: userId }),
+      ]);
+
+      return res.json({
+        ...base,
+        assetsCount,
+        activeAssets,
+        bookingsAsOwner,
+      });
+    }
+
+    if (user.role === "renter") {
+      const [bookingsAsRenter, wishlistCount, cartCount] = await Promise.all([
+        Booking.countDocuments({ renter: userId }),
+        Wishlist.countDocuments({ renter: userId }),
+        Cart.countDocuments({ renter: userId }),
+      ]);
+
+      return res.json({
+        ...base,
+        bookingsAsRenter,
+        wishlistCount,
+        cartCount,
+        totalSpent: user.totalSpent || 0,
+      });
+    }
+
+    // Admin or other roles - minimal summary
+    return res.json(base);
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
   }
 };
 

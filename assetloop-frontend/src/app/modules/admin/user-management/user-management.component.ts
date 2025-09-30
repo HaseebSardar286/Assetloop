@@ -6,6 +6,8 @@ import { HeaderComponent } from '../../../components/header/header.component';
 import { AdminSidebarComponent } from '../admin-sidebar/admin-sidebar.component';
 import { AdminService } from '../../../services/admin.service';
 import { User } from '../../../interfaces/user';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { faTrash, faEye } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
   selector: 'app-user-management',
@@ -16,11 +18,15 @@ import { User } from '../../../interfaces/user';
     FormsModule,
     HeaderComponent,
     AdminSidebarComponent,
+    FontAwesomeModule,
   ],
   templateUrl: './user-management.component.html',
   styleUrls: ['./user-management.component.css'],
 })
 export class UserManagementComponent implements OnInit {
+  faTrash = faTrash;
+  faEye = faEye;
+
   users: User[] = [];
   filteredUsers: User[] = [];
   loading = true;

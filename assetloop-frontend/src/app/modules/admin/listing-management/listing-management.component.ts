@@ -6,6 +6,13 @@ import { HeaderComponent } from '../../../components/header/header.component';
 import { AdminSidebarComponent } from '../admin-sidebar/admin-sidebar.component';
 import { AdminService } from '../../../services/admin.service';
 import { AssetResponse } from '../../../interfaces/asset';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import {
+  faTrash,
+  faLock,
+  faUnlock,
+  faEye,
+} from '@fortawesome/free-solid-svg-icons';
 
 @Component({
   selector: 'app-listing-management',
@@ -16,11 +23,17 @@ import { AssetResponse } from '../../../interfaces/asset';
     FormsModule,
     HeaderComponent,
     AdminSidebarComponent,
+    FontAwesomeModule,
   ],
   templateUrl: './listing-management.component.html',
   styleUrls: ['./listing-management.component.css'],
 })
 export class ListingManagementComponent implements OnInit {
+  faTrash = faTrash;
+  faLock = faLock;
+  faUnlock = faUnlock;
+  faEye = faEye;
+
   listings: AssetResponse[] = [];
   filteredListings: AssetResponse[] = [];
   loading = true;

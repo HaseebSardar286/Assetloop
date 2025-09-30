@@ -19,6 +19,7 @@ const {
   getPendingUserById,
   approvePendingUser,
   rejectPendingUser,
+  getUserSummary,
 } = require("../controllers/adminController");
 
 const router = express.Router();
@@ -33,6 +34,7 @@ router.get("/dashboard-stats", getDashboardStats);
 // User management
 router.get("/users", getUsers);
 router.get("/users/:id", getUserById);
+router.get("/users/:id/summary", getUserSummary);
 router.put("/users/:id", updateUser);
 router.delete("/users/:id", deleteUser);
 
