@@ -34,6 +34,9 @@ export class UserVerificationComponent implements OnInit {
   idFrontFile: File | null = null;
   idBackFile: File | null = null;
   selfieFile: File | null = null;
+  idFrontPreview: string = '';
+  idBackPreview: string = '';
+  selfiePreview: string = '';
   idFrontName: string | null = null;
   idBackName: string | null = null;
   selfieName: string | null = null;
@@ -86,14 +89,20 @@ export class UserVerificationComponent implements OnInit {
     if (type === 'idFront') {
       this.idFrontFile = file;
       this.idFrontName = file.name;
+      if (this.idFrontPreview) URL.revokeObjectURL(this.idFrontPreview);
+      this.idFrontPreview = URL.createObjectURL(file);
     }
     if (type === 'idBack') {
       this.idBackFile = file;
       this.idBackName = file.name;
+      if (this.idBackPreview) URL.revokeObjectURL(this.idBackPreview);
+      this.idBackPreview = URL.createObjectURL(file);
     }
     if (type === 'selfie') {
       this.selfieFile = file;
       this.selfieName = file.name;
+      if (this.selfiePreview) URL.revokeObjectURL(this.selfiePreview);
+      this.selfiePreview = URL.createObjectURL(file);
     }
     this.error = null;
     console.log(`File selected for ${type}: ${file.name} (${file.size} bytes)`);
@@ -226,7 +235,9 @@ export class UserVerificationComponent implements OnInit {
     this.authService.logout();
   }
 
-  getFilePreview(file: File | null): string {
-    return file ? URL.createObjectURL(file) : '';
+  ngOnDestroy(): void {
+    if (this.idFrontPreview) URL.revokeObjectURL(this.idFrontPreview);
+    if (this.idBackPreview) URL.revokeObjectURL(this.idBackPreview);
+    if (this.selfiePreview) URL.revokeObjectURL(this.selfiePreview);
   }
 }
