@@ -71,30 +71,30 @@
                 <td>{{ listing.price || "N/A" }}</td>
                 <td>
                   <button
-                    class="btn btn-info btn-sm"
+                    class="btn btn-info btn-sm me-2"
                     [routerLink]="['/admin/listings/details', listing._id]"
                   >
-                    View Details
+                    <fa-icon [icon]="faEye" class="btn-primary"></fa-icon>
                   </button>
                   <button
                     class="btn btn-warning btn-sm me-2"
                     *ngIf="listing.status?.toLowerCase() === 'active'"
                     [routerLink]="['/admin/status-listing', listing._id]"
                   >
-                    Deactivate
+                    <fa-icon [icon]="faLock" class="btn-primary"></fa-icon>
                   </button>
                   <button
                     class="btn btn-success btn-sm me-2"
                     *ngIf="listing.status?.toLowerCase() === 'inactive'"
                     [routerLink]="['/admin/status-listing', listing._id]"
                   >
-                    Activate
+                    <fa-icon [icon]="faUnlock" class="btn-primary"></fa-icon>
                   </button>
                   <button
                     class="btn btn-danger btn-sm"
                     (click)="deleteListing(listing._id)"
                   >
-                    Delete
+                    <fa-icon [icon]="faTrash" class="btn-primary"></fa-icon>
                   </button>
                 </td>
               </tr>

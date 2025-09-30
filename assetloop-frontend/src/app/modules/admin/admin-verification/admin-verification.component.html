@@ -46,7 +46,6 @@
                 <th>Name</th>
                 <th>Email</th>
                 <th>Role</th>
-                <th>Verification Info</th>
                 <th>Actions</th>
               </tr>
             </thead>
@@ -71,32 +70,31 @@
                     {{ user.role ? (user.role | titlecase) : "N/A" }}
                   </span>
                 </td>
+
                 <td>
                   <button
-                    class="btn btn-info btn-sm"
+                    class="btn btn-info btn-sm me-2"
                     [routerLink]="['/admin/verification/details', user._id]"
                   >
-                    View Details
+                    <fa-icon [icon]="faEye" class="btn-primary"></fa-icon>
                   </button>
-                </td>
-                <td>
                   <button
                     class="btn btn-success btn-sm me-2"
                     (click)="approveUser(user._id)"
                   >
-                    Approve
+                    <fa-icon [icon]="faCheck" class="btn-primary"></fa-icon>
                   </button>
                   <button
                     class="btn btn-danger btn-sm me-2"
                     (click)="rejectUser(user._id)"
                   >
-                    Reject
+                    <fa-icon [icon]="faTimes" class="btn-primary"></fa-icon>
                   </button>
                   <button
                     class="btn btn-warning btn-sm"
                     (click)="deleteUser(user._id)"
                   >
-                    Delete
+                    <fa-icon [icon]="faTrash" class="btn-primary"></fa-icon>
                   </button>
                 </td>
               </tr>

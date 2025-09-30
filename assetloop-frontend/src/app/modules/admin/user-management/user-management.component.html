@@ -72,16 +72,16 @@
                 </td>
                 <td>
                   <button
-                    class="btn btn-info btn-sm"
+                    class="btn btn-info btn-sm me-2"
                     [routerLink]="['/admin/users/details', user._id]"
                   >
-                    View Details
+                    <fa-icon [icon]="faEye" class="btn-primary"></fa-icon>
                   </button>
                   <button
                     class="btn btn-danger btn-sm"
                     (click)="deleteUser(user._id)"
                   >
-                    Delete
+                    <fa-icon [icon]="faTrash" class="btn-primary"></fa-icon>
                   </button>
                 </td>
               </tr>

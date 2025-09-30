@@ -6,6 +6,13 @@ import { HeaderComponent } from '../../../components/header/header.component';
 import { AdminSidebarComponent } from '../admin-sidebar/admin-sidebar.component';
 import { AdminService } from '../../../services/admin.service';
 import { User } from '../../../interfaces/user';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import {
+  faTrash,
+  faCheck,
+  faTimes,
+  faEye,
+} from '@fortawesome/free-solid-svg-icons';
 
 @Component({
   selector: 'app-admin-verification',
@@ -16,11 +23,17 @@ import { User } from '../../../interfaces/user';
     FormsModule,
     HeaderComponent,
     AdminSidebarComponent,
+    FontAwesomeModule,
   ],
   templateUrl: './admin-verification.component.html',
   styleUrls: ['./admin-verification.component.css'],
 })
 export class AdminVerificationComponent implements OnInit {
+  faTrash = faTrash;
+  faCheck = faCheck;
+  faTimes = faTimes;
+  faEye = faEye;
+
   users: User[] = [];
   filteredUsers: User[] = [];
   paginatedUsers: User[] = [];
