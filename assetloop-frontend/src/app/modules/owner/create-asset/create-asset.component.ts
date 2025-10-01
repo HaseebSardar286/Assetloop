@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { RouterModule } from '@angular/router';
+import { RouterModule, Router } from '@angular/router';
 import { HeaderComponent } from '../../../components/header/header.component';
 import { OwnerSideBarComponent } from '../owner-side-bar/owner-side-bar.component';
 import { AssetForm, AssetResponse } from '../../../interfaces/asset';
@@ -32,37 +32,24 @@ export class CreateAssetComponent {
     status: 'Active',
     category: 'car',
     capacity: '',
-    images: [], // Will hold base64 strings
+    images: [],
     features: [],
     amenities: [],
   };
 
+  imageFiles: File[] = [];
   categories = ['car', 'apartment', 'house', 'tool'];
   availableFeatures = ['AC', 'Parking', 'Wi-Fi', 'Kitchen', 'Pet-Friendly'];
   availableAmenities = ['Gym', 'Pool', 'Security', 'Laundry', '24/7 Support'];
   statuses = ['Active', 'Inactive'];
 
-  constructor(private ownerService: OwnerService) {}
+  constructor(private ownerService: OwnerService, private router: Router) {}
 
   onFileChange(event: Event) {
     const input = event.target as HTMLInputElement;
-    if (input && input.files) {
-      this.convertFilesToBase64(input.files);
-    } else {
-      console.warn('Invalid file input target:', event.target);
+    if (input.files) {
+      this.imageFiles = Array.from(input.files).slice(0, 5); // Limit to 5 images
     }
-  }
-
-  convertFilesToBase64(files: FileList) {
-    this.asset.images = [];
-    Array.from(files).forEach((file) => {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        const base64String = e.target?.result as string;
-        this.asset.images.push(base64String);
-      };
-      reader.readAsDataURL(file);
-    });
   }
 
   addFeature(feature: string) {
@@ -85,21 +72,31 @@ export class CreateAssetComponent {
   }
 
   onSubmit() {
-    const assetData: AssetForm = {
-      ...this.asset,
-      price: Number(this.asset.price),
-      capacity: Number(this.asset.capacity),
-    };
-    console.log('Sending assetData:', assetData); // Add this line
+    const formData = new FormData();
+    formData.append('name', this.asset.name);
+    formData.append('address', this.asset.address);
+    formData.append('description', this.asset.description);
+    formData.append('price', Number(this.asset.price).toString());
+    if (this.asset.startDate)
+      formData.append('startDate', this.asset.startDate);
+    if (this.asset.endDate) formData.append('endDate', this.asset.endDate);
+    formData.append('availability', this.asset.availability);
+    formData.append('status', this.asset.status);
+    formData.append('category', this.asset.category);
+    formData.append('capacity', Number(this.asset.capacity).toString());
+    formData.append('features', JSON.stringify(this.asset.features));
+    formData.append('amenities', JSON.stringify(this.asset.amenities));
+    this.imageFiles.forEach((file) =>
+      formData.append('images', file, file.name)
+    );
 
-    this.ownerService.createAsset(assetData).subscribe({
+    this.ownerService.createAsset(formData).subscribe({
       next: (response: AssetResponse) => {
         alert('Asset created successfully!');
-        this.resetForm();
+        this.router.navigate(['/assets']);
       },
       error: (err) => {
-        console.error('Error creating asset:', err);
-        alert(err.error?.message || err.message || 'Failed to create asset');
+        alert(err.error?.message || 'Failed to create asset');
       },
     });
   }
@@ -120,18 +117,11 @@ export class CreateAssetComponent {
       features: [],
       amenities: [],
     };
+    this.imageFiles = [];
   }
 
   onLogout() {
     localStorage.removeItem('token');
-    window.location.href = '/auth/login';
-  }
-
-  onNavigate(event: Event) {
-    const target = event.target as HTMLAnchorElement;
-    if (target && target.getAttribute('href')) {
-      const path = target.getAttribute('href')!;
-      console.log('Navigating to:', path);
-    }
+    this.router.navigate(['/auth/login']);
   }
 }

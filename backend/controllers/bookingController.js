@@ -25,9 +25,7 @@ exports.createBooking = async (req, res) => {
       endDate: new Date(endDate),
       address: asset.address,
       imageUrl:
-        asset.images && asset.images.length > 0
-          ? `data:image/png;base64,${asset.images[0].toString("base64")}`
-          : undefined,
+        asset.images && asset.images.length > 0 ? asset.images[0] : undefined,
       category: asset.category,
       notes: notes || "",
       status: "pending",

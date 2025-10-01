@@ -278,13 +278,7 @@ exports.getAssets = async (req, res) => {
       capacity: asset.capacity,
       startDate: asset.startDate,
       endDate: asset.endDate,
-      images: Array.isArray(asset.images)
-        ? asset.images.map((img) =>
-            typeof img === "string"
-              ? img
-              : `data:image/png;base64,${Buffer.from(img).toString("base64")}`
-          )
-        : [],
+      images: Array.isArray(asset.images) ? asset.images : [],
       features: asset.features || [],
       amenities: asset.amenities || [],
       createdAt: asset.createdAt?.toISOString?.() || asset.createdAt,

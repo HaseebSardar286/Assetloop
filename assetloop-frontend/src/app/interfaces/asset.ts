@@ -11,7 +11,7 @@ export interface AssetForm {
   status: 'Active' | 'Inactive';
   category: 'car' | 'apartment' | 'house' | 'tool';
   capacity: string | number;
-  images: string[]; // For form upload
+  images: File[]; // Files for form upload
   features: string[];
   amenities: string[];
 }
@@ -30,10 +30,10 @@ export interface AssetResponse {
   status: 'Active' | 'Inactive';
   category: 'car' | 'apartment' | 'house' | 'tool';
   capacity: number;
-  images: string[]; // Base64 strings or URLs
+  images: string[]; // Supabase URLs
   features: string[];
   amenities: string[];
-  notes?: string; // For user notes
+  notes?: string;
   createdAt: string;
   updatedAt: string;
 }

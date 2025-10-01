@@ -24,11 +24,19 @@ export class OwnerService {
     return new HttpHeaders().set('Authorization', `Bearer ${token || ''}`);
   }
 
-  createAsset(asset: AssetForm): Observable<AssetResponse> {
-    console.log('Raw asset payload before send:', asset);
-    return this.http.post<AssetResponse>(`${this.apiUrl}/create-asset`, asset, {
-      headers: this.getHeaders(),
-    });
+  // createAsset(asset: AssetForm): Observable<AssetResponse> {
+  //   console.log('Raw asset payload before send:', asset);
+  //   return this.http.post<AssetResponse>(`${this.apiUrl}/create-asset`, asset, {
+  //     headers: this.getHeaders(),
+  //   });
+  // }
+
+  createAsset(formData: FormData): Observable<AssetResponse> {
+    return this.http.post<AssetResponse>(
+      `${this.apiUrl}/create-asset`,
+      formData,
+      { headers: this.getHeaders() }
+    );
   }
 
   getAssets(): Observable<AssetResponse[]> {

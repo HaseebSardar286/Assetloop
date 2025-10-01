@@ -230,9 +230,7 @@ exports.getWishlist = async (req, res) => {
         //     : ["/images/default.jpg"],
         imageUrl:
           Array.isArray(w.asset.images) && w.asset.images.length
-            ? `data:image/png;base64,${Buffer.from(w.asset.images[0]).toString(
-                "base64"
-              )}`
+            ? w.asset.images[0]
             : undefined,
         category: w.asset.category,
       }));
@@ -305,9 +303,7 @@ exports.getCart = async (req, res) => {
         amenities: [],
         imageUrl:
           Array.isArray(ci.asset.images) && ci.asset.images.length
-            ? `data:image/png;base64,${Buffer.from(ci.asset.images[0]).toString(
-                "base64"
-              )}`
+            ? ci.asset.images[0]
             : undefined,
         quantity: ci.quantity,
       }));
