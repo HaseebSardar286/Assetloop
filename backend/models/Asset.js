@@ -11,8 +11,8 @@ const assetSchema = new mongoose.Schema(
     address: { type: String, required: true },
     description: { type: String, required: true },
     price: { type: Number, required: true },
-    startDate: { type: String, required: false }, // Optional
-    endDate: { type: String, required: false }, // Optional
+    startDate: { type: String, required: false },
+    endDate: { type: String, required: false },
     status: {
       type: String,
       enum: ["Active", "Inactive"],
@@ -29,7 +29,7 @@ const assetSchema = new mongoose.Schema(
       required: true,
     },
     capacity: { type: Number, required: true },
-    images: [{ type: Buffer }], // Array of file paths
+    images: [{ type: String }], // Array of Supabase URLs
     features: [{ type: String }],
     amenities: [{ type: String }],
   },

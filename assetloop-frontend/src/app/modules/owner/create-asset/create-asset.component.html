@@ -1,10 +1,7 @@
 <div class="d-flex flex-column vh-100">
   <app-header (logout)="onLogout()"></app-header>
   <div class="d-flex flex-grow-1">
-    <app-owner-side-bar
-      (logout)="onLogout()"
-      (navigate)="onNavigate($event)"
-    ></app-owner-side-bar>
+    <app-owner-side-bar (logout)="onLogout()"></app-owner-side-bar>
     <main class="flex-grow-1 p-4 bg-light">
       <form
         #assetForm="ngForm"
@@ -226,13 +223,7 @@
         >
           Create Listing
         </button>
-        <button
-          type="button"
-          class="btn btn-secondary ms-2"
-          (click)="resetForm()"
-        >
-          Reset
-        </button>
+        <button type="button" class="btn btn-secondary ms-2">Reset</button>
       </form>
     </main>
   </div>

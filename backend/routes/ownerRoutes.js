@@ -33,9 +33,9 @@ router.use(authMiddleware);
 const roleCheck = roleMiddleware(["owner"]); // Invoke and store the middleware
 router.use(roleCheck); // Use the returned middleware
 
-router.post("/create-asset", createAsset);
+router.post("/create-asset", upload.array("images", 20), createAsset);
 router.get("/assets", getAssets);
-router.put("/assets/:id", updateAsset);
+router.put("/assets/:id", upload.array("images", 20), updateAsset);
 router.delete("/assets/:id", deleteAsset);
 
 router.get("/dashboard-stats", getDashboardStats);

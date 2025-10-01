@@ -1,10 +1,9 @@
-console.log("Loading assetController.js");
 const Asset = require("../models/Asset");
 const Joi = require("joi");
 const Booking = require("../models/Bookings");
-const Review = require("../models/Review");
+const supabase = require("../services/supabase.service");
+const fs = require("fs").promises;
 
-console.log("Defining assetSchema");
 const assetSchema = Joi.object({
   name: Joi.string().required(),
   address: Joi.string().required(),
@@ -23,25 +22,11 @@ const assetSchema = Joi.object({
 
 exports.createAsset = async (req, res) => {
   try {
-    console.log("Received request, body:", req.body);
-    const { error } = assetSchema.validate(req.body, {
-      abortEarly: false,
-      convert: false,
-    });
-    if (error) {
-      console.error(
-        "Validation errors:",
-        error.details.map((d) => ({
-          path: d.path,
-          message: d.message,
-          value: d.context.value,
-          type: d.type,
-        }))
-      );
+    const { error } = assetSchema.validate(req.body, { abortEarly: false });
+    if (error)
       return res
         .status(400)
         .json({ message: error.details.map((d) => d.message).join(", ") });
-    }
 
     const {
       name,
@@ -54,18 +39,35 @@ exports.createAsset = async (req, res) => {
       availability,
       category,
       capacity,
-      images,
       features,
       amenities,
     } = req.body;
 
-    const imageBuffers = [];
-    if (images && images.length > 0) {
-      for (let i = 0; i < images.length; i++) {
-        const base64Data = images[i].replace(/^data:image\/\w+;base64,/, "");
-        imageBuffers.push(Buffer.from(base64Data, "base64"));
-      }
+    const files = req.files || [];
+    if (!files.length)
+      return res.status(400).json({ message: "At least one image required" });
+
+    const filePaths = files.map((file) => file.path);
+    for (const filePath of filePaths) {
+      await fs.access(filePath).catch(() => {
+        throw new Error(`File not found: ${filePath}`);
+      });
     }
+
+    const bucket = "asset-images";
+    const imageUrls = await Promise.all(
+      files.map((file, index) =>
+        uploadToSupabase(
+          file.path,
+          `${req.user.id}/asset_${Date.now()}_${index}.jpg`,
+          bucket
+        )
+      )
+    );
+
+    await Promise.all(
+      filePaths.map((filePath) => fs.unlink(filePath).catch(() => {}))
+    );
 
     const asset = new Asset({
       owner: req.user.id,
@@ -79,40 +81,37 @@ exports.createAsset = async (req, res) => {
       availability,
       category,
       capacity: Number(capacity),
-      images: imageBuffers,
+      images: imageUrls.map((result) => result.publicUrl),
       features: features || [],
       amenities: amenities || [],
     });
+
     await asset.save();
-    console.log("Asset saved:", asset);
 
     res.status(201).json({
       message: "Asset created successfully",
       asset: {
         _id: asset._id.toString(),
-        id: asset._id.toString(), // For compatibility
+        id: asset._id.toString(),
         owner: asset.owner.toString(),
-        name: asset.name,
-        address: asset.address,
-        description: asset.description,
+        name,
+        address,
+        description,
         price: asset.price,
         startDate: asset.startDate,
         endDate: asset.endDate,
-        status: asset.status,
-        category: asset.category,
+        status,
+        availability,
+        category,
         capacity: asset.capacity,
-        images: asset.images.map(
-          (img) => `data:image/png;base64,${img.toString("base64")}`
-        ),
+        images: asset.images,
         features: asset.features,
         amenities: asset.amenities,
         createdAt: asset.createdAt.toISOString(),
         updatedAt: asset.updatedAt.toISOString(),
-        availability: asset.availability,
       },
     });
   } catch (error) {
-    console.error("Error in createAsset:", error);
     res.status(500).json({ message: error.message });
   }
 };
@@ -122,7 +121,7 @@ exports.getAssets = async (req, res) => {
     const assets = await Asset.find({ owner: req.user.id }).lean();
     const response = assets.map((asset) => ({
       _id: asset._id.toString(),
-      id: asset._id.toString(), // For compatibility
+      id: asset._id.toString(),
       owner: asset.owner.toString(),
       name: asset.name,
       address: asset.address,
@@ -134,9 +133,7 @@ exports.getAssets = async (req, res) => {
       capacity: asset.capacity,
       startDate: asset.startDate,
       endDate: asset.endDate,
-      images: asset.images.map(
-        (img) => `data:image/png;base64,${img.toString("base64")}`
-      ),
+      images: asset.images,
       features: asset.features,
       amenities: asset.amenities,
       createdAt: asset.createdAt.toISOString(),
@@ -153,10 +150,9 @@ exports.getAllAssets = async (req, res) => {
     const assets = await Asset.find()
       .populate("owner", "firstName lastName email")
       .lean();
-
     const response = assets.map((asset) => ({
       _id: asset._id.toString(),
-      id: asset._id.toString(), // For compatibility
+      id: asset._id.toString(),
       owner: {
         id: asset.owner._id.toString(),
         name: `${asset.owner.firstName} ${asset.owner.lastName}`,
@@ -172,18 +168,14 @@ exports.getAllAssets = async (req, res) => {
       capacity: asset.capacity,
       startDate: asset.startDate,
       endDate: asset.endDate,
-      images: asset.images.map(
-        (img) => `data:image/png;base64,${img.toString("base64")}`
-      ),
+      images: asset.images,
       features: asset.features,
       amenities: asset.amenities,
       createdAt: asset.createdAt.toISOString(),
       updatedAt: asset.updatedAt.toISOString(),
     }));
-
     res.status(200).json({ assets: response });
   } catch (error) {
-    console.error(`Error fetching all assets: ${error.message}`);
     res.status(500).json({ message: "Internal server error" });
   }
 };
@@ -191,23 +183,39 @@ exports.getAllAssets = async (req, res) => {
 exports.updateAsset = async (req, res) => {
   try {
     const { error } = assetSchema.validate(req.body, { presence: "optional" });
-    if (error) {
+    if (error)
       return res.status(400).json({ message: error.details[0].message });
-    }
 
-    let imageBuffers = [];
-    if (req.body.images && req.body.images.length > 0) {
-      for (let i = 0; i < req.body.images.length; i++) {
-        const base64Data = req.body.images[i].replace(
-          /^data:image\/\w+;base64,/,
-          ""
-        );
-        imageBuffers.push(Buffer.from(base64Data, "base64"));
+    const files = req.files || [];
+    let imageUrls = [];
+    if (files.length) {
+      const filePaths = files.map((file) => file.path);
+      for (const filePath of filePaths) {
+        await fs.access(filePath).catch(() => {
+          throw new Error(`File not found: ${filePath}`);
+        });
       }
-      req.body.images = imageBuffers;
+      const bucket = "asset-images";
+      imageUrls = await Promise.all(
+        files.map((file, index) =>
+          uploadToSupabase(
+            file.path,
+            `${req.user.id}/asset_${Date.now()}_${index}.jpg`,
+            bucket
+          )
+        )
+      );
+      await Promise.all(
+        filePaths.map((filePath) => fs.unlink(filePath).catch(() => {}))
+      );
     }
 
-    const asset = await Asset.findByIdAndUpdate(req.params.id, req.body, {
+    const updateData = { ...req.body };
+    if (imageUrls.length) {
+      updateData.images = imageUrls.map((result) => result.publicUrl);
+    }
+
+    const asset = await Asset.findByIdAndUpdate(req.params.id, updateData, {
       new: true,
       runValidators: true,
     });
@@ -215,7 +223,7 @@ exports.updateAsset = async (req, res) => {
 
     res.json({
       _id: asset._id.toString(),
-      id: asset._id.toString(), // For compatibility
+      id: asset._id.toString(),
       owner: asset.owner.toString(),
       name: asset.name,
       address: asset.address,
@@ -225,9 +233,7 @@ exports.updateAsset = async (req, res) => {
       availability: asset.availability,
       category: asset.category,
       capacity: asset.capacity,
-      images: asset.images.map(
-        (img) => `data:image/png;base64,${img.toString("base64")}`
-      ),
+      images: asset.images,
       features: asset.features,
       amenities: asset.amenities,
       createdAt: asset.createdAt.toISOString(),
@@ -248,60 +254,6 @@ exports.deleteAsset = async (req, res) => {
   }
 };
 
-// exports.getDashboardStats = async (req, res) => {
-//   try {
-//     const ownerId = req.user.id;
-
-//     const currentDate = new Date().toISOString().split("T")[0];
-//     const totalAssets = await Asset.countDocuments({ owner: ownerId });
-//     const activeBookings = await Booking.countDocuments({
-//       owner: ownerId,
-//       startDate: { $lte: currentDate },
-//       endDate: { $gte: currentDate },
-//       status: "confirmed",
-//     });
-//     const totalEarnings = await Booking.aggregate([
-//       { $match: { owner: ownerId, status: "completed" } },
-//       { $group: { _id: null, total: { $sum: "$price" } } },
-//     ]).then((results) => results[0]?.total || 0);
-//     const pendingReviews = await Booking.countDocuments({
-//       owner: ownerId,
-//       status: "completed",
-//       review: { $exists: false },
-//     });
-
-//     res.status(200).json({
-//       totalAssets,
-//       activeBookings,
-//       totalEarnings,
-//       pendingReviews,
-//     });
-//   } catch (error) {
-//     console.error("Error in getDashboardStats:", error);
-//     res.status(500).json({ message: error.message });
-//   }
-// };
-
-// exports.getActiveBookings = async (req, res) => {
-//   try {
-//     const ownerId = req.user.id;
-//     const currentDate = new Date().toISOString().split("T")[0];
-
-//     const activeBookings = await Booking.find({
-//       owner: ownerId,
-//       startDate: { $lte: currentDate },
-//       endDate: { $gte: currentDate },
-//       status: "confirmed",
-//     }).populate("asset", "name address price");
-
-//     res.status(200).json(activeBookings);
-//   } catch (error) {
-//     console.error("Error in getActiveBookings:", error);
-//     res.status(500).json({ message: error.message });
-//   }
-// };
-
-// Public/read endpoint to get reviews for a given asset
 exports.getAssetReviews = async (req, res) => {
   try {
     const { assetId } = req.params;
@@ -326,7 +278,22 @@ exports.getAssetReviews = async (req, res) => {
 
     res.status(200).json({ reviews });
   } catch (error) {
-    console.error("Error in getAssetReviews:", error);
     res.status(500).json({ message: error.message });
   }
 };
+
+async function uploadToSupabase(filePath, fileName, bucket) {
+  const file = await fs.readFile(filePath);
+  const { data: listBuckets } = await supabase.storage.listBuckets();
+  if (!listBuckets?.some((b) => b.name === bucket)) {
+    await supabase.storage.createBucket(bucket, { public: true });
+  }
+  const { error } = await supabase.storage
+    .from(bucket)
+    .upload(fileName, file, { upsert: true, contentType: "image/jpeg" });
+  if (error) throw new Error(`Failed to upload ${fileName}: ${error.message}`);
+  const {
+    data: { publicUrl },
+  } = supabase.storage.from(bucket).getPublicUrl(fileName);
+  return { publicUrl };
+}
