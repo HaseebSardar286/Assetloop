@@ -23,8 +23,9 @@ const {
 } = require("../controllers/ownerController");
 const authMiddleware = require("../middlewares/authMiddleware");
 const roleMiddleware = require("../middlewares/roleMiddleware");
-
+const upload = require("../middlewares/multer.config");
 const router = express.Router();
+
 
 // Public owner reviews (no auth needed for read)
 router.get("/:ownerId/reviews", getOwnerReviews);
