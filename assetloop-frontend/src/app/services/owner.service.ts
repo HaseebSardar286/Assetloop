@@ -47,10 +47,26 @@ export class OwnerService {
 
   updateAsset(
     id: string,
-    asset: Partial<AssetForm>
+    data: Partial<AssetForm> | FormData
   ): Observable<AssetResponse> {
-    return this.http.put<AssetResponse>(`${this.apiUrl}/assets/${id}`, asset, {
-      headers: this.getHeaders(),
+    let body: any = data;
+    const headers = this.getHeaders();
+
+    if (!(data instanceof FormData)) {
+      const formData = new FormData();
+      Object.entries(data || {}).forEach(([key, value]) => {
+        if (value === undefined || value === null) return;
+        if (Array.isArray(value)) {
+          formData.append(key, JSON.stringify(value));
+        } else {
+          formData.append(key, String(value));
+        }
+      });
+      body = formData;
+    }
+
+    return this.http.put<AssetResponse>(`${this.apiUrl}/assets/${id}`, body, {
+      headers,
     });
   }
 

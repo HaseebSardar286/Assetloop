@@ -22,7 +22,30 @@ const assetSchema = Joi.object({
 
 exports.createAsset = async (req, res) => {
   try {
-    const { error } = assetSchema.validate(req.body, { abortEarly: false });
+    // Normalize multipart text fields before validation
+    const normalizedBody = { ...req.body };
+    if (typeof normalizedBody.features === "string") {
+      try {
+        normalizedBody.features = JSON.parse(normalizedBody.features);
+      } catch {
+        normalizedBody.features = [];
+      }
+    }
+    if (typeof normalizedBody.amenities === "string") {
+      try {
+        normalizedBody.amenities = JSON.parse(normalizedBody.amenities);
+      } catch {
+        normalizedBody.amenities = [];
+      }
+    }
+    if (typeof normalizedBody.price === "string") {
+      normalizedBody.price = Number(normalizedBody.price);
+    }
+    if (typeof normalizedBody.capacity === "string") {
+      normalizedBody.capacity = Number(normalizedBody.capacity);
+    }
+
+    const { error } = assetSchema.validate(normalizedBody, { abortEarly: false });
     if (error)
       return res
         .status(400)
@@ -41,7 +64,7 @@ exports.createAsset = async (req, res) => {
       capacity,
       features,
       amenities,
-    } = req.body;
+    } = normalizedBody;
 
     const files = req.files || [];
     if (!files.length)
@@ -182,7 +205,32 @@ exports.getAllAssets = async (req, res) => {
 
 exports.updateAsset = async (req, res) => {
   try {
-    const { error } = assetSchema.validate(req.body, { presence: "optional" });
+    // Normalize multipart text fields for partial updates
+    const normalizedBody = { ...req.body };
+    if (typeof normalizedBody.features === "string") {
+      try {
+        normalizedBody.features = JSON.parse(normalizedBody.features);
+      } catch {
+        delete normalizedBody.features; // ignore malformed string
+      }
+    }
+    if (typeof normalizedBody.amenities === "string") {
+      try {
+        normalizedBody.amenities = JSON.parse(normalizedBody.amenities);
+      } catch {
+        delete normalizedBody.amenities; // ignore malformed string
+      }
+    }
+    if (typeof normalizedBody.price === "string") {
+      const n = Number(normalizedBody.price);
+      if (!Number.isNaN(n)) normalizedBody.price = n;
+    }
+    if (typeof normalizedBody.capacity === "string") {
+      const n = Number(normalizedBody.capacity);
+      if (!Number.isNaN(n)) normalizedBody.capacity = n;
+    }
+
+    const { error } = assetSchema.validate(normalizedBody, { presence: "optional" });
     if (error)
       return res.status(400).json({ message: error.details[0].message });
 
@@ -210,7 +258,7 @@ exports.updateAsset = async (req, res) => {
       );
     }
 
-    const updateData = { ...req.body };
+    const updateData = { ...normalizedBody };
     if (imageUrls.length) {
       updateData.images = imageUrls.map((result) => result.publicUrl);
     }
