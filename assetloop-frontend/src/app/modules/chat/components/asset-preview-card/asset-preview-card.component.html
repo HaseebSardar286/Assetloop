@@ -1,20 +1,16 @@
 <div class="card">
   <img
-    [src]="asset.imageUrl || '/images/download.jpg'"
+    [src]="getImageUrl()"
     class="card-img-top"
     alt="Asset"
+    style="height: 200px; object-fit: cover;"
   />
   <div class="card-body">
     <h6 class="mb-0">{{ asset.name }}</h6>
-    <p class="card-text">{{ asset.address }}</p>
-    <p class="card-text">{{ asset.totalPaid }}</p>
-    <!-- <span
-      class="badge"
-      [ngClass]="{
-        'bg-success': asset.status === 'available',
-        'bg-danger': asset.status !== 'available'
-      }"
-      >{{ asset.status }}</span
-    > -->
+    <p class="card-text text-muted small mb-1">{{ asset.address }}</p>
+    <p class="card-text mb-0">
+      <strong>${{ asset.price | number:'1.2-2' }}</strong>
+      <span class="badge bg-secondary ms-2">{{ asset.category }}</span>
+    </p>
   </div>
 </div>

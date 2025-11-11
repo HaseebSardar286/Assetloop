@@ -15,6 +15,7 @@ export class RentalRequestItemsComponent {
     bookingId: string;
     newStatus: 'confirmed' | 'cancelled';
   }>();
+  @Output() startChat = new EventEmitter<Booking>();
 
   updateStatus(bookingId: string, newStatus: 'confirmed' | 'cancelled') {
     console.log(
@@ -24,5 +25,9 @@ export class RentalRequestItemsComponent {
       newStatus
     );
     this.statusUpdate.emit({ bookingId, newStatus });
+  }
+
+  onStartChat() {
+    this.startChat.emit(this.booking);
   }
 }

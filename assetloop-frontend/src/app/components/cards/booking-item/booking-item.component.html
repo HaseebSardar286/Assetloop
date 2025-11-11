@@ -45,30 +45,35 @@
       >
         <fa-icon [icon]="faShoppingCart"></fa-icon>
       </button>
-      <button class="btn btn-outline-secondary btn-sm" (click)="onShare()">
+      <button class="btn btn-outline-secondary btn-sm me-2" (click)="onShare()">
         <fa-icon [icon]="faShare"></fa-icon>
       </button>
+      <button class="btn btn-outline-success btn-sm" (click)="startChatWithOwner()">
+        💬 Chat
+      </button>
     </div>
-    <button class="btn btn-primary btn-sm" (click)="onViewListing()">
-      View Listing
-    </button>
-    <button
-      class="btn btn-danger btn-sm"
-      *ngIf="booking.status !== 'cancelled'"
-      (click)="onCancelBooking()"
-    >
-      Cancel
-    </button>
-    <button
-      class="btn btn-success btn-sm"
-      *ngIf="
-        activeTab === 'past' &&
-        booking.status === 'completed' &&
-        !booking.review
-      "
-      (click)="onLeaveReview()"
-    >
-      Leave Review
-    </button>
+    <div class="d-flex align-items-center gap-2">
+      <button class="btn btn-primary btn-sm" (click)="onViewListing()">
+        View Listing
+      </button>
+      <button
+        class="btn btn-danger btn-sm"
+        *ngIf="booking.status !== 'cancelled'"
+        (click)="onCancelBooking()"
+      >
+        Cancel
+      </button>
+      <button
+        class="btn btn-success btn-sm"
+        *ngIf="
+          activeTab === 'past' &&
+          booking.status === 'completed' &&
+          !booking.review
+        "
+        (click)="onLeaveReview()"
+      >
+        Leave Review
+      </button>
+    </div>
   </div>
 </div>

@@ -1,13 +1,16 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router, RouterModule } from '@angular/router';
+import { Router, RouterModule, ActivatedRoute, NavigationEnd } from '@angular/router';
 import { HeaderComponent } from '../../../../components/header/header.component';
 import { RenterSideBarComponent } from '../../../renter/renter-side-bar/renter-side-bar.component';
+import { OwnerSideBarComponent } from '../../../owner/owner-side-bar/owner-side-bar.component';
 import { ConversationListComponent } from '../conversation-list/conversation-list.component';
 import { ChatWindowComponent } from '../chat-window/chat-window.component';
 import { ChatInfoPanelComponent } from '../chat-info-panel/chat-info-panel.component';
 import { ChatEmptyStateComponent } from '../chat-empty-state/chat-empty-state.component';
-import { Chat } from '../../../../interfaces/bookings';
+import { ChatService, ChatConversation } from '../../../../services/chat.service';
+import { AuthService } from '../../../../services/auth.service';
+import { interval, Subscription, filter } from 'rxjs';
 
 @Component({
   selector: 'app-chat',
@@ -17,6 +20,7 @@ import { Chat } from '../../../../interfaces/bookings';
     RouterModule,
     HeaderComponent,
     RenterSideBarComponent,
+    OwnerSideBarComponent,
     ConversationListComponent,
     ChatWindowComponent,
     ChatInfoPanelComponent,
@@ -25,101 +29,126 @@ import { Chat } from '../../../../interfaces/bookings';
   templateUrl: './chat.component.html',
   styleUrls: ['./chat.component.css'],
 })
-export class ChatComponent {
-  selectedChatId: number | null = null;
-  userRole: 'Renter' | 'Owner' = 'Renter'; // Mock user role; replace with auth service
-  conversations: Chat[] = [
-    {
-      id: 1,
-      otherUser: {
-        name: 'Ahmed Hassan',
-        role: 'Owner',
-        profilePic: '/images/profile.png',
-      },
-      asset: {
-        id: 'mock-asset-1',
-        _id: 'mock-asset-1',
-        name: 'Toyota Corolla 2020',
-        description: 'Well-maintained car with great mileage.',
-        price: 55,
-        owner: {
-          firstName: 'Ahmed',
-          middleName: '',
-          lastName: 'Hassan',
-          email: 'owner@example.com',
-          contact: '',
-        },
-        startDate: new Date().toISOString(),
-        endDate: new Date(Date.now() + 86400000).toISOString(),
-        status: 'confirmed',
-        address: 'Gulberg, Lahore',
-        imageUrl: '/images/download.jpg',
-        category: 'car',
-      },
-      lastMessage: {
-        id: 101,
-        sender: 'Owner',
-        senderName: 'Ahmed Hassan',
-        content: 'Pickup at 10 AM works for me.',
-        timestamp: new Date().toISOString(),
-        status: 'delivered',
-      },
-      unreadCount: 1,
-    },
-    {
-      id: 2,
-      otherUser: {
-        name: 'Sara Ahmed',
-        role: 'Owner',
-        profilePic: '/images/profile.png',
-      },
-      asset: {
-        id: 'mock-asset-2',
-        _id: 'mock-asset-2',
-        name: 'Apartment 2B - DHA',
-        description: 'Cozy 1-bedroom apartment near park.',
-        price: 80,
-        owner: {
-          firstName: 'Sara',
-          middleName: '',
-          lastName: 'Ahmed',
-          email: 'owner2@example.com',
-          contact: '',
-        },
-        startDate: new Date().toISOString(),
-        endDate: new Date(Date.now() + 2 * 86400000).toISOString(),
-        status: 'pending',
-        address: 'DHA Phase 5, Karachi',
-        imageUrl: '/images/download (1).jpg',
-        category: 'apartment',
-      },
-      lastMessage: {
-        id: 201,
-        sender: 'Renter',
-        senderName: 'You',
-        content: 'Is early check-in possible?',
-        timestamp: new Date().toISOString(),
-        status: 'read',
-      },
-      unreadCount: 0,
-    },
-  ]; // Dummy conversations for UI testing
+export class ChatComponent implements OnInit, OnDestroy {
+  selectedChatId: string | null = null;
+  userRole: string = '';
+  conversations: ChatConversation[] = [];
+  loading = false;
+  error: string | null = null;
+  private refreshSubscription?: Subscription;
+  private routerSubscription?: Subscription;
 
-  constructor(private router: Router) {}
+  constructor(
+    private router: Router,
+    private route: ActivatedRoute,
+    private chatService: ChatService,
+    private authService: AuthService
+  ) {}
 
-  onSelectChat(id: number) {
-    this.selectedChatId = id;
+  ngOnInit(): void {
+    // Determine user role from route path or auth service
+    this.determineUserRole();
+    
+    // Listen to route changes to update role if needed
+    this.routerSubscription = this.router.events
+      .pipe(filter(event => event instanceof NavigationEnd))
+      .subscribe(() => {
+        this.determineUserRole();
+      });
+    
+    this.loadConversations();
+    this.loadUnreadCount();
+    
+    // Check for conversation ID in query params
+    this.route.queryParams.subscribe(params => {
+      if (params['conversationId']) {
+        this.selectedChatId = params['conversationId'];
+      }
+    });
+    
+    // Refresh conversations every 30 seconds
+    this.refreshSubscription = interval(30000).subscribe(() => {
+      this.loadConversations();
+      this.loadUnreadCount();
+    });
   }
 
-  onLogout() {
-    this.router.navigate(['/auth/login']);
-  }
-
-  onNavigate(event: Event) {
-    const target = event.target as HTMLAnchorElement;
-    if (target && target.getAttribute('href')) {
-      const path = target.getAttribute('href')!;
-      this.router.navigate([path]);
+  private determineUserRole(): void {
+    // Route path is more reliable since routes are clearly separated
+    const currentPath = this.router.url;
+    if (currentPath.startsWith('/owner/')) {
+      this.userRole = 'owner';
+    } else if (currentPath.startsWith('/renter/')) {
+      this.userRole = 'renter';
+    } else {
+      // Fallback to auth service if route doesn't indicate role
+      this.userRole = this.authService.getUserRole() || 'renter';
     }
+  }
+
+  ngOnDestroy(): void {
+    if (this.refreshSubscription) {
+      this.refreshSubscription.unsubscribe();
+    }
+    if (this.routerSubscription) {
+      this.routerSubscription.unsubscribe();
+    }
+  }
+
+  loadConversations(): void {
+    this.loading = true;
+    this.error = null;
+    
+    this.chatService.getConversations().subscribe({
+      next: (response) => {
+        this.conversations = response.conversations;
+        this.loading = false;
+      },
+      error: (err) => {
+        this.error = err?.error?.message || 'Failed to load conversations';
+        this.loading = false;
+      }
+    });
+  }
+
+  loadUnreadCount(): void {
+    this.chatService.getUnreadCount().subscribe({
+      next: (response) => {
+        // Unread count is handled by the service's BehaviorSubject
+      },
+      error: (err) => {
+        console.error('Failed to load unread count:', err);
+      }
+    });
+  }
+
+  onSelectChat(conversationId: string): void {
+    this.selectedChatId = conversationId;
+    // Mark messages as read when selecting a conversation
+    this.chatService.markAsRead(conversationId).subscribe({
+      next: () => {
+        // Update local unread count
+        const conversation = this.conversations.find(c => c._id === conversationId);
+        if (conversation) {
+          conversation.unreadCount = 0;
+        }
+        this.loadUnreadCount();
+      },
+      error: (err) => {
+        console.error('Failed to mark messages as read:', err);
+      }
+    });
+  }
+
+  onLogout(): void {
+    this.authService.logout();
+  }
+
+  isOwner(): boolean {
+    return this.userRole === 'owner';
+  }
+
+  isRenter(): boolean {
+    return this.userRole === 'renter';
   }
 }

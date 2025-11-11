@@ -4,6 +4,8 @@ import { Router, ActivatedRoute, RouterModule } from '@angular/router';
 import { HeaderComponent } from '../../../components/header/header.component';
 import { RenterSideBarComponent } from '../renter-side-bar/renter-side-bar.component';
 import { RenterService } from '../../../services/renter.service';
+import { ChatService } from '../../../services/chat.service';
+import { AuthService } from '../../../services/auth.service';
 
 @Component({
   selector: 'app-asset-details',
@@ -32,6 +34,8 @@ export class AssetDetailsComponent {
   constructor(
     private route: ActivatedRoute,
     private renterService: RenterService,
+    private chatService: ChatService,
+    private authService: AuthService,
     private router: Router
   ) {}
 
@@ -98,5 +102,31 @@ export class AssetDetailsComponent {
             err?.error?.message || 'Failed to add to cart (login as renter?)'
           ),
       });
+  }
+
+  startChat(): void {
+    if (!this.asset || !this.asset.owner) {
+      alert('Asset owner information not available');
+      return;
+    }
+
+    const currentUser = this.authService.getCurrentUser();
+    if (!currentUser) {
+      alert('Please login to start a chat');
+      return;
+    }
+
+    // Get or create conversation with the asset owner
+    this.chatService.getOrCreateConversation(this.asset._id, this.asset.owner._id).subscribe({
+      next: (response) => {
+        // Navigate to chat with the conversation ID
+        this.router.navigate(['/renter/chat'], { 
+          queryParams: { conversationId: response.conversation._id } 
+        });
+      },
+      error: (err) => {
+        alert(err?.error?.message || 'Failed to start chat');
+      }
+    });
   }
 }

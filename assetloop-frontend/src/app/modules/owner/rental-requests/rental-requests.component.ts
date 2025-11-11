@@ -1,9 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { RouterModule, Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { Booking, Bookings } from '../../../interfaces/bookings';
 import { OwnerService } from '../../../services/owner.service';
+import { ChatService } from '../../../services/chat.service';
+import { AuthService } from '../../../services/auth.service';
 import { HeaderComponent } from '../../../components/header/header.component';
 import { OwnerSideBarComponent } from '../owner-side-bar/owner-side-bar.component';
 import { RentalRequestItemsComponent } from '../../../components/cards/rental-request-items/rental-request-items.component';
@@ -26,7 +28,12 @@ export class RentalRequestsComponent implements OnInit {
   loading = false;
   error: string | null = null;
 
-  constructor(private ownerService: OwnerService) {}
+  constructor(
+    private ownerService: OwnerService,
+    private chatService: ChatService,
+    private authService: AuthService,
+    private router: Router
+  ) {}
 
   ngOnInit(): void {
     this.loadBookings();
@@ -109,6 +116,32 @@ export class RentalRequestsComponent implements OnInit {
           details: err,
         });
       },
+    });
+  }
+
+  startChatWithRenter(booking: Booking): void {
+    if (!booking.renter || !booking.asset) {
+      alert('Renter or asset information not available');
+      return;
+    }
+
+    const currentUser = this.authService.getCurrentUser();
+    if (!currentUser) {
+      alert('Please login to start a chat');
+      return;
+    }
+
+    // Get or create conversation with the renter for this asset
+    this.chatService.getOrCreateConversation(booking.asset._id, booking.renter._id).subscribe({
+      next: (response) => {
+        // Navigate to chat with the conversation ID
+        this.router.navigate(['/owner/chat'], { 
+          queryParams: { conversationId: response.conversation._id } 
+        });
+      },
+      error: (err) => {
+        alert(err?.error?.message || 'Failed to start chat');
+      }
     });
   }
 }

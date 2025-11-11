@@ -2,7 +2,7 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ConversationCardComponent } from '../conversation-card/conversation-card.component';
-import { Chat } from '../../../../interfaces/bookings';
+import { ChatConversation } from '../../../../interfaces/chat';
 
 @Component({
   selector: 'app-conversation-list',
@@ -12,9 +12,9 @@ import { Chat } from '../../../../interfaces/bookings';
   styleUrls: ['./conversation-list.component.css'],
 })
 export class ConversationListComponent {
-  @Output() selectChat = new EventEmitter<number>();
+  @Output() selectChat = new EventEmitter<string>();
   searchQuery: string = '';
-  @Input() conversations: Chat[] = [];
+  @Input() conversations: ChatConversation[] = [];
 
   getFilteredConversations() {
     return this.conversations.filter(

@@ -41,6 +41,6 @@ export const OWNER_ROUTES: Routes = [
   {
     path: 'chat',
     component: ChatComponent,
-    data: { title: 'Owner Chat' },
+    data: { title: 'Messages' },
   },
 ];

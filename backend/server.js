@@ -7,6 +7,9 @@ const ownerRoutes = require("./routes/ownerRoutes");
 const roleRoutes = require("./routes/roleRoutes");
 const renterRoutes = require("./routes/renterRoutes");
 const adminRoutes = require("./routes/adminRoutes");
+const chatRoutes = require("./routes/chatRoutes");
+const paymentsRoutes = require("./routes/paymentsRoutes");
+const { stripeWebhookHandler } = require("./controllers/paymentsController");
 const errorHandler = require("./middlewares/errorHandler");
 
 dotenv.config();
@@ -28,6 +31,9 @@ app.use(
   })
 );
 
+// Stripe webhook must be defined BEFORE body parsers to retain raw body
+app.post("/api/payments/webhook", express.raw({ type: "application/json" }), stripeWebhookHandler);
+
 app.use(express.json({ limit: "50mb" })); // Increase payload limit for base64 images
 app.use(express.urlencoded({ extended: true, limit: "50mb" }));
 
@@ -46,6 +52,8 @@ app.use("/api/owner", ownerRoutes);
 app.use("/api", roleRoutes);
 app.use("/api/renter", renterRoutes);
 app.use("/api/admin", adminRoutes);
+app.use("/api/chat", chatRoutes);
+app.use("/api/payments", paymentsRoutes);
 
 // Error handling middleware (must be last)
 app.use(errorHandler);

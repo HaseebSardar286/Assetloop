@@ -21,7 +21,7 @@ import { RenterService } from '../../../services/renter.service';
   styleUrls: ['./renter-dashboard.component.css'],
 })
 export class RenterDashboardComponent implements OnInit {
-  userName = 'Haseeb';
+  userName = 'Renter';
   quickStats = {
     activeRentals: 0,
     pendingRequests: 0,
