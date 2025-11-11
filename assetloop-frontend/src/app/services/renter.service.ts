@@ -237,4 +237,12 @@ export class RenterService {
       0
     );
   }
+  getUsers(): Observable<{ users: User[]; totalUsers: number }> {
+    return this.http.get<{ users: User[]; totalUsers: number }>(
+      `${this.apiUrl}/users`,
+      {
+        headers: this.getHeaders(),
+      }
+    );
+  }
 }

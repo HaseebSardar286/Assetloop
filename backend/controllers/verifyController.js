@@ -99,12 +99,11 @@ exports.submitVerification = async (req, res) => {
 
     if (!updated) return res.status(404).json({ message: "User not found" });
 
-    res
-      .status(200)
-      .json({
-        message: "Verification submitted successfully",
-        redirectToLogin: true,
-      });
+    res.status(200).json({
+      message:
+        "Verification submitted successfully. Your request will be approved with 24 hours.",
+      redirectToLogin: true,
+    });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

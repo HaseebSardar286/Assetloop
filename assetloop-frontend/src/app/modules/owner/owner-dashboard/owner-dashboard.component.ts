@@ -7,6 +7,7 @@ import { HeaderComponent } from '../../../components/header/header.component';
 import { OwnerSideBarComponent } from '../owner-side-bar/owner-side-bar.component';
 import { OwnerService } from '../../../services/owner.service';
 import { DashboardStats } from '../../../interfaces/ownerDashboard';
+import { User } from '../../../interfaces/user';
 
 @Component({
   selector: 'app-owner-dashboard',
@@ -26,12 +27,14 @@ export class OwnerDashboardComponent implements OnInit {
   activeBookings: Booking[] = [];
   reviews: Review[] = [];
   userId: string = localStorage.getItem('userId') || '';
+  users: User[] = [];
 
   constructor(private ownerService: OwnerService, private router: Router) {}
 
   ngOnInit(): void {
     this.loadDashboardStats();
     this.loadActiveBookings();
+    this.loadUsers();
     // this.loadReviews();
   }
 
@@ -44,6 +47,17 @@ export class OwnerDashboardComponent implements OnInit {
       error: (err) => {
         console.error('Error loading dashboard stats:', err);
         alert('Failed to load dashboard stats');
+      },
+    });
+  }
+
+  loadUsers(): void {
+    this.ownerService.getUsers().subscribe({
+      next: (data) => {
+        this.users = data.users;
+      },
+      error: (err) => {
+        console.error('Error loading active bookings:', err);
       },
     });
   }

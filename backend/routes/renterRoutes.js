@@ -26,6 +26,7 @@ const {
   removeFromCart,
   clearCart,
   getRenterReviews,
+  getUsers,
 } = require("../controllers/renterController");
 const router = express.Router();
 
@@ -38,6 +39,8 @@ router.get("/renters/:renterId/reviews", getRenterReviews);
 router.use(authMiddleware);
 const roleCheck = roleMiddleware(["renter"]);
 router.use(roleCheck);
+
+router.get("/users", getUsers);
 
 router.get("/profile", getProfile);
 router.put("/profile", updateProfile);

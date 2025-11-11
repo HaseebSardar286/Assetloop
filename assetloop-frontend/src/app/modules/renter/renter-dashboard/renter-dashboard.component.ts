@@ -7,6 +7,7 @@ import { Observable } from 'rxjs';
 import { Bookings, Chat, UserProfile } from '../../../interfaces/bookings';
 import { CartItem, Favourite } from '../../../interfaces/rental';
 import { RenterService } from '../../../services/renter.service';
+import { User } from '../../../interfaces/user';
 
 @Component({
   selector: 'app-renter-dashboard',
@@ -35,6 +36,7 @@ export class RenterDashboardComponent implements OnInit {
   cart$: Observable<CartItem[]> | undefined;
   error: string | null = null;
   loading = true;
+  users: User[] = [];
 
   constructor(private renterService: RenterService, private router: Router) {}
 
@@ -42,6 +44,7 @@ export class RenterDashboardComponent implements OnInit {
     this.loadDashboardData();
     this.favourites$ = this.renterService.getFavourites();
     this.cart$ = this.renterService.getCart();
+    this.loadUsers();
     // Optional: Fetch chats and profile if implemented
     // this.chats$ = this.renterService.getChats();
     // this.renterService.getProfile().subscribe(profile => this.userProfile = profile);
@@ -108,6 +111,17 @@ export class RenterDashboardComponent implements OnInit {
         },
       });
     }
+  }
+
+  loadUsers(): void {
+    this.renterService.getUsers().subscribe({
+      next: (data) => {
+        this.users = data.users;
+      },
+      error: (err) => {
+        this.error = this.error || err.error?.message || 'Failed to load users';
+      },
+    });
   }
 
   leaveReview(id: string): void {

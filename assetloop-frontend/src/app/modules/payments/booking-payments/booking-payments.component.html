@@ -13,20 +13,48 @@
         <h5 class="card-title mb-1">{{ booking.name }}</h5>
         <div class="text-muted mb-2">{{ booking.address }}</div>
         <div class="row">
-          <div class="col-md-4"><strong>Price:</strong> ${{ booking.price }}</div>
-          <div class="col-md-4"><strong>Paid:</strong> ${{ booking.totalPaid || 0 }}</div>
-          <div class="col-md-4"><strong>Amount Due:</strong> ${{ amountDue }}</div>
+          <div class="col-md-4">
+            <strong>Price:</strong> ${{ booking.price | number : "1.0-0" }}
+          </div>
+          <div class="col-md-4">
+            <strong>Paid:</strong> ${{
+              booking.totalPaid || 0 | number : "1.0-0"
+            }}
+          </div>
+          <div class="col-md-4">
+            <strong>Amount Due:</strong>
+            <span
+              [ngClass]="{
+                'badge bg-success': amountDue <= 0,
+                'badge bg-warning text-dark': amountDue > 0
+              }"
+            >
+              ${{ amountDue | number : "1.0-0" }}
+            </span>
+          </div>
         </div>
         <div class="row mt-2">
-          <div class="col-md-6"><strong>Start:</strong> {{ booking.startDate | date:'mediumDate' }}</div>
-          <div class="col-md-6"><strong>End:</strong> {{ booking.endDate | date:'mediumDate' }}</div>
+          <div class="col-md-6">
+            <strong>Start:</strong>
+            {{ booking.startDate | date : "mediumDate" }}
+          </div>
+          <div class="col-md-6">
+            <strong>End:</strong> {{ booking.endDate | date : "mediumDate" }}
+          </div>
         </div>
       </div>
     </div>
 
+    <div *ngIf="amountDue <= 0" class="alert alert-success mb-3">
+      Payment complete. No amount due.
+    </div>
+
     <h4>Upcoming Payments</h4>
     <ul class="list-group mb-3" *ngIf="upcomingPayments.length; else noneDue">
-      <li class="list-group-item d-flex justify-content-between align-items-center" *ngFor="let payment of upcomingPayments">
+      <li
+        class="list-group-item d-flex justify-content-between align-items-center"
+        *ngFor="let payment of upcomingPayments"
+      >
         <span>{{ payment.type }} — {{ payment.date }}</span>
         <span class="badge bg-primary rounded-pill">${{ payment.amount }}</span>
       </li>
@@ -51,8 +79,12 @@
     </div>
 
     <div class="mt-4">
-      <button class="btn btn-primary" (click)="payNow()" [disabled]="loading || amountDue <= 0">
-        {{ loading ? 'Redirecting...' : (amountDue > 0 ? 'Pay Now' : 'Paid') }}
+      <button
+        class="btn btn-primary"
+        (click)="payNow()"
+        [disabled]="loading || amountDue <= 0"
+      >
+        {{ loading ? "Redirecting..." : amountDue > 0 ? "Pay Now" : "Paid" }}
       </button>
     </div>
   </ng-container>

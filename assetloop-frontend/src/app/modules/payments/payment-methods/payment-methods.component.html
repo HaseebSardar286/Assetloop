@@ -1,21 +1,89 @@
 <div class="payment-methods">
   <h4>Linked Payment Methods</h4>
-  <ul class="list-group">
+
+  <div *ngIf="loading" class="mb-2">
+    <div class="spinner-border spinner-border-sm" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+  </div>
+  <div class="alert alert-danger" *ngIf="error">{{ error }}</div>
+  <div class="alert alert-info" *ngIf="!error && info">{{ info }}</div>
+
+  <ul class="list-group mb-3">
     <li
       class="list-group-item d-flex justify-content-between align-items-center"
       *ngFor="let method of paymentMethods"
     >
-      <span
-        >{{ method.type }}: {{ method.details }}
-        <span *ngIf="method.isDefault" class="badge bg-success"
+      <span class="d-flex align-items-center">
+        <span class="me-2" aria-hidden="true">
+          <span *ngIf="method.type === 'card'">💳</span>
+          <span *ngIf="method.type === 'bank'">🏦</span>
+          <span *ngIf="method.type === 'wallet'">💸</span>
+        </span>
+        <span class="fw-medium text-capitalize">{{ method.type }}</span>
+        <span class="text-muted ms-2">{{ method.details }}</span>
+        <span *ngIf="method.isDefault" class="badge bg-success ms-2"
           >Default</span
-        ></span
-      >
-      <div>
-        <button class="btn btn-sm btn-primary">Set Default</button>
-        <button class="btn btn-sm btn-danger ms-2">Remove</button>
+        >
+      </span>
+      <div class="d-flex">
+        <button
+          class="btn btn-sm btn-primary"
+          (click)="setDefault(method)"
+          [disabled]="loading || method.isDefault"
+        >
+          Set Default
+        </button>
+        <button
+          class="btn btn-sm btn-danger ms-2"
+          (click)="remove(method)"
+          [disabled]="loading"
+        >
+          Remove
+        </button>
       </div>
     </li>
+    <li *ngIf="!paymentMethods.length && !loading" class="list-group-item">
+      No payment methods linked.
+    </li>
   </ul>
-  <button class="btn btn-success mt-2">Add New Method</button>
+
+  <div class="card">
+    <div class="card-body">
+      <h5 class="card-title">Add New Method</h5>
+      <div class="row g-2 align-items-end">
+        <div class="col-md-3">
+          <label class="form-label">Type</label>
+          <select class="form-select" [(ngModel)]="newMethod.type">
+            <option value="card">Card</option>
+            <option value="bank">Bank</option>
+            <option value="wallet">Wallet</option>
+          </select>
+        </div>
+        <div class="col-md-6">
+          <label class="form-label">Details</label>
+          <input
+            class="form-control"
+            type="text"
+            [(ngModel)]="newMethod.details"
+            placeholder="e.g., **** 4242 or Bank name"
+          />
+        </div>
+        <div class="col-md-2 form-check ms-2">
+          <input
+            class="form-check-input"
+            id="isDefault"
+            type="checkbox"
+            [(ngModel)]="newMethod.isDefault"
+          />
+          <label class="form-check-label" for="isDefault">Set as default</label>
+        </div>
+        <div class="col-md-12 mt-2">
+          <button class="btn btn-success" (click)="add()" [disabled]="loading">
+            Add Method
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>

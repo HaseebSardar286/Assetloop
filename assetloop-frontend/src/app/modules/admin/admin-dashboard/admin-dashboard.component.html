@@ -5,7 +5,14 @@
     <main class="flex-grow-1 p-4 bg-light">
       <!-- Welcome & Quick Stats -->
       <div class="mb-4">
-        <h2 class="mb-3">👋 Welcome back, {{ adminName }}!</h2>
+        <h2 class="mb-3">
+          👋 Welcome back,
+          <span *ngFor="let user of users">
+            <span *ngIf="user.role == 'admin'">
+              {{ user.firstName }} {{ user?.middleName }} {{ user.lastName }}
+            </span>
+          </span>
+        </h2>
         <div class="row g-3">
           <div class="col-md-3">
             <div class="card h-100 bg-primary text-white">
@@ -53,8 +60,10 @@
             <div class="col-md-6 col-lg-4" *ngFor="let user of users">
               <div class="card h-100 border" *ngIf="user.createdAt">
                 <div class="card-body">
-                  <h6 class="card-title">
-                    {{ user.firstName }} {{ user.lastName }}
+                  <h6>
+                    {{ user.firstName }} {{ user?.middleName }}
+                    {{ user.lastName }}
+                    <span class="badge bg-info">{{ user.role }}</span>
                   </h6>
                   <p class="card-text">
                     <strong>Email:</strong> {{ user.email }}<br />
