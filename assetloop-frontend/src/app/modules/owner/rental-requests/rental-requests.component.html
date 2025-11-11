@@ -20,6 +20,7 @@
             <app-rental-request-items
               [booking]="booking"
               (statusUpdate)="onStatusUpdate($event)"
+              (startChat)="startChatWithRenter($event)"
             ></app-rental-request-items>
           </div>
         </div>

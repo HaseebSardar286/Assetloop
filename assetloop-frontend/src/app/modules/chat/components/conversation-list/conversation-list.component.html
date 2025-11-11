@@ -7,7 +7,7 @@
   <div *ngFor="let c of getFilteredConversations()">
     <app-conversation-card
       [chat]="c"
-      (select)="selectChat.emit(c.id)"
+      (select)="selectChat.emit(c._id)"
     ></app-conversation-card>
   </div>
   <div *ngIf="!getFilteredConversations().length" class="text-muted small">

@@ -1,8 +1,11 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, OnInit, OnDestroy, OnChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MessageBubbleComponent } from '../message-bubble/message-bubble.component';
-import { Message } from '../../../../interfaces/bookings';
+import { ChatMessage } from '../../../../interfaces/chat';
+import { ChatService } from '../../../../services/chat.service';
+import { AuthService } from '../../../../services/auth.service';
+import { interval, Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-chat-window',
@@ -11,51 +14,99 @@ import { Message } from '../../../../interfaces/bookings';
   templateUrl: './chat-window.component.html',
   styleUrls: ['./chat-window.component.css'],
 })
-export class ChatWindowComponent {
-  @Input() chatId!: number | null;
-  @Input() userRole!: 'Renter' | 'Owner';
+export class ChatWindowComponent implements OnInit, OnDestroy, OnChanges {
+  @Input() chatId!: string | null;
+  @Input() userRole!: string;
   newMessage: string = '';
   isTyping: boolean = false;
-  messages: Message[] = [];
+  messages: ChatMessage[] = [];
+  loading = false;
+  error: string | null = null;
+  private refreshSubscription?: Subscription;
 
-  ngOnChanges() {
+  constructor(
+    private chatService: ChatService,
+    private authService: AuthService
+  ) {}
+
+  ngOnInit(): void {
     if (this.chatId) {
-      this.messages = [
-        {
-          id: 1,
-          sender: 'Owner',
-          senderName: 'Ali',
-          content: 'Hello, is this available?',
-          timestamp: '2025-08-30 14:00',
-          status: 'read',
-        },
-        {
-          id: 2,
-          sender: 'Renter',
-          senderName: 'Haseeb',
-          content: 'Yes, it is!',
-          timestamp: '2025-08-30 14:05',
-          status: 'read',
-        },
-      ];
+      this.loadMessages();
+      // Refresh messages every 10 seconds
+      this.refreshSubscription = interval(10000).subscribe(() => {
+        this.loadMessages();
+      });
     }
   }
 
-  sendMessage() {
-    if (this.newMessage.trim()) {
-      const message: Message = {
-        id: Date.now(),
-        sender: this.userRole,
-        senderName: this.userRole === 'Renter' ? 'Haseeb' : 'Ali',
-        content: this.newMessage,
-        timestamp: new Date().toLocaleString('en-US', {
-          timeZone: 'Asia/Karachi',
-        }),
-        status: 'sent',
-      };
-      this.messages.push(message);
-      this.newMessage = '';
-      this.isTyping = false;
+  ngOnDestroy(): void {
+    if (this.refreshSubscription) {
+      this.refreshSubscription.unsubscribe();
+    }
+  }
+
+  ngOnChanges(): void {
+    if (this.chatId) {
+      this.messages = []; // Clear messages when switching conversations
+      this.loadMessages();
+      // Restart refresh subscription
+      if (this.refreshSubscription) {
+        this.refreshSubscription.unsubscribe();
+      }
+      this.refreshSubscription = interval(10000).subscribe(() => {
+        this.loadMessages();
+      });
+    } else {
+      this.messages = [];
+      if (this.refreshSubscription) {
+        this.refreshSubscription.unsubscribe();
+        this.refreshSubscription = undefined;
+      }
+    }
+  }
+
+  loadMessages(): void {
+    if (!this.chatId) return;
+
+    this.loading = true;
+    this.error = null;
+
+    this.chatService.getMessages(this.chatId).subscribe({
+      next: (response) => {
+        this.messages = response.messages;
+        this.loading = false;
+      },
+      error: (err) => {
+        this.error = err?.error?.message || 'Failed to load messages';
+        this.loading = false;
+      }
+    });
+  }
+
+  sendMessage(): void {
+    if (!this.newMessage.trim() || !this.chatId) return;
+
+    const content = this.newMessage.trim();
+    this.newMessage = '';
+    this.isTyping = false;
+
+    this.chatService.sendMessage(this.chatId, content).subscribe({
+      next: (response) => {
+        // Reload messages to get the latest state
+        this.loadMessages();
+      },
+      error: (err) => {
+        this.error = err?.error?.message || 'Failed to send message';
+        // Restore the message if sending failed
+        this.newMessage = content;
+      }
+    });
+  }
+
+  onKeyPress(event: KeyboardEvent): void {
+    if (event.key === 'Enter' && !event.shiftKey) {
+      event.preventDefault();
+      this.sendMessage();
     }
   }
 }

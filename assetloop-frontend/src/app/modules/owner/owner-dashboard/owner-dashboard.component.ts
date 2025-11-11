@@ -16,7 +16,7 @@ import { DashboardStats } from '../../../interfaces/ownerDashboard';
   styleUrls: ['./owner-dashboard.component.css'],
 })
 export class OwnerDashboardComponent implements OnInit {
-  userName = 'Haseeb';
+  userName = 'Owner';
   stats: DashboardStats = {
     totalAssets: 0,
     activeBookings: 0,

@@ -9,6 +9,9 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { Booking, Bookings } from '../../../interfaces/bookings';
+import { ChatService } from '../../../services/chat.service';
+import { Router } from '@angular/router';
+import { AuthService } from '../../../services/auth.service';
 
 @Component({
   selector: 'app-booking-item',
@@ -34,6 +37,12 @@ export class BookingItemComponent {
   faShoppingCart = faShoppingCart;
   faShare = faShare;
   faTrash = faTrash;
+
+  constructor(
+    private chatService: ChatService,
+    private router: Router,
+    private authService: AuthService
+  ) {}
 
   onViewListing() {
     this.viewListing.emit(this.booking.id || this.booking._id);
@@ -62,5 +71,33 @@ export class BookingItemComponent {
   onNotesChange(event: Event) {
     const notes = (event.target as HTMLInputElement).value;
     this.updateNotes.emit({ id: this.booking.id || this.booking._id, notes });
+  }
+
+  startChatWithOwner(): void {
+    // Ensure user is logged in
+    if (!this.authService.isAuthenticated()) {
+      alert('Please login to start a chat');
+      return;
+    }
+
+    // Determine assetId and ownerId
+    const assetId = (this.booking.asset && (this.booking.asset as any)._id) || this.booking._id || this.booking.id;
+    const ownerId = (this.booking.owner && (this.booking.owner as any)._id) || (this.booking as any).owner?._id;
+
+    if (!assetId || !ownerId) {
+      alert('Missing asset or owner information for chat');
+      return;
+    }
+
+    this.chatService.getOrCreateConversation(String(assetId), String(ownerId)).subscribe({
+      next: (response) => {
+        this.router.navigate(['/renter/chat'], {
+          queryParams: { conversationId: response.conversation._id },
+        });
+      },
+      error: (err) => {
+        alert(err?.error?.message || 'Failed to start chat');
+      },
+    });
   }
 }

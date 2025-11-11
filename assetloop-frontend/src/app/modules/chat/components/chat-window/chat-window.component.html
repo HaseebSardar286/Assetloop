@@ -1,20 +1,35 @@
 <div class="chat-window" *ngIf="chatId">
   <div class="messages" #messagesContainer>
+    <div *ngIf="loading" class="text-center p-3">
+      <div class="spinner-border spinner-border-sm" role="status">
+        <span class="visually-hidden">Loading...</span>
+      </div>
+    </div>
+    <div *ngIf="error" class="alert alert-danger m-2" role="alert">
+      {{ error }}
+    </div>
     <app-message-bubble
       *ngFor="let message of messages"
       [message]="message"
       [userRole]="userRole"
     ></app-message-bubble>
-    <div *ngIf="isTyping" class="typing-indicator">Ali is typing...</div>
+    <div *ngIf="isTyping && !loading" class="typing-indicator">Typing...</div>
   </div>
   <div class="input-bar">
     <input
       type="text"
       class="form-control"
       [(ngModel)]="newMessage"
+      (keypress)="onKeyPress($event)"
       (input)="isTyping = true"
       placeholder="Type a message..."
+      [disabled]="loading"
     />
-    <button class="btn btn-primary ms-2" (click)="sendMessage()">Send</button>
+    <button 
+      class="btn btn-primary ms-2" 
+      (click)="sendMessage()" 
+      [disabled]="!newMessage.trim() || loading">
+      Send
+    </button>
   </div>
 </div>

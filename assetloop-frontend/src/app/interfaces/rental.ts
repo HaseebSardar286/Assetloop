@@ -7,6 +7,7 @@ export interface Owner {
 }
 
 export interface Renter {
+  _id: string;
   firstName?: string;
   middleName?: string;
   lastName?: string;

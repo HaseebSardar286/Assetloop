@@ -1,21 +1,59 @@
 <div class="booking-payments">
-  <h4>Upcoming Payments</h4>
-  <ul class="list-group">
-    <li class="list-group-item" *ngFor="let payment of upcomingPayments">
-      {{ payment.type }}: PKR {{ payment.amount }} ({{ payment.date }})
-    </li>
-  </ul>
-  <div class="mt-2">
-    <h4>Security Deposit</h4>
-    <p>PKR {{ securityDeposit }} held</p>
+  <div *ngIf="loading" class="text-center my-4">
+    <div class="spinner-border" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
   </div>
-  <div class="form-check mt-2">
-    <input
-      type="checkbox"
-      class="form-check-input"
-      id="autoPay"
-      [(ngModel)]="autoPay"
-    />
-    <label class="form-check-label" for="autoPay">Enable Auto-Pay</label>
-  </div>
+  <div class="alert alert-danger" *ngIf="error">{{ error }}</div>
+
+  <ng-container *ngIf="!loading && booking">
+    <h4 class="mb-3">Booking Summary</h4>
+    <div class="card mb-3">
+      <div class="card-body">
+        <h5 class="card-title mb-1">{{ booking.name }}</h5>
+        <div class="text-muted mb-2">{{ booking.address }}</div>
+        <div class="row">
+          <div class="col-md-4"><strong>Price:</strong> ${{ booking.price }}</div>
+          <div class="col-md-4"><strong>Paid:</strong> ${{ booking.totalPaid || 0 }}</div>
+          <div class="col-md-4"><strong>Amount Due:</strong> ${{ amountDue }}</div>
+        </div>
+        <div class="row mt-2">
+          <div class="col-md-6"><strong>Start:</strong> {{ booking.startDate | date:'mediumDate' }}</div>
+          <div class="col-md-6"><strong>End:</strong> {{ booking.endDate | date:'mediumDate' }}</div>
+        </div>
+      </div>
+    </div>
+
+    <h4>Upcoming Payments</h4>
+    <ul class="list-group mb-3" *ngIf="upcomingPayments.length; else noneDue">
+      <li class="list-group-item d-flex justify-content-between align-items-center" *ngFor="let payment of upcomingPayments">
+        <span>{{ payment.type }} — {{ payment.date }}</span>
+        <span class="badge bg-primary rounded-pill">${{ payment.amount }}</span>
+      </li>
+    </ul>
+    <ng-template #noneDue>
+      <div class="alert alert-success">No payments due.</div>
+    </ng-template>
+
+    <div class="mt-2">
+      <h4>Security Deposit</h4>
+      <p>${{ securityDeposit }}</p>
+    </div>
+
+    <div class="form-check mt-2">
+      <input
+        type="checkbox"
+        class="form-check-input"
+        id="autoPay"
+        [(ngModel)]="autoPay"
+      />
+      <label class="form-check-label" for="autoPay">Enable Auto-Pay</label>
+    </div>
+
+    <div class="mt-4">
+      <button class="btn btn-primary" (click)="payNow()" [disabled]="loading || amountDue <= 0">
+        {{ loading ? 'Redirecting...' : (amountDue > 0 ? 'Pay Now' : 'Paid') }}
+      </button>
+    </div>
+  </ng-container>
 </div>

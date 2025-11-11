@@ -24,6 +24,12 @@
         <strong>Actions:</strong>
         <button class="btn btn-primary btn-sm me-2">Details</button>
         <button
+          class="btn btn-outline-success btn-sm me-2"
+          (click)="onStartChat()"
+        >
+          💬 Chat
+        </button>
+        <button
           *ngIf="booking.status === 'pending'"
           class="btn btn-success btn-sm me-2"
           (click)="updateStatus(booking.id, 'confirmed')"
