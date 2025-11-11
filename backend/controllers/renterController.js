@@ -419,3 +419,17 @@ exports.getRenterReviews = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+exports.getUsers = async (req, res) => {
+  try {
+    const users = await User.find()
+      .select("-password -__v")
+      .sort({ createdAt: -1 });
+    const totalUsers = users.length;
+    res.status(200).json({ users, totalUsers });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: `Failed to fetch users: ${error.message}` });
+  }
+};

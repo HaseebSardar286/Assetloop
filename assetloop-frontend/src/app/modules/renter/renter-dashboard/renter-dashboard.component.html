@@ -5,7 +5,14 @@
     <main class="flex-grow-1 p-4 bg-light">
       <!-- Welcome & Quick Stats -->
       <div class="mb-4">
-        <h2 class="mb-3">👋 Welcome back, {{ userName }}!</h2>
+        <h2 class="mb-3">
+          👋 Welcome back,
+          <span *ngFor="let user of users">
+            <span *ngIf="user.role == 'renter'">
+              {{ user.firstName }} {{ user?.middleName }} {{ user.lastName }}
+            </span>
+          </span>
+        </h2>
         <div class="row g-3">
           <div class="col-md-3">
             <div class="card h-100 bg-primary text-white">

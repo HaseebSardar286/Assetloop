@@ -352,23 +352,24 @@
               <!-- Spacer to maintain layout consistency -->
               <div *ngIf="currentStep === 1" class="flex-grow-1"></div>
 
-              <!-- Next or Submit Button (always on the right) -->
+              <!-- Next Button -->
               <button
-                [attr.type]="currentStep < 4 ? 'button' : 'submit'"
-                class="btn btn-small"
-                [ngClass]="{
-                  'btn-primary': currentStep < 4,
-                  'btn-success': currentStep === 4
-                }"
-                (click)="currentStep < 4 && nextStep(verifyForm)"
-                [disabled]="verifyForm.invalid && currentStep < 4"
+                *ngIf="currentStep < 4"
+                type="button"
+                class="btn btn-small btn-primary"
+                (click)="nextStep(verifyForm)"
+                [disabled]="verifyForm.invalid"
               >
-                <span *ngIf="currentStep < 4"
-                  >Next <i class="bi bi-arrow-right"></i
-                ></span>
-                <span *ngIf="currentStep === 4"
-                  >Submit <i class="bi bi-check-circle"></i
-                ></span>
+                Next <i class="bi bi-arrow-right"></i>
+              </button>
+
+              <!-- Submit Button -->
+              <button
+                *ngIf="currentStep === 4"
+                type="submit"
+                class="btn btn-small btn-success"
+              >
+                Submit <i class="bi bi-check-circle"></i>
               </button>
             </div>
           </form>

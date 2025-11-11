@@ -1,25 +1,80 @@
 <div class="wallet-card">
   <h3>Wallet Balance</h3>
-  <p class="balance">PKR {{ currentBalance }}</p>
+  <div *ngIf="loading" class="mb-2">
+    <div class="spinner-border spinner-border-sm" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+  </div>
+  <div class="alert alert-danger" *ngIf="error">{{ error }}</div>
+  <p class="balance">PKR {{ currentBalance | number : "1.0-0" }}</p>
 </div>
 <div class="section">
   <h4>Pending Payments</h4>
   <ul class="list-group">
-    <li class="list-group-item" *ngFor="let payment of pendingPayments">
-      {{ payment.type }}: PKR {{ payment.amount }} ({{ payment.status }})
+    <li
+      class="list-group-item d-flex justify-content-between align-items-center"
+      *ngFor="let payment of pendingPayments"
+    >
+      <span class="text-capitalize">{{ payment.type }}</span>
+      <span class="badge bg-secondary">{{ payment.date }}</span>
+      <span class="badge bg-primary"
+        >PKR {{ payment.amount | number : "1.0-0" }}</span
+      >
+    </li>
+    <li class="list-group-item" *ngIf="!pendingPayments.length && !loading">
+      None
     </li>
   </ul>
 </div>
 <div class="section">
   <h4>Earnings/Refunds</h4>
   <ul class="list-group">
-    <li class="list-group-item" *ngFor="let earning of earningsRefunds">
-      {{ earning.type }}: PKR {{ earning.amount }} ({{ earning.status }})
+    <li
+      class="list-group-item d-flex justify-content-between align-items-center"
+      *ngFor="let earning of earningsRefunds"
+    >
+      <span class="text-capitalize">{{ earning.type }}</span>
+      <span
+        [ngClass]="{
+          'badge bg-success': earning.status === 'successful',
+          'badge bg-warning text-dark': earning.status === 'pending',
+          'badge bg-danger': earning.status === 'failed'
+        }"
+      >
+        {{ earning.status }}
+      </span>
+      <span class="badge bg-primary"
+        >PKR {{ earning.amount | number : "1.0-0" }}</span
+      >
+    </li>
+    <li class="list-group-item" *ngIf="!earningsRefunds.length && !loading">
+      None
     </li>
   </ul>
 </div>
 <div class="quick-actions">
-  <button class="btn btn-success">Add Money</button>
-  <button class="btn btn-warning">Withdraw</button>
-  <button class="btn btn-info">Transaction History</button>
+  <div class="input-group mb-2" style="max-width: 320px">
+    <span class="input-group-text">PKR</span>
+    <input
+      class="form-control"
+      type="number"
+      [(ngModel)]="addWithdrawAmount"
+      placeholder="Amount"
+    />
+  </div>
+  <button
+    class="btn btn-success me-2"
+    (click)="addMoney()"
+    [disabled]="loading || addWithdrawAmount <= 0"
+  >
+    Add Money
+  </button>
+  <button
+    class="btn btn-warning me-2"
+    (click)="withdraw()"
+    [disabled]="loading || addWithdrawAmount <= 0"
+  >
+    Withdraw
+  </button>
+  <a class="btn btn-info" routerLink="/payments/history">Transaction History</a>
 </div>

@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Transaction } from '../../../interfaces/payments';
 import { TransactionCardComponent } from '../transaction-card/transaction-card.component';
+import { PaymentsService } from '../../../services/payments.service';
 
 @Component({
   selector: 'app-transaction-history',
@@ -14,24 +15,28 @@ import { TransactionCardComponent } from '../transaction-card/transaction-card.c
 export class TransactionHistoryComponent {
   filterDate: string = '';
   filterType: string = '';
-  transactions: Transaction[] = [
-    {
-      id: 1,
-      amount: 2000,
-      status: 'successful',
-      method: 'card',
-      date: '2025-08-30',
-      type: 'rent',
-    },
-    {
-      id: 2,
-      amount: 500,
-      status: 'pending',
-      method: 'wallet',
-      date: '2025-08-31',
-      type: 'service fee',
-    },
-  ];
+  transactions: Transaction[] = [];
+  loading = false;
+  error: string | null = null;
+
+  constructor(private paymentsService: PaymentsService) {
+    this.load();
+  }
+
+  load(): void {
+    this.loading = true;
+    this.error = null;
+    this.paymentsService.getTransactions().subscribe({
+      next: (txns) => {
+        this.transactions = txns || [];
+        this.loading = false;
+      },
+      error: (err) => {
+        this.error = err?.error?.message || 'Failed to load transactions';
+        this.loading = false;
+      },
+    });
+  }
 
   getFilteredTransactions() {
     return this.transactions.filter(

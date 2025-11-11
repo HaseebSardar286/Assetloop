@@ -20,12 +20,12 @@ const {
   getOwnerReviews,
   getDashboardStats,
   getActiveBookings,
+  getUsers,
 } = require("../controllers/ownerController");
 const authMiddleware = require("../middlewares/authMiddleware");
 const roleMiddleware = require("../middlewares/roleMiddleware");
 const upload = require("../middlewares/multer.config");
 const router = express.Router();
-
 
 // Public owner reviews (no auth needed for read)
 router.get("/:ownerId/reviews", getOwnerReviews);
@@ -33,6 +33,8 @@ router.get("/:ownerId/reviews", getOwnerReviews);
 router.use(authMiddleware);
 const roleCheck = roleMiddleware(["owner"]); // Invoke and store the middleware
 router.use(roleCheck); // Use the returned middleware
+
+router.get("/users", getUsers);
 
 router.post("/create-asset", upload.array("images", 20), createAsset);
 router.get("/assets", getAssets);

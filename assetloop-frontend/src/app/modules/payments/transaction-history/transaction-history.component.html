@@ -1,20 +1,36 @@
 <div class="filters">
-  <input
-    type="text"
-    class="form-control mb-2"
-    placeholder="Filter by date..."
-    [(ngModel)]="filterDate"
-  />
-  <input
-    type="text"
-    class="form-control"
-    placeholder="Filter by type..."
-    [(ngModel)]="filterType"
-  />
+  <div class="row g-2">
+    <div class="col-md-4">
+      <input
+        type="date"
+        class="form-control"
+        placeholder="Filter by date..."
+        [(ngModel)]="filterDate"
+      />
+    </div>
+    <div class="col-md-4">
+      <select class="form-select" [(ngModel)]="filterType">
+        <option value="">All Types</option>
+        <option value="rent">Rent</option>
+        <option value="service fee">Service Fee</option>
+        <option value="refund">Refund</option>
+        <option value="deposit">Deposit</option>
+      </select>
+    </div>
+  </div>
 </div>
+<div class="my-2" *ngIf="loading">
+  <div class="spinner-border spinner-border-sm" role="status">
+    <span class="visually-hidden">Loading...</span>
+  </div>
+</div>
+<div class="alert alert-danger" *ngIf="error">{{ error }}</div>
 <div class="transaction-list">
   <app-transaction-card
     *ngFor="let transaction of getFilteredTransactions()"
     [transaction]="transaction"
   ></app-transaction-card>
+  <div class="text-muted" *ngIf="!getFilteredTransactions().length && !loading">
+    No transactions
+  </div>
 </div>
