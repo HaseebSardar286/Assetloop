@@ -67,23 +67,40 @@ export class RenterDashboardComponent implements OnInit {
 
     this.renterService.getBookings().subscribe({
       next: (allBookings) => {
-        console.log(allBookings);
+        console.log('All bookings received:', allBookings);
         const currentDate = new Date();
+        currentDate.setHours(0, 0, 0, 0); // Normalize to start of day for comparison
+        
         this.bookings = {
-          current: allBookings.filter(
-            (b) =>
-              (b.status === 'active' ||
-                b.status === 'expiring soon' ||
-                b.status === 'overdue') &&
-              new Date(b.endDate) > currentDate
-          ),
+          // Include confirmed, active, expiring soon, and overdue in current bookings
+          current: allBookings.filter((b) => {
+            const isCurrentStatus = 
+              b.status === 'active' ||
+              b.status === 'expiring soon' ||
+              b.status === 'overdue' ||
+              b.status === 'confirmed';
+            
+            if (!isCurrentStatus) return false;
+            
+            // If endDate exists, check if it's in the future or today
+            if (b.endDate) {
+              const endDate = new Date(b.endDate);
+              endDate.setHours(0, 0, 0, 0);
+              return endDate >= currentDate;
+            }
+            
+            // If no endDate, include confirmed/active bookings (booking hasn't ended)
+            return b.status === 'confirmed' || b.status === 'active';
+          }),
           past: allBookings.filter((b) => b.status === 'completed'),
-          cancelled: allBookings.filter((b) => b.status === 'cancelled'), // Exclude pending
+          cancelled: allBookings.filter((b) => b.status === 'cancelled'),
           pending: allBookings.filter((b) => b.status === 'pending'),
         };
+        console.log('Partitioned bookings:', this.bookings);
       },
       error: (err: any) => {
         this.error = err.error?.message || 'Failed to load bookings';
+        console.error('Error loading bookings:', err);
       },
     });
   }

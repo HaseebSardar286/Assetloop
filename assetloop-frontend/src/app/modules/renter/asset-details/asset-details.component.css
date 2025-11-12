@@ -27,3 +27,30 @@ main {
 .col-md-9 {
   padding: 0 15px;
 }
+
+/* Star rating display */
+.star-display {
+  font-size: 1.2rem;
+  line-height: 1;
+  color: #ddd;
+}
+
+.star-display.star-filled {
+  color: #ffc107;
+}
+
+.star-display.star-empty {
+  color: #ddd;
+}
+
+.star-rating-display {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.review-item:last-child {
+  border-bottom: none !important;
+  margin-bottom: 0 !important;
+  padding-bottom: 0 !important;
+}

@@ -324,7 +324,16 @@ exports.getAssetReviews = async (req, res) => {
         }`.trim(),
       }));
 
-    res.status(200).json({ reviews });
+    // Calculate average rating
+    const averageRating = reviews.length > 0
+      ? reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length
+      : 0;
+
+    res.status(200).json({ 
+      reviews,
+      averageRating: Math.round(averageRating * 10) / 10, // Round to 1 decimal
+      totalReviews: reviews.length
+    });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

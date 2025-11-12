@@ -136,6 +136,8 @@ export class RenterService {
       createdAt: string;
       reviewer: string;
     }>;
+    averageRating?: number;
+    totalReviews?: number;
   }> {
     return this.http.get<{
       reviews: Array<{
@@ -144,6 +146,8 @@ export class RenterService {
         createdAt: string;
         reviewer: string;
       }>;
+      averageRating?: number;
+      totalReviews?: number;
     }>(`${this.apiUrl}/assets/${assetId}/reviews`, {
       headers: this.getHeaders(),
     });
@@ -237,6 +241,7 @@ export class RenterService {
       0
     );
   }
+
   getUsers(): Observable<{ users: User[]; totalUsers: number }> {
     return this.http.get<{ users: User[]; totalUsers: number }>(
       `${this.apiUrl}/users`,

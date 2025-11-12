@@ -36,6 +36,8 @@ export class MyBookingsComponent implements OnInit {
 
   private partitionBookings(allBookings: Booking[]): Bookings {
     const currentDate = new Date();
+    currentDate.setHours(0, 0, 0, 0); // Normalize to start of day for comparison
+    
     // Ensure each booking has an id field (use _id if id is not present)
     const bookingsWithId = allBookings.map((booking) => ({
       ...booking,
@@ -43,14 +45,27 @@ export class MyBookingsComponent implements OnInit {
     }));
 
     return {
-      current: bookingsWithId.filter(
-        (b) =>
-          (b.status === 'active' ||
-            b.status === 'expiring soon' ||
-            b.status === 'overdue' ||
-            b.status === 'confirmed') &&
-          new Date(b.endDate || currentDate) > currentDate
-      ),
+      // Current bookings: confirmed, active, expiring soon, or overdue status
+      // AND endDate is in the future (or null/undefined which means it hasn't ended)
+      current: bookingsWithId.filter((b) => {
+        const isCurrentStatus = 
+          b.status === 'active' ||
+          b.status === 'expiring soon' ||
+          b.status === 'overdue' ||
+          b.status === 'confirmed';
+        
+        if (!isCurrentStatus) return false;
+        
+        // If endDate exists, check if it's in the future
+        if (b.endDate) {
+          const endDate = new Date(b.endDate);
+          endDate.setHours(0, 0, 0, 0);
+          return endDate >= currentDate;
+        }
+        
+        // If no endDate, include it if status is confirmed/active (booking hasn't ended yet)
+        return b.status === 'confirmed' || b.status === 'active';
+      }),
       past: bookingsWithId.filter((b) => b.status === 'completed'),
       cancelled: bookingsWithId.filter((b) => b.status === 'cancelled'),
       pending: bookingsWithId.filter((b) => b.status === 'pending'),
@@ -62,10 +77,27 @@ export class MyBookingsComponent implements OnInit {
     this.error = null;
     this.renterService.getBookings().subscribe({
       next: (allBookings) => {
+        console.log('Received bookings from API:', allBookings);
+        console.log('Total bookings:', allBookings.length);
+        console.log('Bookings by status:', {
+          pending: allBookings.filter(b => b.status === 'pending').length,
+          confirmed: allBookings.filter(b => b.status === 'confirmed').length,
+          active: allBookings.filter(b => b.status === 'active').length,
+          completed: allBookings.filter(b => b.status === 'completed').length,
+          cancelled: allBookings.filter(b => b.status === 'cancelled').length,
+        });
         this.bookings = this.partitionBookings(allBookings);
+        console.log('Partitioned bookings:', {
+          current: this.bookings.current.length,
+          past: this.bookings.past.length,
+          cancelled: this.bookings.cancelled.length,
+          pending: this.bookings.pending.length,
+        });
+        console.log('Confirmed bookings in current:', this.bookings.current.filter(b => b.status === 'confirmed').length);
         this.loading = false;
       },
       error: (err: any) => {
+        console.error('Error loading bookings:', err);
         this.error = err?.error?.message || 'Failed to load bookings';
         this.loading = false;
       },
@@ -80,16 +112,36 @@ export class MyBookingsComponent implements OnInit {
     if (!confirm('Are you sure you want to cancel this booking?')) return;
     this.renterService.cancelBooking(bookingId).subscribe({
       next: () => {
-        const booking = this.bookings.current.find((b) => b.id === bookingId);
+        // Find booking in any category
+        const allBookings = [
+          ...this.bookings.current,
+          ...this.bookings.past,
+          ...this.bookings.pending,
+        ];
+        const booking = allBookings.find((b) => b.id === bookingId);
+        
         if (booking) {
+          // Remove from current category
           this.bookings.current = this.bookings.current.filter(
             (b) => b.id !== bookingId
           );
+          this.bookings.past = this.bookings.past.filter(
+            (b) => b.id !== bookingId
+          );
+          this.bookings.pending = this.bookings.pending.filter(
+            (b) => b.id !== bookingId
+          );
+          
+          // Add to cancelled
           booking.status = 'cancelled';
           this.bookings.cancelled = [...this.bookings.cancelled, booking];
+        } else {
+          // If booking not found locally, reload from server
+          this.loadBookings();
         }
       },
       error: (err: any) => {
+        console.error('Error cancelling booking:', err);
         this.error = err?.error?.message || 'Failed to cancel booking';
       },
     });

@@ -21,10 +21,12 @@ import { RenterService } from '../../../services/renter.service';
 })
 export class ReviewComponent {
   bookingId: string | null = null;
-  rating = 5;
+  rating = 0;
+  hoveredRating = 0;
   comment = '';
   loading = false;
   error: string | null = null;
+  success = false;
 
   constructor(
     private route: ActivatedRoute,
@@ -36,22 +38,69 @@ export class ReviewComponent {
     this.bookingId = this.route.snapshot.paramMap.get('id');
   }
 
+  setRating(rating: number): void {
+    this.rating = rating;
+  }
+
+  setHoveredRating(rating: number): void {
+    this.hoveredRating = rating;
+  }
+
+  clearHoveredRating(): void {
+    this.hoveredRating = 0;
+  }
+
+  getStarClass(starNumber: number): string {
+    const activeRating = this.hoveredRating || this.rating;
+    if (starNumber <= activeRating) {
+      return 'star-filled';
+    }
+    return 'star-empty';
+  }
+
   submit(): void {
-    if (!this.bookingId) return;
+    if (!this.bookingId) {
+      this.error = 'Booking ID is missing';
+      return;
+    }
+
+    if (this.rating === 0) {
+      this.error = 'Please select a rating';
+      return;
+    }
+
+    if (!this.comment.trim()) {
+      this.error = 'Please write a comment';
+      return;
+    }
+
     this.loading = true;
     this.error = null;
+    this.success = false;
+
     this.renterService
-      .addReview(this.bookingId, this.rating, this.comment)
+      .addReview(this.bookingId, this.rating, this.comment.trim())
       .subscribe({
         next: () => {
           this.loading = false;
-          alert('Review submitted');
-          this.router.navigate(['/renter/booking-history']);
+          this.success = true;
+          setTimeout(() => {
+            // Navigate back to my-bookings page
+            this.router.navigate(['/renter/booking-history']).then(() => {
+              // Reload the page to refresh bookings list
+              window.location.reload();
+            });
+          }, 1500);
         },
         error: (err) => {
           this.loading = false;
-          this.error = err?.error?.message || 'Failed to submit review';
+          this.error = err?.error?.message || 'Failed to submit review. Please try again.';
         },
       });
+  }
+
+  cancel(): void {
+    // Navigate back to my-bookings
+    this.router.navigate(['/renter/booking-history']);
   }
 }
