@@ -140,25 +140,43 @@ exports.updateBookingStatus = async (req, res) => {
 
 exports.getBookings = async (req, res) => {
   try {
-    const bookings = await Booking.find({ renter: req.user.id })
+    const renterId = req.user.id;
+    console.log("Fetching bookings for renter:", renterId);
+    
+    const bookings = await Booking.find({ renter: renterId })
       .populate("asset owner review")
       .lean();
-    console.log("Fetched renter bookings:", bookings.length);
-    res.status(200).json(
-      bookings.map((booking) => ({
+    
+    console.log(`Fetched ${bookings.length} bookings for renter ${renterId}`);
+    console.log("Booking statuses:", bookings.map(b => ({ id: b._id, status: b.status, endDate: b.endDate })));
+    
+    const formattedBookings = bookings.map((booking) => {
+      // Handle case where owner might not be populated
+      let ownerData = {
+        name: "Unknown Owner",
+        contact: "N/A",
+      };
+      
+      if (booking.owner) {
+        if (typeof booking.owner === 'object') {
+          ownerData = {
+            name: `${booking.owner.firstName || ''} ${booking.owner.lastName || ''}`.trim() || "Unknown Owner",
+            contact: booking.owner.email || "N/A",
+          };
+        }
+      }
+      
+      return {
         id: booking._id,
         _id: booking._id,
         name: booking.name,
         description: booking.description,
         price: booking.price,
-        owner: {
-          name: booking.owner.firstName + " " + booking.owner.lastName,
-          contact: booking.owner.email,
-        },
+        owner: ownerData,
         startDate: booking.startDate,
         endDate: booking.endDate,
         status: booking.status,
-        totalPaid: booking.totalPaid,
+        totalPaid: booking.totalPaid || 0,
         review: booking.review
           ? {
               rating: booking.review.rating,
@@ -174,8 +192,11 @@ exports.getBookings = async (req, res) => {
         category: booking.category,
         notes: booking.notes,
         createdAt: booking.createdAt,
-      }))
-    );
+      };
+    });
+    
+    console.log(`Returning ${formattedBookings.length} formatted bookings`);
+    res.status(200).json(formattedBookings);
   } catch (error) {
     console.error("Error in getBookings:", error);
     res.status(500).json({ message: error.message });
@@ -256,29 +277,82 @@ exports.cancelBooking = async (req, res) => {
 exports.addReview = async (req, res) => {
   try {
     const { bookingId, rating, comment } = req.body;
+
+    // Validate input
+    if (!bookingId) {
+      return res.status(400).json({ message: "Booking ID is required" });
+    }
+    if (!rating || rating < 1 || rating > 5) {
+      return res.status(400).json({ message: "Rating must be between 1 and 5" });
+    }
+
+    // Find booking and check if it belongs to the renter
     const booking = await Booking.findOne({
       _id: bookingId,
       renter: req.user.id,
-      status: "completed",
     });
-    if (!booking)
+
+    if (!booking) {
       return res
         .status(404)
-        .json({ message: "Booking not found or not reviewable" });
+        .json({ message: "Booking not found or you are not authorized to review this booking" });
+    }
 
+    // Check if booking is reviewable (completed or past end date)
+    const now = new Date();
+    const isPastEndDate = booking.endDate && new Date(booking.endDate) < now;
+    const isCompleted = booking.status === "completed";
+    
+    if (!isCompleted && !isPastEndDate) {
+      return res
+        .status(400)
+        .json({ message: "You can only review completed bookings or bookings that have ended" });
+    }
+
+    // Check if review already exists
+    if (booking.review) {
+      return res
+        .status(400)
+        .json({ message: "You have already reviewed this booking" });
+    }
+
+    // Get owner from booking
+    await booking.populate("owner");
+    const ownerId = booking.owner?._id || booking.owner;
+
+    // Create review
     const review = new Review({
       rental: bookingId,
       renter: req.user.id,
+      owner: ownerId,
       rating,
-      comment,
+      comment: comment || "",
     });
     await review.save();
+
+    // Link review to booking
     booking.review = review._id;
     await booking.save();
+
+    // Populate review for response
+    await review.populate("renter", "firstName lastName");
+
     console.log("Review added for booking:", bookingId);
-    res.status(201).json({ message: "Review added", review });
+    res.status(201).json({ 
+      message: "Review added successfully", 
+      review: {
+        _id: review._id,
+        rating: review.rating,
+        comment: review.comment,
+        createdAt: review.createdAt,
+        renter: {
+          firstName: review.renter.firstName,
+          lastName: review.renter.lastName,
+        }
+      }
+    });
   } catch (error) {
     console.error("Error in addReview:", error);
-    res.status(500).json({ message: error.message });
+    res.status(500).json({ message: error.message || "Failed to add review" });
   }
 };

@@ -30,6 +30,11 @@ export class AssetDetailsComponent {
     createdAt: string;
     reviewer: string;
   }> = [];
+  averageRating = 0;
+  totalReviews = 0;
+
+  // Expose Math to template
+  Math = Math;
 
   constructor(
     private route: ActivatedRoute,
@@ -54,7 +59,11 @@ export class AssetDetailsComponent {
           }
           if (this.assetId) {
             this.renterService.getAssetReviews(this.assetId).subscribe({
-              next: (r) => (this.reviews = r.reviews || []),
+              next: (r) => {
+                this.reviews = r.reviews || [];
+                this.averageRating = r.averageRating || 0;
+                this.totalReviews = r.totalReviews || 0;
+              },
               error: () => {},
             });
           }

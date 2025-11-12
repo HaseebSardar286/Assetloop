@@ -100,4 +100,64 @@ export class BookingItemComponent {
       },
     });
   }
+
+  /**
+   * Check if the booking's end date has passed
+   * Handles different date formats and normalizes to start of day for comparison
+   */
+  isBookingPastEndDate(): boolean {
+    if (!this.booking.endDate) {
+      return false;
+    }
+    
+    try {
+      const endDate = new Date(this.booking.endDate);
+      // Check if date is valid
+      if (isNaN(endDate.getTime())) {
+        console.warn('Invalid endDate for booking:', this.booking.id, this.booking.endDate);
+        return false;
+      }
+      
+      // Normalize to start of day for comparison (ignore time)
+      endDate.setHours(0, 0, 0, 0);
+      const now = new Date();
+      now.setHours(0, 0, 0, 0);
+      
+      // Return true if end date is before or equal to today
+      return endDate <= now;
+    } catch (error) {
+      console.error('Error checking end date:', error);
+      return false;
+    }
+  }
+
+  /**
+   * Check if the booking can be reviewed
+   * A booking can be reviewed if:
+   * 1. It's completed, OR
+   * 2. The end date has passed (regardless of status), AND
+   * 3. No review has been submitted yet
+   */
+  isReviewable(): boolean {
+    // Can't review if already reviewed
+    if (this.booking.review) {
+      console.log('Booking already reviewed:', this.booking.id);
+      return false;
+    }
+    
+    // Can review if status is completed
+    if (this.booking.status === 'completed') {
+      console.log('Booking is completed, can review:', this.booking.id);
+      return true;
+    }
+    
+    // Can review if end date has passed (for any status)
+    const isPastEndDate = this.isBookingPastEndDate();
+    if (isPastEndDate) {
+      console.log('Booking end date has passed, can review:', this.booking.id, 'Status:', this.booking.status);
+    } else {
+      console.log('Booking end date has not passed yet:', this.booking.id, 'End Date:', this.booking.endDate, 'Status:', this.booking.status);
+    }
+    return isPastEndDate;
+  }
 }
