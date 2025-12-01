@@ -68,7 +68,7 @@ app.use("/api/payments", paymentsRoutes);
 app.use(errorHandler);
 
 // Handle 404 routes with JSON instead of Express default "Cannot GET /"
-app.use("*", (req, res) => {
+app.use((req, res) => {
   res.status(404).json({
     message: `Route ${req.originalUrl} not found`,
   });
