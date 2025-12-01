@@ -1,9 +1,12 @@
 const multer = require("multer");
 const fs = require("fs");
 const path = require("path");
+const os = require("os");
 
-// Store files temporarily on disk
-const uploadDir = path.join(process.cwd(), "uploads");
+// Serverless platforms (e.g. Vercel) only allow writing under /tmp.
+const baseUploadDir =
+  process.env.VERCEL || process.env.AWS_REGION ? os.tmpdir() : process.cwd();
+const uploadDir = path.join(baseUploadDir, "uploads");
 if (!fs.existsSync(uploadDir)) {
   fs.mkdirSync(uploadDir, { recursive: true });
 }
