@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, BehaviorSubject } from 'rxjs';
 import { tap, map } from 'rxjs/operators';
+import { environment } from '../../environments/environment';
 
 export interface ChatMessage {
   _id: string;
@@ -80,7 +81,7 @@ export interface ConversationsResponse {
   providedIn: 'root',
 })
 export class ChatService {
-  private apiUrl = 'http://localhost:5000/api/chat';
+  private apiUrl = `${environment.apiBaseUrl}/chat`;
   private unreadCountSubject = new BehaviorSubject<number>(0);
   public unreadCount$ = this.unreadCountSubject.asObservable();
 

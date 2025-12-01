@@ -6,12 +6,13 @@ import { Booking } from '../interfaces/bookings';
 import { User } from '../interfaces/user';
 import { RenterDashboardStats } from '../interfaces/ownerDashboard';
 import { AssetResponse } from '../interfaces/asset';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root',
 })
 export class RenterService {
-  private apiUrl = 'http://localhost:5000/api/renter';
+  private apiUrl = `${environment.apiBaseUrl}/renter`;
   private favourites = new BehaviorSubject<Favourite[]>([]);
   private cart = new BehaviorSubject<CartItem[]>([]);
 
@@ -27,7 +28,7 @@ export class RenterService {
   }
 
   login(email: string, password: string): Observable<any> {
-    return this.http.post(`http://localhost:5000/api/auth/login`, {
+    return this.http.post(`${environment.apiBaseUrl}/auth/login`, {
       email,
       password,
     });
@@ -168,7 +169,7 @@ export class RenterService {
         createdAt: string;
         reviewer: string;
       }>;
-    }>(`http://localhost:5000/api/owner/${ownerId}/reviews`, {
+    }>(`${environment.apiBaseUrl}/owner/${ownerId}/reviews`, {
       headers: this.getHeaders(),
     });
   }

@@ -3,12 +3,13 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, tap, BehaviorSubject } from 'rxjs';
 import { LoginForm, RegisterForm, User } from '../interfaces/user';
 import { Router } from '@angular/router';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
-  private apiUrl = 'http://localhost:5000/api/auth'; // Backend URL
+  private apiUrl = `${environment.apiBaseUrl}/auth`; // Backend URL
   private currentUserSubject = new BehaviorSubject<User | null>(null);
   public currentUser$ = this.currentUserSubject.asObservable();
 

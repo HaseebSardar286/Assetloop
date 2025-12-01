@@ -1,12 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import {
-  Transaction,
-  PaymentMethod,
-  Invoice,
-  Refund,
-} from '../interfaces/payments';
+import { Transaction, PaymentMethod, Invoice, Refund } from '../interfaces/payments';
+import { environment } from '../../environments/environment';
 
 interface CreateSessionResponse {
   id: string;
@@ -17,7 +13,7 @@ interface CreateSessionResponse {
   providedIn: 'root',
 })
 export class PaymentsService {
-  private apiUrl = 'http://localhost:5000/api/payments';
+  private apiUrl = `${environment.apiBaseUrl}/payments`;
 
   constructor(private http: HttpClient) { }
 

@@ -1,12 +1,13 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { AuthService } from './auth.service';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root',
 })
 export class VerificationService {
-  private apiUrl = 'http://localhost:5000/api/auth/verification';
+  private apiUrl = `${environment.apiBaseUrl}/auth/verification`;
 
   constructor(private authService: AuthService) {}
 

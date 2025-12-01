@@ -6,12 +6,13 @@ import { Booking } from '../interfaces/bookings';
 import { Review } from '../interfaces/review';
 import { User } from '../interfaces/user';
 import { AssetResponse } from '../interfaces/asset';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AdminService {
-  private apiUrl = 'http://localhost:5000/api/admin';
+  private apiUrl = `${environment.apiBaseUrl}/admin`;
 
   constructor(private http: HttpClient) {}
 
