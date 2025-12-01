@@ -46,6 +46,15 @@ app.get("/health", (req, res) => {
   });
 });
 
+// Root info endpoint for sanity checks
+app.get("/", (req, res) => {
+  res.status(200).json({
+    status: "OK",
+    message: "Assetloop API is reachable",
+    docs: "/health for status, /api/* for resources",
+  });
+});
+
 // Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/owner", ownerRoutes);
@@ -58,12 +67,12 @@ app.use("/api/payments", paymentsRoutes);
 // Error handling middleware (must be last)
 app.use(errorHandler);
 
-// Handle 404 routes
-// app.use('*', (req, res) => {
-//   res.status(404).json({
-//     message: `Route ${req.originalUrl} not found`
-//   });
-// });
+// Handle 404 routes with JSON instead of Express default "Cannot GET /"
+app.use("*", (req, res) => {
+  res.status(404).json({
+    message: `Route ${req.originalUrl} not found`,
+  });
+});
 
 const PORT = process.env.PORT || 5000;
 
