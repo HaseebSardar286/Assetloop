@@ -13,6 +13,8 @@ const userSchema = new mongoose.Schema(
     city: { type: String },
     address: { type: String },
     totalSpent: { type: Number, default: 0 },
+    walletBalance: { type: Number, default: 0 },
+    stripeCustomerId: { type: String },
     notificationSettings: {
       emailEnabled: { type: Boolean, default: true },
       smsEnabled: { type: Boolean, default: false },

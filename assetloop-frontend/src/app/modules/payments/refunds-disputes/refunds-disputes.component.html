@@ -1,12 +1,36 @@
-<div class="refunds">
-  <h4>Refunds & Disputes</h4>
-  <ul class="list-group">
-    <li class="list-group-item" *ngFor="let refund of refunds">
-      <p>Amount: PKR {{ refund.amount }}</p>
-      <p>Status: {{ refund.status }}</p>
-      <ul class="timeline">
-        <li *ngFor="let event of refund.timeline">{{ event }}</li>
-      </ul>
+<div class="refunds-container p-4">
+  <h4 class="mb-4">Refunds & Disputes</h4>
+
+  <div *ngIf="loading" class="text-center my-4">
+    <div class="spinner-border" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+  </div>
+
+  <div *ngIf="error" class="alert alert-danger">{{ error }}</div>
+
+  <div *ngIf="!loading && !error && refunds.length === 0" class="alert alert-info">
+    No refunds or disputes found.
+  </div>
+
+  <ul class="list-group" *ngIf="!loading && refunds.length > 0">
+    <li class="list-group-item mb-3 border rounded shadow-sm" *ngFor="let refund of refunds">
+      <div class="d-flex justify-content-between align-items-center mb-2">
+        <h5 class="mb-0">{{ refund.amount | currency:'USD' }}</h5>
+        <span [ngClass]="{
+          'badge bg-warning text-dark': refund.status === 'in progress',
+          'badge bg-success': refund.status === 'resolved',
+          'badge bg-danger': refund.status === 'rejected'
+        }">{{ refund.status | titlecase }}</span>
+      </div>
+      <div class="timeline mt-3">
+        <h6 class="text-muted mb-2">Timeline</h6>
+        <ul class="list-unstyled border-start ps-3">
+          <li *ngFor="let event of refund.timeline" class="mb-2 position-relative">
+            <small class="text-muted">{{ event }}</small>
+          </li>
+        </ul>
+      </div>
     </li>
   </ul>
 </div>

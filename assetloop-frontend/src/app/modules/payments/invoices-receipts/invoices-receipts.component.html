@@ -1,16 +1,42 @@
-<div class="invoices">
-  <h4>Invoices & Receipts</h4>
-  <ul class="list-group">
-    <li class="list-group-item" *ngFor="let invoice of invoices">
-      <p>Booking ID: {{ invoice.bookingId }}</p>
-      <p>Asset: {{ invoice.asset }}</p>
-      <p>Dates: {{ invoice.dates }}</p>
-      <p>
-        Amounts: Rent PKR {{ invoice.amounts.rent }}, Fees PKR
-        {{ invoice.amounts.fees }}
-      </p>
-      <p>Status: {{ invoice.status }}</p>
-      <button class="btn btn-secondary">Download PDF</button>
+<div class="invoices-container p-4">
+  <h4 class="mb-4">Invoices & Receipts</h4>
+
+  <div *ngIf="loading" class="text-center my-4">
+    <div class="spinner-border" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+  </div>
+
+  <div *ngIf="error" class="alert alert-danger">{{ error }}</div>
+
+  <div *ngIf="!loading && !error && invoices.length === 0" class="alert alert-info">
+    No invoices found.
+  </div>
+
+  <ul class="list-group" *ngIf="!loading && invoices.length > 0">
+    <li class="list-group-item mb-3 border rounded shadow-sm" *ngFor="let invoice of invoices">
+      <div class="d-flex justify-content-between align-items-start">
+        <div>
+          <h6 class="mb-1">Booking #{{ invoice.bookingId }}</h6>
+          <p class="mb-1"><strong>Asset:</strong> {{ invoice.asset }}</p>
+          <p class="mb-1 text-muted"><small>Dates: {{ invoice.dates }}</small></p>
+        </div>
+        <div class="text-end">
+          <span class="badge bg-success mb-2">{{ invoice.status | titlecase }}</span>
+          <button class="btn btn-sm btn-outline-secondary d-block">Download PDF</button>
+        </div>
+      </div>
+      <hr>
+      <div class="row">
+        <div class="col-6">
+          <small class="text-muted">Rent</small>
+          <div>{{ invoice.amounts.rent | currency:'USD' }}</div>
+        </div>
+        <div class="col-6">
+          <small class="text-muted">Fees</small>
+          <div>{{ invoice.amounts.fees | currency:'USD' }}</div>
+        </div>
+      </div>
     </li>
   </ul>
 </div>

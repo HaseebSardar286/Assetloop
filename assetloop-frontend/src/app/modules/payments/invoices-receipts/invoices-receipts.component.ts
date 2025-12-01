@@ -1,5 +1,6 @@
-import { Component } from '@angular/core';
+import { PaymentsService } from '../../../services/payments.service';
 import { CommonModule } from '@angular/common';
+import { Component } from '@angular/core';
 import { Invoice } from '../../../interfaces/payments';
 
 @Component({
@@ -10,14 +11,25 @@ import { Invoice } from '../../../interfaces/payments';
   styleUrls: ['./invoices-receipts.component.css'],
 })
 export class InvoicesReceiptsComponent {
-  invoices: Invoice[] = [
-    {
-      id: 1,
-      bookingId: 1,
-      asset: 'Honda Civic',
-      dates: '2025-09-01 to 2025-09-05',
-      amounts: { rent: 2000, fees: 100 },
-      status: 'paid',
-    },
-  ];
+  invoices: Invoice[] = [];
+  loading = false;
+  error: string | null = null;
+
+  constructor(private paymentsService: PaymentsService) {
+    this.loadInvoices();
+  }
+
+  loadInvoices() {
+    this.loading = true;
+    this.paymentsService.getInvoices().subscribe({
+      next: (data) => {
+        this.invoices = data;
+        this.loading = false;
+      },
+      error: (err) => {
+        this.error = 'Failed to load invoices';
+        this.loading = false;
+      }
+    });
+  }
 }

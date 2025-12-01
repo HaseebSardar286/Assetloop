@@ -19,7 +19,7 @@ interface CreateSessionResponse {
 export class PaymentsService {
   private apiUrl = 'http://localhost:5000/api/payments';
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   private getHeaders(): HttpHeaders {
     const token = localStorage.getItem('authToken');
@@ -45,18 +45,16 @@ export class PaymentsService {
   // Wallet
   getWallet(): Observable<{
     balance: number;
-    pendingPayments: Transaction[];
-    earningsRefunds: Transaction[];
+    transactions: Transaction[];
   }> {
     return this.http.get<{
       balance: number;
-      pendingPayments: Transaction[];
-      earningsRefunds: Transaction[];
+      transactions: Transaction[];
     }>(`${this.apiUrl}/wallet`, { headers: this.getHeaders() });
   }
 
-  addMoney(amount: number): Observable<{ success: boolean; balance: number }> {
-    return this.http.post<{ success: boolean; balance: number }>(
+  addMoney(amount: number): Observable<{ id: string; url: string }> {
+    return this.http.post<{ id: string; url: string }>(
       `${this.apiUrl}/wallet/add`,
       { amount },
       { headers: this.getHeaders() }
@@ -86,14 +84,14 @@ export class PaymentsService {
     });
   }
 
-  removePaymentMethod(id: number): Observable<{ success: boolean }> {
+  removePaymentMethod(id: number | string): Observable<{ success: boolean }> {
     return this.http.delete<{ success: boolean }>(
       `${this.apiUrl}/methods/${id}`,
       { headers: this.getHeaders() }
     );
   }
 
-  setDefaultPaymentMethod(id: number): Observable<{ success: boolean }> {
+  setDefaultPaymentMethod(id: number | string): Observable<{ success: boolean }> {
     return this.http.post<{ success: boolean }>(
       `${this.apiUrl}/methods/${id}/default`,
       {},
@@ -105,10 +103,12 @@ export class PaymentsService {
   getTransactions(params?: {
     date?: string;
     type?: string;
+    bookingId?: string;
   }): Observable<Transaction[]> {
     const query = new URLSearchParams();
     if (params?.date) query.set('date', params.date);
     if (params?.type) query.set('type', params.type);
+    if (params?.bookingId) query.set('bookingId', params.bookingId);
     const qs = query.toString();
     return this.http.get<Transaction[]>(
       `${this.apiUrl}/transactions${qs ? `?${qs}` : ''}`,
