@@ -7,12 +7,13 @@ import { AssetResponse } from '../interfaces/asset';
 import { DashboardStats } from '../interfaces/ownerDashboard';
 import { User } from '../interfaces/user';
 import { Booking } from '../interfaces/bookings';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root',
 })
 export class OwnerService {
-  private apiUrl = 'http://localhost:5000/api/owner';
+  private apiUrl = `${environment.apiBaseUrl}/owner`;
 
   constructor(private http: HttpClient) {}
 

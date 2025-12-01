@@ -22,9 +22,13 @@ connectDB(); // <--- This will read MONGO_URI from .env
 const app = express();
 
 // CORS configuration
+const allowedOrigins = process.env.CORS_ORIGINS
+  ? process.env.CORS_ORIGINS.split(",")
+  : ["http://localhost:2000", "http://127.0.0.1:4200", "http://localhost:4200"];
+
 app.use(
   cors({
-    origin: ["http://localhost:2000", "http://127.0.0.1:4200", "http://localhost:4200"],
+    origin: allowedOrigins,
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
