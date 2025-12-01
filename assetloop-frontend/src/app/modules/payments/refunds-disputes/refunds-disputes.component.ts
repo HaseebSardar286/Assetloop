@@ -1,5 +1,6 @@
-import { Component } from '@angular/core';
+import { PaymentsService } from '../../../services/payments.service';
 import { CommonModule } from '@angular/common';
+import { Component } from '@angular/core';
 import { Refund } from '../../../interfaces/payments';
 
 @Component({
@@ -10,12 +11,25 @@ import { Refund } from '../../../interfaces/payments';
   styleUrls: ['./refunds-disputes.component.css'],
 })
 export class RefundsDisputesComponent {
-  refunds: Refund[] = [
-    {
-      id: 1,
-      amount: 1000,
-      status: 'in progress',
-      timeline: ['2025-08-30: Requested', '2025-08-31: Under Review'],
-    },
-  ];
+  refunds: Refund[] = [];
+  loading = false;
+  error: string | null = null;
+
+  constructor(private paymentsService: PaymentsService) {
+    this.loadRefunds();
+  }
+
+  loadRefunds() {
+    this.loading = true;
+    this.paymentsService.getRefunds().subscribe({
+      next: (data) => {
+        this.refunds = data;
+        this.loading = false;
+      },
+      error: (err) => {
+        this.error = 'Failed to load refunds';
+        this.loading = false;
+      }
+    });
+  }
 }

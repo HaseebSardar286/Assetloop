@@ -1,22 +1,25 @@
 export interface Transaction {
-  id: number;
+  id: number | string;
   amount: number;
-  status: 'successful' | 'pending' | 'failed';
-  method: 'card' | 'bank' | 'wallet';
-  date: string;
-  type?: 'rent' | 'service fee' | 'refund' | 'deposit';
+  status: 'successful' | 'pending' | 'failed' | 'completed' | 'cancelled';
+  method?: 'card' | 'bank' | 'wallet';
+  date?: string;
+  createdAt?: string;
+  type?: 'rent' | 'service fee' | 'refund' | 'deposit' | 'payment' | 'withdrawal' | 'payout';
+  currency?: string;
+  description?: string;
 }
 
 export interface PaymentMethod {
-  id: number;
+  id: number | string;
   type: 'card' | 'bank' | 'wallet';
   details: string;
   isDefault: boolean;
 }
 
 export interface Invoice {
-  id: number;
-  bookingId: number;
+  id: number | string;
+  bookingId: number | string;
   asset: string;
   dates: string;
   amounts: { rent: number; fees: number; insurance?: number; taxes?: number };
@@ -24,7 +27,7 @@ export interface Invoice {
 }
 
 export interface Refund {
-  id: number;
+  id: number | string;
   amount: number;
   status: 'in progress' | 'resolved' | 'rejected';
   timeline: string[];

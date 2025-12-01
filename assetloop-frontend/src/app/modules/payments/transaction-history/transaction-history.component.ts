@@ -40,9 +40,11 @@ export class TransactionHistoryComponent {
 
   getFilteredTransactions() {
     return this.transactions.filter(
-      (t) =>
-        (!this.filterDate || t.date.includes(this.filterDate)) &&
-        (!this.filterType || (t.type && t.type.includes(this.filterType)))
+      (t) => {
+        const dateStr = t.date || t.createdAt || '';
+        return (!this.filterDate || dateStr.includes(this.filterDate)) &&
+          (!this.filterType || (t.type && t.type.includes(this.filterType)));
+      }
     );
   }
 }

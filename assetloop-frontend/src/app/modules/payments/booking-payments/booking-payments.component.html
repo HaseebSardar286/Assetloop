@@ -18,17 +18,15 @@
           </div>
           <div class="col-md-4">
             <strong>Paid:</strong> ${{
-              booking.totalPaid || 0 | number : "1.0-0"
+            booking.totalPaid || 0 | number : "1.0-0"
             }}
           </div>
           <div class="col-md-4">
             <strong>Amount Due:</strong>
-            <span
-              [ngClass]="{
+            <span [ngClass]="{
                 'badge bg-success': amountDue <= 0,
                 'badge bg-warning text-dark': amountDue > 0
-              }"
-            >
+              }">
               ${{ amountDue | number : "1.0-0" }}
             </span>
           </div>
@@ -49,18 +47,28 @@
       Payment complete. No amount due.
     </div>
 
-    <h4>Upcoming Payments</h4>
+    <h4>Payment History & Schedule</h4>
     <ul class="list-group mb-3" *ngIf="upcomingPayments.length; else noneDue">
-      <li
-        class="list-group-item d-flex justify-content-between align-items-center"
-        *ngFor="let payment of upcomingPayments"
-      >
-        <span>{{ payment.type }} — {{ payment.date }}</span>
-        <span class="badge bg-primary rounded-pill">${{ payment.amount }}</span>
+      <li class="list-group-item d-flex justify-content-between align-items-center"
+        *ngFor="let payment of upcomingPayments">
+        <div>
+          <span class="fw-bold">{{ payment.type | titlecase }}</span>
+          <span class="text-muted ms-2" *ngIf="payment.date || payment.createdAt">
+            {{ payment.date || (payment.createdAt | date) }}
+          </span>
+        </div>
+        <div>
+          <span class="badge rounded-pill me-2" [ngClass]="{
+            'bg-success': payment.status === 'successful' || payment.status === 'completed',
+            'bg-warning text-dark': payment.status === 'pending',
+            'bg-danger': payment.status === 'failed'
+          }">{{ payment.status | titlecase }}</span>
+          <span class="fw-bold">{{ payment.amount | currency:'USD' }}</span>
+        </div>
       </li>
     </ul>
     <ng-template #noneDue>
-      <div class="alert alert-success">No payments due.</div>
+      <div class="alert alert-info">No payment history or upcoming payments.</div>
     </ng-template>
 
     <div class="mt-2">
@@ -69,21 +77,12 @@
     </div>
 
     <div class="form-check mt-2">
-      <input
-        type="checkbox"
-        class="form-check-input"
-        id="autoPay"
-        [(ngModel)]="autoPay"
-      />
+      <input type="checkbox" class="form-check-input" id="autoPay" [(ngModel)]="autoPay" />
       <label class="form-check-label" for="autoPay">Enable Auto-Pay</label>
     </div>
 
     <div class="mt-4">
-      <button
-        class="btn btn-primary"
-        (click)="payNow()"
-        [disabled]="loading || amountDue <= 0"
-      >
+      <button class="btn btn-primary" (click)="payNow()" [disabled]="loading || amountDue <= 0">
         {{ loading ? "Redirecting..." : amountDue > 0 ? "Pay Now" : "Paid" }}
       </button>
     </div>

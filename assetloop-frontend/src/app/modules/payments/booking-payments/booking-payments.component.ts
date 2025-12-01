@@ -48,22 +48,52 @@ export class BookingPaymentsComponent {
         this.booking = bookings.find(b => (b._id || b.id) === this.bookingId) || null;
         if (!this.booking) {
           this.error = 'Booking not found';
+          this.loading = false;
         } else {
           const price = Number(this.booking.price) || 0;
           const paid = Number(this.booking.totalPaid) || 0;
           this.amountDue = Math.max(0, price - paid);
-          // Populate dynamic upcoming payments and deposit if available
-          this.upcomingPayments = this.amountDue > 0 ? [{
-            id: 1,
-            amount: this.amountDue,
-            status: 'pending',
-            method: 'card',
-            date: new Date().toISOString().slice(0,10),
-            type: 'rent',
-          }] : [];
+
+          // Fetch actual transactions for this booking
+          this.paymentsService.getTransactions({ bookingId: this.bookingId! }).subscribe({
+            next: (txns) => {
+              // Combine past transactions with potential upcoming payment
+              const pastPayments = txns.map(t => ({
+                ...t,
+                status: t.status === 'completed' ? 'successful' : t.status // Map status if needed
+              })) as Transaction[];
+
+              const upcoming = this.amountDue > 0 ? [{
+                id: 'pending-1',
+                amount: this.amountDue,
+                status: 'pending',
+                method: 'card',
+                date: new Date().toISOString().slice(0, 10),
+                type: 'payment',
+                currency: 'usd'
+              } as Transaction] : [];
+
+              this.upcomingPayments = [...pastPayments, ...upcoming];
+              this.loading = false;
+            },
+            error: (err) => {
+              console.error('Failed to load transactions', err);
+              // Fallback to just showing due amount
+              this.upcomingPayments = this.amountDue > 0 ? [{
+                id: 'pending-1',
+                amount: this.amountDue,
+                status: 'pending',
+                method: 'card',
+                date: new Date().toISOString().slice(0, 10),
+                type: 'payment',
+                currency: 'usd'
+              } as Transaction] : [];
+              this.loading = false;
+            }
+          });
+
           this.securityDeposit = 0;
         }
-        this.loading = false;
       },
       error: (err) => {
         this.error = err?.error?.message || 'Failed to load booking';

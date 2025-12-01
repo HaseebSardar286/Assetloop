@@ -10,6 +10,8 @@ import { BookingPaymentsComponent } from '../booking-payments/booking-payments.c
 import { InvoicesReceiptsComponent } from '../invoices-receipts/invoices-receipts.component';
 import { RefundsDisputesComponent } from '../refunds-disputes/refunds-disputes.component';
 import { SecurityFeaturesComponent } from '../security-features/security-features.component';
+import { PaymentsService } from '../../../services/payments.service';
+import { Transaction } from '../../../interfaces/payments';
 
 @Component({
   selector: 'app-payments-wallet',
@@ -32,8 +34,31 @@ import { SecurityFeaturesComponent } from '../security-features/security-feature
 })
 export class PaymentsWalletComponent {
   activeTab: string = 'overview';
+  balance = 0;
+  transactions: any[] = [];
+  loading = false;
 
-  constructor(private router: Router) {}
+  constructor(
+    private router: Router,
+    private paymentsService: PaymentsService
+  ) {
+    this.loadWallet();
+  }
+
+  loadWallet() {
+    this.loading = true;
+    this.paymentsService.getWallet().subscribe({
+      next: (data: { balance: number; transactions: Transaction[] }) => {
+        this.balance = data.balance;
+        this.transactions = data.transactions;
+        this.loading = false;
+      },
+      error: (err: any) => {
+        console.error('Failed to load wallet', err);
+        this.loading = false;
+      }
+    });
+  }
 
   setActiveTab(tab: string) {
     this.activeTab = tab;

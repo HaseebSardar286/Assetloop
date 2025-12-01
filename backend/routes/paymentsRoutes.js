@@ -1,15 +1,41 @@
 const express = require("express");
 const authMiddleware = require("../middlewares/authMiddleware");
-const { createCheckoutSession } = require("../controllers/paymentsController");
+const {
+    createCheckoutSession,
+    getWallet,
+    addMoney,
+    withdraw,
+    getTransactions,
+    getPaymentMethods,
+    addPaymentMethod,
+    removePaymentMethod,
+    getInvoices,
+    getRefunds,
+} = require("../controllers/paymentsController");
 
 const router = express.Router();
 
 // Authenticated routes
 router.use(authMiddleware);
 
-// Create a Stripe Checkout session for a booking
+// Booking Payment
 router.post("/create-checkout-session", createCheckoutSession);
 
+// Wallet
+router.get("/wallet", getWallet);
+router.post("/wallet/add", addMoney);
+router.post("/wallet/withdraw", withdraw);
+
+// Transactions
+router.get("/transactions", getTransactions);
+
+// Payment Methods
+router.get("/methods", getPaymentMethods);
+router.post("/methods", addPaymentMethod);
+router.delete("/methods/:id", removePaymentMethod);
+
+// Invoices & Refunds
+router.get("/invoices", getInvoices);
+router.get("/refunds", getRefunds);
+
 module.exports = router;
-
-

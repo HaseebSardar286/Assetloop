@@ -30,8 +30,11 @@ export class WalletOverviewComponent {
     this.paymentsService.getWallet().subscribe({
       next: (res) => {
         this.currentBalance = res.balance || 0;
-        this.pendingPayments = res.pendingPayments || [];
-        this.earningsRefunds = res.earningsRefunds || [];
+        // Filter transactions for display if needed, or just show recent ones
+        // For now, let's categorize them roughly if the UI expects these arrays
+        const txns = res.transactions || [];
+        this.pendingPayments = txns.filter(t => t.status === 'pending');
+        this.earningsRefunds = txns.filter(t => t.type === 'refund' || t.type === 'payout');
         this.loading = false;
       },
       error: (err) => {
@@ -47,9 +50,12 @@ export class WalletOverviewComponent {
     this.error = null;
     this.paymentsService.addMoney(this.addWithdrawAmount).subscribe({
       next: (res) => {
-        this.currentBalance = res.balance;
-        this.addWithdrawAmount = 0;
-        this.loading = false;
+        if (res.url) {
+          window.location.href = res.url;
+        } else {
+          this.error = 'Failed to initiate payment';
+          this.loading = false;
+        }
       },
       error: (err) => {
         this.error = err?.error?.message || 'Failed to add money';
