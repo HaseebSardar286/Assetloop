@@ -6,6 +6,7 @@ const SystemSettings = require("../models/SystemSettings");
 const PendingUser = require("../models/PendingUser");
 const Wishlist = require("../models/Wishlist");
 const Cart = require("../models/Cart");
+const Transaction = require("../models/Transaction");
 
 // Dashboard statistics
 exports.getDashboardStats = async (req, res) => {
@@ -264,26 +265,41 @@ exports.getAssets = async (req, res) => {
 
     const total = await Asset.countDocuments(query);
 
-    const response = assets.map((asset) => ({
-      _id: asset._id.toString(),
-      id: asset._id.toString(),
-      owner: asset.owner,
-      name: asset.name,
-      address: asset.address,
-      description: asset.description,
-      price: asset.price,
-      status: asset.status,
-      availability: asset.availability,
-      category: asset.category,
-      capacity: asset.capacity,
-      startDate: asset.startDate,
-      endDate: asset.endDate,
-      images: Array.isArray(asset.images) ? asset.images : [],
-      features: asset.features || [],
-      amenities: asset.amenities || [],
-      createdAt: asset.createdAt?.toISOString?.() || asset.createdAt,
-      updatedAt: asset.updatedAt?.toISOString?.() || asset.updatedAt,
-    }));
+    const response = assets.map((asset) => {
+      let ownerData = null;
+      if (asset.owner && typeof asset.owner === 'object') {
+        ownerData = {
+          _id: asset.owner._id ? asset.owner._id.toString() : '',
+          firstName: asset.owner.firstName || '',
+          lastName: asset.owner.lastName || '',
+          email: asset.owner.email || '',
+          middleName: asset.owner.middleName || '',
+        };
+      } else if (asset.owner) {
+        ownerData = asset.owner.toString();
+      }
+
+      return {
+        _id: asset._id.toString(),
+        id: asset._id.toString(),
+        owner: ownerData,
+        name: asset.name || '',
+        address: asset.address || '',
+        description: asset.description || '',
+        price: asset.price || 0,
+        status: asset.status || 'Inactive',
+        availability: asset.availability || 'available',
+        category: asset.category || '',
+        capacity: asset.capacity || 0,
+        startDate: asset.startDate || null,
+        endDate: asset.endDate || null,
+        images: Array.isArray(asset.images) ? asset.images : [],
+        features: Array.isArray(asset.features) ? asset.features : [],
+        amenities: Array.isArray(asset.amenities) ? asset.amenities : [],
+        createdAt: asset.createdAt ? (asset.createdAt.toISOString ? asset.createdAt.toISOString() : asset.createdAt) : new Date().toISOString(),
+        updatedAt: asset.updatedAt ? (asset.updatedAt.toISOString ? asset.updatedAt.toISOString() : asset.updatedAt) : new Date().toISOString(),
+      };
+    });
 
     res.json({
       assets: response,
@@ -488,5 +504,141 @@ exports.deleteReview = async (req, res) => {
     res
       .status(500)
       .json({ message: `Failed to delete review: ${error.message}` });
+  }
+};
+
+// Transaction management
+exports.getAllTransactions = async (req, res) => {
+  try {
+    const { status, type, search, page = 1, limit = 20 } = req.query;
+    const query = {};
+
+    if (status) {
+      query.status = status;
+    }
+    if (type) {
+      query.type = type;
+    }
+
+    const skip = (Number(page) - 1) * Number(limit);
+
+    let transactions = await Transaction.find(query)
+      .populate("user", "firstName lastName email")
+      .populate("booking", "name asset")
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(Number(limit));
+
+    // If search is provided, filter by user name or email
+    if (search) {
+      const searchLower = search.toLowerCase();
+      transactions = transactions.filter((t) => {
+        const user = t.user;
+        if (user && typeof user === "object") {
+          const fullName = `${user.firstName || ""} ${user.lastName || ""}`.toLowerCase();
+          const email = (user.email || "").toLowerCase();
+          return fullName.includes(searchLower) || email.includes(searchLower);
+        }
+        return false;
+      });
+    }
+
+    const total = await Transaction.countDocuments(query);
+
+    // Format transactions for frontend
+    const formattedTransactions = transactions.map((t) => ({
+      id: t._id.toString(),
+      _id: t._id.toString(),
+      user: t.user
+        ? {
+            id: t.user._id?.toString() || "",
+            name: `${t.user.firstName || ""} ${t.user.lastName || ""}`.trim() || "Unknown User",
+            email: t.user.email || "",
+          }
+        : { id: "", name: "Unknown User", email: "" },
+      booking: t.booking
+        ? {
+            id: t.booking._id?.toString() || "",
+            name: t.booking.name || "Unknown Booking",
+            asset: t.booking.asset || "",
+          }
+        : null,
+      amount: t.amount,
+      currency: t.currency || "usd",
+      type: t.type,
+      status: t.status,
+      description: t.description || "",
+      createdAt: t.createdAt,
+      date: t.createdAt ? new Date(t.createdAt).toISOString() : new Date().toISOString(),
+    }));
+
+    res.status(200).json({
+      transactions: formattedTransactions,
+      total,
+      page: Number(page),
+      limit: Number(limit),
+      totalPages: Math.ceil(total / Number(limit)),
+    });
+  } catch (error) {
+    console.error("Error in getAllTransactions:", error);
+    res.status(500).json({ message: `Failed to fetch transactions: ${error.message}` });
+  }
+};
+
+exports.updateTransactionStatus = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { status } = req.body;
+
+    if (!status || !["pending", "completed", "failed", "cancelled"].includes(status)) {
+      return res.status(400).json({ message: "Invalid status. Must be one of: pending, completed, failed, cancelled" });
+    }
+
+    const transaction = await Transaction.findByIdAndUpdate(
+      id,
+      { status },
+      { new: true }
+    )
+      .populate("user", "firstName lastName email")
+      .populate("booking", "name asset");
+
+    if (!transaction) {
+      return res.status(404).json({ message: "Transaction not found" });
+    }
+
+    // Format response
+    const formattedTransaction = {
+      id: transaction._id.toString(),
+      _id: transaction._id.toString(),
+      user: transaction.user
+        ? {
+            id: transaction.user._id?.toString() || "",
+            name: `${transaction.user.firstName || ""} ${transaction.user.lastName || ""}`.trim() || "Unknown User",
+            email: transaction.user.email || "",
+          }
+        : { id: "", name: "Unknown User", email: "" },
+      booking: transaction.booking
+        ? {
+            id: transaction.booking._id?.toString() || "",
+            name: transaction.booking.name || "Unknown Booking",
+            asset: transaction.booking.asset || "",
+          }
+        : null,
+      amount: transaction.amount,
+      currency: transaction.currency || "usd",
+      type: transaction.type,
+      status: transaction.status,
+      description: transaction.description || "",
+      createdAt: transaction.createdAt,
+      date: transaction.createdAt ? new Date(transaction.createdAt).toISOString() : new Date().toISOString(),
+    };
+
+    res.status(200).json({
+      message: "Transaction status updated successfully",
+      transaction: formattedTransaction,
+    });
+  } catch (error) {
+    console.error("Error in updateTransactionStatus:", error);
+    res.status(500).json({ message: `Failed to update transaction: ${error.message}` });
   }
 };

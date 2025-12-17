@@ -5,6 +5,16 @@ import { HeaderComponent } from '../../../components/header/header.component';
 import { OwnerSideBarComponent } from '../owner-side-bar/owner-side-bar.component';
 import { FormsModule } from '@angular/forms';
 import { OwnerService } from '../../../services/owner.service';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import {
+  faPlus,
+  faPen,
+  faEye,
+  faToggleOn,
+  faToggleOff,
+  faArrowUpRightFromSquare,
+  faTrash,
+} from '@fortawesome/free-solid-svg-icons';
 
 @Component({
   selector: 'app-my-listing',
@@ -15,34 +25,19 @@ import { OwnerService } from '../../../services/owner.service';
     HeaderComponent,
     OwnerSideBarComponent,
     FormsModule,
+    FontAwesomeModule,
   ],
   templateUrl: './my-listing.component.html',
   styleUrls: ['./my-listing.component.css'],
 })
 export class MyListingsComponent {
-  // listings = [
-  //   {
-  //     id: 1,
-  //     name: 'Toyota Camry',
-  //     address: '123 Main St, Karachi',
-  //     status: 'available',
-  //     price: 5000,
-  //   },
-  //   {
-  //     id: 2,
-  //     name: 'Apartment 2B',
-  //     address: '456 Park Ave, Lahore',
-  //     status: 'unavailable',
-  //     price: 8000,
-  //   },
-  //   {
-  //     id: 3,
-  //     name: 'House 3C',
-  //     address: '789 Hill Rd, Islamabad',
-  //     status: 'available',
-  //     price: 12000,
-  //   },
-  // ];
+  faPlus = faPlus;
+  faPen = faPen;
+  faEye = faEye;
+  faToggleOn = faToggleOn;
+  faToggleOff = faToggleOff;
+  faArrowUpRightFromSquare = faArrowUpRightFromSquare;
+  faTrash = faTrash;
 
   selectedListing: any = null;
 
@@ -52,6 +47,78 @@ export class MyListingsComponent {
 
   ngOnInit(): void {
     this.loadAssets();
+  }
+
+  get activeCount(): number {
+    return this.assets.filter(
+      (a) => (a.status || '').toLowerCase() === 'active'
+    ).length;
+  }
+
+  saveChanges() {
+    if (!this.selectedListing) return;
+    const id = this.selectedListing.id || this.selectedListing._id;
+    if (!id) {
+      alert('Asset id missing, cannot update.');
+      return;
+    }
+    const payload: any = {
+      name: this.selectedListing.name,
+      address: this.selectedListing.address,
+      price: this.selectedListing.price,
+      status: this.selectedListing.status,
+    };
+    this.ownerService.updateAsset(id, payload).subscribe({
+      next: () => {
+        this.loadAssets();
+        this.closeModal();
+      },
+      error: () => {
+        alert('Failed to update listing');
+      },
+    });
+  }
+
+  toggleStatus(asset: any) {
+    const id = asset.id || asset._id;
+    if (!id) {
+      alert('Asset id missing, cannot toggle status.');
+      return;
+    }
+    const next =
+      (asset.status || '').toLowerCase() === 'active' ? 'Inactive' : 'Active';
+    this.ownerService.updateAsset(id, { status: next }).subscribe({
+      next: () => {
+        asset.status = next;
+      },
+      error: () => alert('Failed to update status'),
+    });
+  }
+
+  deleteAsset(asset: any) {
+    const id = asset.id || asset._id;
+    if (!id) {
+      alert('Asset id missing, cannot delete.');
+      return;
+    }
+    const confirmed = confirm(
+      'Are you sure you want to delete this asset? All related bookings will also be removed.'
+    );
+    if (!confirmed) return;
+
+    this.ownerService.deleteAsset(id).subscribe({
+      next: () => {
+        this.assets = this.assets.filter((a) => (a.id || a._id) !== id);
+        if (this.selectedListing && (this.selectedListing.id === id || this.selectedListing._id === id)) {
+          this.closeModal();
+        }
+        alert('Asset deleted successfully. Related bookings have been removed.');
+      },
+      error: (err) => {
+        console.error('Failed to delete asset', err);
+        alert(err?.error?.message || 'Failed to delete asset');
+      },
+    });
   }
 
   loadAssets() {

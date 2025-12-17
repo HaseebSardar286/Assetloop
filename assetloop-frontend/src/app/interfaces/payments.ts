@@ -15,6 +15,11 @@ export interface PaymentMethod {
   type: 'card' | 'bank' | 'wallet';
   details: string;
   isDefault: boolean;
+  brand?: string;
+  last4?: string;
+  expMonth?: number;
+  expYear?: number;
+  name?: string;
 }
 
 export interface Invoice {

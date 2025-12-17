@@ -8,15 +8,40 @@ import { OwnerSideBarComponent } from '../owner-side-bar/owner-side-bar.componen
 import { OwnerService } from '../../../services/owner.service';
 import { DashboardStats } from '../../../interfaces/ownerDashboard';
 import { User } from '../../../interfaces/user';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import {
+  faBoxArchive,
+  faCalendarCheck,
+  faWallet,
+  faStarHalfStroke,
+  faArrowUpRightFromSquare,
+  faChartLine,
+  faComments,
+  faScrewdriverWrench,
+} from '@fortawesome/free-solid-svg-icons';
 
 @Component({
   selector: 'app-owner-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterModule, HeaderComponent, OwnerSideBarComponent],
+  imports: [
+    CommonModule,
+    RouterModule,
+    HeaderComponent,
+    OwnerSideBarComponent,
+    FontAwesomeModule,
+  ],
   templateUrl: './owner-dashboard.component.html',
   styleUrls: ['./owner-dashboard.component.css'],
 })
 export class OwnerDashboardComponent implements OnInit {
+  faBoxArchive = faBoxArchive;
+  faCalendarCheck = faCalendarCheck;
+  faWallet = faWallet;
+  faStarHalfStroke = faStarHalfStroke;
+  faArrowUpRightFromSquare = faArrowUpRightFromSquare;
+  faChartLine = faChartLine;
+  faComments = faComments;
+  faScrewdriverWrench = faScrewdriverWrench;
   userName = 'Owner';
   stats: DashboardStats = {
     totalAssets: 0,

@@ -50,40 +50,149 @@
 
   <div class="card">
     <div class="card-body">
-      <h5 class="card-title">Add New Method</h5>
-      <div class="row g-2 align-items-end">
-        <div class="col-md-3">
-          <label class="form-label">Type</label>
-          <select class="form-select" [(ngModel)]="newMethod.type">
-            <option value="card">Card</option>
-            <option value="bank">Bank</option>
-            <option value="wallet">Wallet</option>
-          </select>
+      <h5 class="card-title">Add New Payment Method</h5>
+      <form [formGroup]="paymentForm" (ngSubmit)="add()">
+        <div class="row g-3">
+          <div class="col-12">
+            <label class="form-label">Payment Type <span class="text-danger">*</span></label>
+            <select class="form-select" formControlName="type">
+              <option value="card">Credit/Debit Card</option>
+              <option value="wallet">Mobile Wallet</option>
+            </select>
+          </div>
+
+          <!-- Card Fields -->
+          <ng-container *ngIf="paymentType === 'card'">
+            <div class="col-12">
+              <label class="form-label">Cardholder Name <span class="text-danger">*</span></label>
+              <input
+                type="text"
+                class="form-control"
+                formControlName="cardName"
+                placeholder="John Doe"
+                [class.is-invalid]="paymentForm.get('cardName')?.invalid && paymentForm.get('cardName')?.touched"
+              />
+              <div class="invalid-feedback" *ngIf="paymentForm.get('cardName')?.invalid && paymentForm.get('cardName')?.touched">
+                Cardholder name is required
+              </div>
+            </div>
+            <div class="col-12">
+              <label class="form-label">Card Number <span class="text-danger">*</span></label>
+              <input
+                type="text"
+                class="form-control"
+                formControlName="cardNumber"
+                placeholder="1234 5678 9012 3456"
+                inputmode="numeric"
+                (input)="formatCardNumber($event)"
+                [class.is-invalid]="paymentForm.get('cardNumber')?.invalid && paymentForm.get('cardNumber')?.touched"
+              />
+              <div class="invalid-feedback" *ngIf="paymentForm.get('cardNumber')?.invalid && paymentForm.get('cardNumber')?.touched">
+                Valid card number is required (12-19 digits)
+              </div>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Expiry Date <span class="text-danger">*</span></label>
+              <input
+                type="text"
+                class="form-control"
+                formControlName="expiry"
+                placeholder="MM/YY"
+                maxlength="7"
+                (input)="formatExpiry($event)"
+                [class.is-invalid]="paymentForm.get('expiry')?.invalid && paymentForm.get('expiry')?.touched"
+              />
+              <div class="invalid-feedback" *ngIf="paymentForm.get('expiry')?.invalid && paymentForm.get('expiry')?.touched">
+                Valid expiry date is required (MM/YY format)
+              </div>
+            </div>
+          </ng-container>
+
+          <!-- Wallet Fields -->
+          <ng-container *ngIf="paymentType === 'wallet'">
+            <div class="col-12">
+              <label class="form-label">Wallet Provider <span class="text-danger">*</span></label>
+              <select
+                class="form-select"
+                formControlName="walletProvider"
+                [class.is-invalid]="paymentForm.get('walletProvider')?.invalid && paymentForm.get('walletProvider')?.touched"
+              >
+                <option value="">Select wallet provider</option>
+                <option value="JazzCash">JazzCash</option>
+                <option value="EasyPaisa">EasyPaisa</option>
+                <option value="UPI">UPI</option>
+                <option value="Paytm">Paytm</option>
+                <option value="Google Pay">Google Pay</option>
+                <option value="Apple Pay">Apple Pay</option>
+                <option value="Other">Other</option>
+              </select>
+              <div class="invalid-feedback" *ngIf="paymentForm.get('walletProvider')?.invalid && paymentForm.get('walletProvider')?.touched">
+                Wallet provider is required
+              </div>
+            </div>
+            <div class="col-12">
+              <label class="form-label">Account/Phone Number <span class="text-danger">*</span></label>
+              <input
+                type="text"
+                class="form-control"
+                formControlName="walletAccount"
+                placeholder="e.g., 03001234567"
+                inputmode="numeric"
+                [class.is-invalid]="paymentForm.get('walletAccount')?.invalid && paymentForm.get('walletAccount')?.touched"
+              />
+              <div class="invalid-feedback" *ngIf="paymentForm.get('walletAccount')?.invalid && paymentForm.get('walletAccount')?.touched">
+                Valid account/phone number is required (minimum 10 digits)
+              </div>
+            </div>
+            <div class="col-12">
+              <label class="form-label">Account Holder Name <span class="text-danger">*</span></label>
+              <input
+                type="text"
+                class="form-control"
+                formControlName="walletName"
+                placeholder="Account holder name"
+                [class.is-invalid]="paymentForm.get('walletName')?.invalid && paymentForm.get('walletName')?.touched"
+              />
+              <div class="invalid-feedback" *ngIf="paymentForm.get('walletName')?.invalid && paymentForm.get('walletName')?.touched">
+                Account holder name is required
+              </div>
+            </div>
+          </ng-container>
+
+          <div class="col-md-6 d-flex align-items-end" *ngIf="paymentType === 'card'">
+            <div class="form-check">
+              <input
+                class="form-check-input"
+                type="checkbox"
+                id="isDefault"
+                formControlName="isDefault"
+              />
+              <label class="form-check-label" for="isDefault">
+                Set as default payment method
+              </label>
+            </div>
+          </div>
+          <div class="col-md-6 d-flex align-items-end" *ngIf="paymentType === 'wallet'">
+            <div class="form-check">
+              <input
+                class="form-check-input"
+                type="checkbox"
+                id="isDefaultWallet"
+                formControlName="isDefault"
+              />
+              <label class="form-check-label" for="isDefaultWallet">
+                Set as default payment method
+              </label>
+            </div>
+          </div>
+          <div class="col-12">
+            <button type="submit" class="btn btn-success" [disabled]="loading || paymentForm.invalid">
+              <span *ngIf="loading" class="spinner-border spinner-border-sm me-2"></span>
+              {{ loading ? 'Adding...' : 'Add Payment Method' }}
+            </button>
+          </div>
         </div>
-        <div class="col-md-6">
-          <label class="form-label">Details</label>
-          <input
-            class="form-control"
-            type="text"
-            [(ngModel)]="newMethod.details"
-            placeholder="e.g., **** 4242 or Bank name"
-          />
-        </div>
-        <div class="col-md-2 form-check ms-2">
-          <input
-            class="form-check-input"
-            id="isDefault"
-            type="checkbox"
-            [(ngModel)]="newMethod.isDefault"
-          />
-          <label class="form-check-label" for="isDefault">Set as default</label>
-        </div>
-        <div class="col-md-12 mt-2">
-          <button class="btn btn-success" (click)="add()" [disabled]="loading">
-            Add Method
-          </button>
-        </div>
-      </div>
+      </form>
     </div>
   </div>
 </div>

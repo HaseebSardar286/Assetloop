@@ -1,69 +1,90 @@
-/* Ensure the entire container takes full viewport height */
-.d-flex {
-  height: 100vh;
+.gradient-bg {
+  background: radial-gradient(circle at 10% 20%, #5aa6ff 0, #4a7bff 25%, #29316d 80%);
+  color: #fff;
 }
 
-/* Style the main content area */
-main {
-  margin-left: 230px; /* Match sidebar width */
-  flex-grow: 1;
-  overflow-y: auto; /* Enable scrolling if content overflows */
-  padding: 1rem;
-  background-color: #f8f9fa; /* Light background for consistency */
-  transition: margin-left 0.3s ease; /* Smooth transition for responsive adjustment */
+.stat-pill {
+  border: 1px solid #e8ebf3;
 }
 
-/* Adjust for header height (assuming 60px, adjust if different) */
-main {
-  margin-top: 60px; /* Offset for header */
-  height: calc(100vh - 60px); /* Full height minus header */
+.glass-card {
+  border: 1px solid #e8ebf3;
+  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.08);
+  border-radius: 16px;
+  width: 100%;
 }
 
-/* Responsive design: Collapse sidebar on small screens */
-@media (max-width: 768px) {
-  main {
-    margin-left: 0; /* Remove sidebar margin on small screens */
-    width: 100%; /* Full width */
-    margin-top: 60px; /* Maintain header offset */
-    height: calc(100vh - 60px); /* Adjust height */
-  }
-
-  .d-flex .flex-grow-1 {
-    flex-direction: column; /* Stack content vertically */
-  }
-}
-
-/* Card styling for consistency */
-.card {
-  border: none;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.card-header {
-  background-color: #f8f9fa;
-  font-weight: bold;
-}
-
-.card-body {
-  padding: 1.5rem;
-}
-
-.form-label {
-  font-weight: 500;
-}
-
-.btn {
-  margin-top: 1rem;
-}
-
-.list-group-item {
-  display: flex;
-  justify-content: space-between;
+.icon-circle {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  background: rgba(74, 123, 255, 0.12);
+  color: #4a7bff;
+  display: inline-flex;
   align-items: center;
+  justify-content: center;
 }
 
-.btn-sm {
-  padding: 0.25rem 0.5rem;
-  font-size: 0.875rem;
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px;
+  border-radius: 12px;
+  background: #eef4ff;
+  color: #2c4b9b;
+  font-size: 0.85rem;
+  border: 1px solid rgba(74, 123, 255, 0.16);
+}
+
+.chip.muted {
+  background: #f8fafc;
+  color: #475569;
+  border-color: #e2e8f0;
+}
+
+.upload-box input[type='file'] {
+  cursor: pointer;
+}
+
+.form-control:focus,
+.form-select:focus {
+  box-shadow: 0 0 0 0.2rem rgba(74, 123, 255, 0.2);
+  border-color: #4a7bff;
+}
+
+:host {
+  display: block;
+  height: 100%;
+}
+
+.dashboard-hero .container-fluid,
+section.container-fluid {
+  max-width: 1200px;
+}
+
+main {
+  margin-left: 230px;
+  flex-grow: 1;
+  min-height: calc(100vh - 60px);
+  margin-top: 70px;
+}
+
+.dashboard-hero {
+  margin-left: 0;
+}
+
+.container-fluid {
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
+}
+
+@media (max-width: 768px) {
+  .stat-pill {
+    width: 100%;
+  }
+
+  main {
+    margin-left: 0; /* remove sidebar offset on mobile */
+  }
 }

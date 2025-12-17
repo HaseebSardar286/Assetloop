@@ -9,7 +9,7 @@ export interface AssetForm {
   endDate?: string;
   availability: 'available' | 'unavailable';
   status: 'Active' | 'Inactive';
-  category: 'car' | 'apartment' | 'house' | 'tool';
+  category: string;
   capacity: string | number;
   images: File[]; // Files for form upload
   features: string[];
@@ -28,7 +28,7 @@ export interface AssetResponse {
   endDate?: string;
   availability: 'available' | 'unavailable';
   status: 'Active' | 'Inactive';
-  category: 'car' | 'apartment' | 'house' | 'tool';
+  category: string;
   capacity: number;
   images: string[]; // Supabase URLs
   features: string[];

@@ -1,4 +1,16 @@
 <div class="empty-state text-center py-5">
-  <p>No messages yet. Start by exploring rentals.</p>
-  <button class="btn btn-primary" routerLink="/home">Explore Rentals</button>
+  <p *ngIf="userRole === 'renter'">
+    No messages yet. Start by exploring rentals.
+  </p>
+  <p *ngIf="userRole === 'owner'">
+    No messages yet. You will see conversations here when renters contact you.
+  </p>
+
+  <button
+    *ngIf="userRole === 'renter'"
+    class="btn btn-primary"
+    routerLink="/renter/search"
+  >
+    Explore Rentals
+  </button>
 </div>

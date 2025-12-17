@@ -1,55 +1,51 @@
-/* Ensure the entire container takes full viewport height */
-.d-flex {
-  height: 100vh;
+.dashboard-hero {
+  border-bottom-left-radius: 28px;
+  border-bottom-right-radius: 28px;
+  margin-bottom: -20px;
 }
 
-/* Style the main content area */
+.gradient-bg {
+  background: radial-gradient(circle at 10% 20%, #5aa6ff 0, #4a7bff 25%, #29316d 80%);
+}
+
 main {
-  margin-left: 230px; /* Match sidebar width */
+  margin-left: 230px;
   flex-grow: 1;
-  overflow-y: auto; /* Enable scrolling if content overflows */
-  padding: 1rem;
-  background-color: #f8f9fa; /* Light background for consistency */
-  transition: margin-left 0.3s ease; /* Smooth transition for responsive adjustment */
+  min-height: calc(100vh - 60px);
+  margin-top: 60px;
 }
 
-/* Adjust for header height (assuming 60px, adjust if different) */
-main {
-  margin-top: 60px; /* Offset for header */
-  height: calc(100vh - 60px); /* Full height minus header */
+.tab-chip {
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
+  border: 1px solid #e8ebf3;
+  background: #fff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.05);
 }
 
-/* Responsive design: Collapse sidebar on small screens */
-@media (max-width: 768px) {
+.tab-chip.active {
+  background: #eef2ff;
+  color: #3b5bdb;
+  border-color: #dfe3ff;
+}
+
+.empty-state {
+  background: #fff;
+}
+
+.stat-pill {
+  min-width: 220px;
+}
+
+@media (max-width: 992px) {
   main {
-    margin-left: 0; /* Remove sidebar margin on small screens */
-    width: 100%; /* Full width */
-    margin-top: 60px; /* Maintain header offset */
-    height: calc(100vh - 60px); /* Adjust height */
+    margin-left: 0;
   }
-
-  .d-flex .flex-grow-1 {
-    flex-direction: column; /* Stack content vertically */
+  .dashboard-hero {
+    border-radius: 0 0 20px 20px;
   }
-}
-
-/* Card styling for consistency */
-.card {
-  border: none;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.card-header {
-  background-color: #f8f9fa;
-  font-weight: bold;
-}
-
-.card-body {
-  padding: 1.5rem;
-}
-
-.btn-sm {
-  padding: 0.25rem 0.5rem;
-  font-size: 0.875rem;
 }

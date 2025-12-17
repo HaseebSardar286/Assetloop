@@ -6,6 +6,12 @@ import { RenterSideBarComponent } from '../renter-side-bar/renter-side-bar.compo
 import { RenterService } from '../../../services/renter.service';
 import { Subscription, forkJoin } from 'rxjs';
 import { CartItem } from '../../../interfaces/rental';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import {
+  faTrash,
+  faBroom,
+  faArrowRight,
+} from '@fortawesome/free-solid-svg-icons';
 
 @Component({
   selector: 'app-cart',
@@ -15,11 +21,16 @@ import { CartItem } from '../../../interfaces/rental';
     RouterModule,
     HeaderComponent,
     RenterSideBarComponent,
+    FontAwesomeModule,
   ],
   templateUrl: './cart.component.html',
   styleUrls: ['./cart.component.css'],
 })
 export class CartComponent implements OnInit, OnDestroy {
+  faTrash = faTrash;
+  faBroom = faBroom;
+  faArrowRight = faArrowRight;
+
   items: CartItem[] = [];
   private sub?: Subscription;
   loading = false;

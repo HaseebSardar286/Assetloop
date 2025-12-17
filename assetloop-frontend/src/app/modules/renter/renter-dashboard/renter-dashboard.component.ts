@@ -8,6 +8,16 @@ import { Bookings, Chat, UserProfile } from '../../../interfaces/bookings';
 import { CartItem, Favourite } from '../../../interfaces/rental';
 import { RenterService } from '../../../services/renter.service';
 import { User } from '../../../interfaces/user';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import {
+  faHouse,
+  faClockRotateLeft,
+  faHeart,
+  faWallet,
+  faArrowRight,
+  faPen,
+  faEye,
+} from '@fortawesome/free-solid-svg-icons';
 
 @Component({
   selector: 'app-renter-dashboard',
@@ -17,11 +27,19 @@ import { User } from '../../../interfaces/user';
     RouterModule,
     RenterSideBarComponent,
     HeaderComponent,
+    FontAwesomeModule,
   ],
   templateUrl: './renter-dashboard.component.html',
   styleUrls: ['./renter-dashboard.component.css'],
 })
 export class RenterDashboardComponent implements OnInit {
+  faHouse = faHouse;
+  faClockRotateLeft = faClockRotateLeft;
+  faHeart = faHeart;
+  faWallet = faWallet;
+  faArrowRight = faArrowRight;
+  faPen = faPen;
+  faEye = faEye;
   userName = 'Renter';
   quickStats = {
     activeRentals: 0,

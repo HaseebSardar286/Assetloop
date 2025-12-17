@@ -35,7 +35,7 @@ export class AssetDetailsComponent {
     if (this.assetId) {
       this.loading = true;
       // Reuse all assets endpoint and pick the one by id for now
-      this.renterService.getAllAssets({}).subscribe({
+      this.renterService.getAllAssets().subscribe({
         next: (res) => {
           this.asset = (res.assets || []).find(
             (a: any) => a._id === this.assetId

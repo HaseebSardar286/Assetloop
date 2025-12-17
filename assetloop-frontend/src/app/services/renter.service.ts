@@ -1,6 +1,7 @@
-import { Injectable } from '@angular/core';
+import { Injectable, Inject, PLATFORM_ID } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { Observable } from 'rxjs';
 import { CartItem, Favourite } from '../interfaces/rental';
 import { Booking } from '../interfaces/bookings';
 import { User } from '../interfaces/user';
@@ -13,18 +14,21 @@ import { environment } from '../../environments/environment';
 })
 export class RenterService {
   private apiUrl = `${environment.apiBaseUrl}/renter`;
-  private favourites = new BehaviorSubject<Favourite[]>([]);
-  private cart = new BehaviorSubject<CartItem[]>([]);
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, @Inject(PLATFORM_ID) private platformId: Object) {}
 
   // Backend API Methods
   private getHeaders(): HttpHeaders {
-    const items = { ...localStorage }; // Log all items for debugging
-    console.log('localStorage contents:', items);
-    const token = localStorage.getItem('authToken'); // Changed from 'token' to 'authToken'
-    console.log('Retrieved token with "authToken":', token);
-    return new HttpHeaders().set('Authorization', `Bearer ${token || ''}`);
+    let headers = new HttpHeaders();
+    // Check if running in browser to avoid SSR/Vercel errors
+    if (isPlatformBrowser(this.platformId)) {
+      // Check both 'authToken' and 'token' to ensure compatibility
+      const token = localStorage.getItem('authToken') || localStorage.getItem('token');
+      if (token) {
+        headers = headers.set('Authorization', `Bearer ${token}`);
+      }
+    }
+    return headers;
   }
 
   login(email: string, password: string): Observable<any> {
@@ -35,7 +39,6 @@ export class RenterService {
   }
 
   getProfile(): Observable<User> {
-    console.log('Renter service get profile called!');
     return this.http.get<User>(`${this.apiUrl}/profile`, {
       headers: this.getHeaders(),
     });
@@ -47,7 +50,7 @@ export class RenterService {
     });
   }
 
-  getAllAssets(_p0: {}): Observable<{ assets: AssetResponse[] }> {
+  getAllAssets(): Observable<{ assets: AssetResponse[] }> {
     return this.http.get<{ assets: AssetResponse[] }>(
       `${this.apiUrl}/allAssets`,
       {
@@ -66,7 +69,6 @@ export class RenterService {
   }
 
   getNotificationSettings(): Observable<any> {
-    console.log('Notification settings renter:');
     return this.http.get(`${this.apiUrl}/notification-settings`, {
       headers: this.getHeaders(),
     });

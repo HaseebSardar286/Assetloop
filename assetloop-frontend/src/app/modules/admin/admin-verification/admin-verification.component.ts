@@ -12,6 +12,9 @@ import {
   faCheck,
   faTimes,
   faEye,
+  faSearch,
+  faArrowLeft,
+  faArrowRight,
 } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
@@ -33,6 +36,9 @@ export class AdminVerificationComponent implements OnInit {
   faCheck = faCheck;
   faTimes = faTimes;
   faEye = faEye;
+  faSearch = faSearch;
+  faArrowLeft = faArrowLeft;
+  faArrowRight = faArrowRight;
 
   users: User[] = [];
   filteredUsers: User[] = [];
@@ -63,9 +69,6 @@ export class AdminVerificationComponent implements OnInit {
           : [];
         this.filteredUsers = this.users;
         this.loading = false;
-        if (this.users.length === 0 && !this.error) {
-          this.error = 'No pending users found';
-        }
         this.updatePagination();
       },
       error: (err: { error: { message: string } }) => {

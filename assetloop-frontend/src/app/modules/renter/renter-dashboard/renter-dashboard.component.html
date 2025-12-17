@@ -2,229 +2,221 @@
   <app-header (logout)="logout()"></app-header>
   <div class="d-flex flex-grow-1">
     <app-renter-side-bar></app-renter-side-bar>
-    <main class="flex-grow-1 p-4 bg-light">
-      <!-- Welcome & Quick Stats -->
-      <div class="mb-4">
-        <h2 class="mb-3">
-          👋 Welcome back,
-          <span *ngFor="let user of users">
-            <span *ngIf="user.role == 'renter'">
-              {{ user.firstName }} {{ user?.middleName }} {{ user.lastName }}
-            </span>
-          </span>
-        </h2>
-        <div class="row g-3">
-          <div class="col-md-3">
-            <div class="card h-100 bg-primary text-white">
-              <div class="card-body text-center">
-                <h6 class="card-title">Active Rentals</h6>
-                <p class="display-6 mb-0">{{ quickStats.activeRentals }}</p>
-              </div>
-            </div>
+    <main class="flex-grow-1 bg-light">
+      <section class="dashboard-hero gradient-bg px-4 py-4 py-md-5">
+        <div class="container-fluid d-flex flex-wrap justify-content-between align-items-start gap-3">
+          <div>
+            <div class="badge text-bg-light fw-semibold mb-2">Dashboard</div>
+            <h2 class="text-white fw-bold mb-1">Welcome back</h2>
+            <p class="text-white-50 mb-0">
+              Track your rentals, requests, and wishlist at a glance.
+            </p>
           </div>
-          <div class="col-md-3">
-            <div class="card h-100 bg-warning text-white">
-              <div class="card-body text-center">
-                <h6 class="card-title">Pending Requests</h6>
-                <p class="display-6 mb-0">{{ quickStats.pendingRequests }}</p>
-              </div>
+          <div class="stat-pill bg-white shadow-sm rounded-4 p-3 d-flex align-items-center gap-3">
+            <div>
+              <div class="text-muted small">Active rentals</div>
+              <div class="fs-4 fw-bold text-dark">{{ quickStats.activeRentals }}</div>
             </div>
-          </div>
-          <div class="col-md-3">
-            <div class="card h-100 bg-info text-white">
-              <div class="card-body text-center">
-                <h6 class="card-title">Wishlist Items</h6>
-                <p class="display-6 mb-0">{{ quickStats.wishlistItems }}</p>
-              </div>
-            </div>
-          </div>
-          <div class="col-md-3">
-            <div class="card h-100 bg-success text-white">
-              <div class="card-body text-center">
-                <h6 class="card-title">Total Spent</h6>
-                <p class="display-6 mb-0">PKR {{ quickStats.totalSpent }}</p>
-              </div>
+            <div class="vr"></div>
+            <div>
+              <div class="text-muted small">Wishlist</div>
+              <div class="fw-semibold text-dark">{{ quickStats.wishlistItems }}</div>
             </div>
           </div>
         </div>
-      </div>
+      </section>
 
-      <!-- My Rentals -->
-      <div class="card mb-4 shadow-sm">
-        <div class="card-header bg-primary text-white">
-          <h4 class="mb-0">My Rentals</h4>
+      <section class="container-fluid py-4">
+        <div class="row g-3 mb-4">
+          <div class="col-sm-6 col-lg-3">
+            <div class="metric-card">
+              <div class="icon-circle text-primary bg-primary-subtle">
+                <fa-icon [icon]="faHouse"></fa-icon>
+              </div>
+              <div>
+                <div class="text-muted small">Active rentals</div>
+                <div class="h4 mb-0 fw-bold">{{ quickStats.activeRentals }}</div>
+              </div>
+            </div>
+          </div>
+          <div class="col-sm-6 col-lg-3">
+            <div class="metric-card">
+              <div class="icon-circle text-warning bg-warning-subtle">
+                <fa-icon [icon]="faClockRotateLeft"></fa-icon>
+              </div>
+              <div>
+                <div class="text-muted small">Pending requests</div>
+                <div class="h4 mb-0 fw-bold">{{ quickStats.pendingRequests }}</div>
+              </div>
+            </div>
+          </div>
+          <div class="col-sm-6 col-lg-3">
+            <div class="metric-card">
+              <div class="icon-circle text-danger bg-danger-subtle">
+                <fa-icon [icon]="faHeart"></fa-icon>
+              </div>
+              <div>
+                <div class="text-muted small">Wishlist</div>
+                <div class="h4 mb-0 fw-bold">{{ quickStats.wishlistItems }}</div>
+              </div>
+            </div>
+          </div>
+          <div class="col-sm-6 col-lg-3">
+            <div class="metric-card">
+              <div class="icon-circle text-success bg-success-subtle">
+                <fa-icon [icon]="faWallet"></fa-icon>
+              </div>
+              <div>
+                <div class="text-muted small">Total spent</div>
+                <div class="h4 mb-0 fw-bold">PKR {{ quickStats.totalSpent }}</div>
+              </div>
+            </div>
+          </div>
         </div>
-        <div class="card-body">
-          <!-- Current Rentals -->
-          <h5 class="mb-3">Current Rentals</h5>
-          <div class="row g-3" *ngIf="bookings.current.length > 0">
-            <div
-              class="col-md-6 col-lg-4"
-              *ngFor="let booking of bookings.current"
-            >
-              <div class="card h-100">
-                <img
-                  [src]="booking.imageUrl"
-                  class="card-img-top"
-                  alt="{{ booking.name }}"
-                  *ngIf="booking.imageUrl"
-                />
-                <div class="card-body">
-                  <h6 class="card-title">{{ booking.name }}</h6>
-                  <p class="card-text">{{ booking.description }}</p>
-                  <p class="card-text">
-                    <strong>Owner:</strong> {{ booking.owner.firstName }} <br />
-                    <small class="text-muted">{{ booking.owner.email }}</small>
-                  </p>
-                  <p class="card-text">
-                    <strong>Period:</strong>
-                    {{ booking.startDate | date : "mediumDate" }} -
-                    {{ booking.endDate | date : "mediumDate" }}
-                  </p>
-                  <p class="card-text">
-                    <strong>Price:</strong> PKR {{ booking.price }} / night
-                  </p>
-                  <p class="card-text">
-                    <span
-                      class="badge bg-{{
-                        booking.status === 'active'
-                          ? 'success'
-                          : booking.status === 'expiring soon'
-                          ? 'warning'
-                          : 'danger'
-                      }}"
-                    >
-                      {{ booking.status }}
-                    </span>
-                  </p>
-                  <button
-                    class="btn btn-sm btn-outline-primary"
-                    (click)="viewRentalDetails(booking.id)"
-                  >
-                    View Details
-                  </button>
+
+        <div class="card glass-card mb-4">
+          <div class="card-header d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">Current rentals</h5>
+            <span class="badge bg-light text-dark">{{ bookings.current.length }} active</span>
+          </div>
+          <div class="card-body">
+            <div class="row g-3" *ngIf="bookings.current.length > 0; else noCurrent">
+              <div class="col-md-6 col-lg-4" *ngFor="let booking of bookings.current">
+                <div class="rental-card h-100">
+                  <div class="rental-image" *ngIf="booking.imageUrl">
+                    <img [src]="booking.imageUrl" [alt]="booking.name" />
+                    <span class="status-chip" [ngClass]="{
+                      'bg-success': booking.status === 'active',
+                      'bg-warning': booking.status === 'expiring soon',
+                      'bg-danger': booking.status !== 'active' && booking.status !== 'expiring soon'
+                    }">{{ booking.status }}</span>
+                  </div>
+                  <div class="rental-body">
+                    <div class="d-flex justify-content-between align-items-start mb-1">
+                      <h6 class="mb-0">{{ booking.name }}</h6>
+                      <button
+                        class="btn btn-icon btn-outline-primary"
+                        (click)="viewRentalDetails(booking.id)"
+                        aria-label="View details"
+                      >
+                        <fa-icon [icon]="faArrowRight"></fa-icon>
+                      </button>
+                    </div>
+                    <p class="text-muted small mb-2">{{ booking.description }}</p>
+                    <p class="small mb-1"><strong>Owner:</strong> {{ booking.owner.firstName }}</p>
+                    <p class="small mb-1">
+                      <strong>Period:</strong>
+                      {{ booking.startDate | date : "mediumDate" }} -
+                      {{ booking.endDate | date : "mediumDate" }}
+                    </p>
+                    <p class="small mb-0"><strong>Price:</strong> PKR {{ booking.price }}/night</p>
+                  </div>
                 </div>
               </div>
             </div>
+            <ng-template #noCurrent>
+              <div class="empty-state text-center p-4 border rounded-4">
+                <h6 class="fw-semibold mb-1">No current rentals</h6>
+                <p class="text-muted mb-0">Book something to see it here.</p>
+              </div>
+            </ng-template>
           </div>
-          <p class="text-muted" *ngIf="bookings.current.length === 0">
-            No current rentals.
-          </p>
+        </div>
 
-          <!-- Past Rentals -->
-          <h5 class="mt-4 mb-3">Past Rentals</h5>
-          <div class="row g-3" *ngIf="bookings.past.length > 0">
-            <div
-              class="col-md-6 col-lg-4"
-              *ngFor="let booking of bookings.past"
-            >
-              <div class="card h-100">
-                <img
-                  [src]="booking.imageUrl"
-                  class="card-img-top"
-                  alt="{{ booking.name }}"
-                  *ngIf="booking.imageUrl"
-                />
-                <div class="card-body">
-                  <h6 class="card-title">{{ booking.name }}</h6>
-                  <p class="card-text">{{ booking.description }}</p>
-                  <p class="card-text">
-                    <strong>Owner:</strong> {{ booking.owner.firstName }} <br />
-                    <small class="text-muted">{{ booking.owner.email }}</small>
-                  </p>
-                  <p class="card-text">
-                    <strong>Period:</strong>
-                    {{ booking.startDate | date : "mediumDate" }} -
-                    {{ booking.endDate | date : "mediumDate" }}
-                  </p>
-                  <p class="card-text">
-                    <strong>Total Paid:</strong> PKR {{ booking.totalPaid }}
-                  </p>
-                  <div *ngIf="booking.review">
-                    <p class="card-text">
-                      <strong>Your Review:</strong>
-                      {{ booking.review }}/5
-                      <span *ngIf="booking.review" class="text-muted ms-2"
-                        >"{{ booking.review }}"</span
+        <div class="card glass-card mb-4">
+          <div class="card-header d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">Past rentals</h5>
+            <span class="badge bg-light text-dark">{{ bookings.past.length }} completed</span>
+          </div>
+          <div class="card-body">
+            <div class="row g-3" *ngIf="bookings.past.length > 0; else noPast">
+              <div class="col-md-6 col-lg-4" *ngFor="let booking of bookings.past">
+                <div class="rental-card h-100">
+                  <div class="rental-image" *ngIf="booking.imageUrl">
+                    <img [src]="booking.imageUrl" [alt]="booking.name" />
+                  </div>
+                  <div class="rental-body">
+                    <div class="d-flex justify-content-between align-items-start mb-1">
+                      <h6 class="mb-0">{{ booking.name }}</h6>
+                      <button
+                        class="btn btn-icon btn-outline-secondary"
+                        (click)="viewRentalDetails(booking.id)"
+                        aria-label="View details"
                       >
+                        <fa-icon [icon]="faEye"></fa-icon>
+                      </button>
+                    </div>
+                    <p class="text-muted small mb-2">{{ booking.description }}</p>
+                    <p class="small mb-1"><strong>Owner:</strong> {{ booking.owner.firstName }}</p>
+                    <p class="small mb-1">
+                      <strong>Period:</strong>
+                      {{ booking.startDate | date : "mediumDate" }} -
+                      {{ booking.endDate | date : "mediumDate" }}
+                    </p>
+                    <p class="small mb-2"><strong>Total Paid:</strong> PKR {{ booking.totalPaid }}</p>
+                    <div class="d-flex gap-2">
+                      <span class="badge bg-success-subtle text-success" *ngIf="booking.review">
+                        Rated {{ booking.review }}/5
+                      </span>
+                      <button
+                        *ngIf="!booking.review"
+                        class="btn btn-icon btn-outline-primary"
+                        (click)="leaveReview(booking.id)"
+                        aria-label="Leave review"
+                      >
+                        <fa-icon [icon]="faPen"></fa-icon>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <ng-template #noPast>
+              <div class="empty-state text-center p-4 border rounded-4">
+                <h6 class="fw-semibold mb-1">No past rentals</h6>
+                <p class="text-muted mb-0">Finish a booking to see its history here.</p>
+              </div>
+            </ng-template>
+          </div>
+        </div>
+
+        <div class="card glass-card">
+          <div class="card-header d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">Requests</h5>
+            <span class="badge bg-light text-dark">{{ bookings.cancelled.length }} total</span>
+          </div>
+          <div class="card-body">
+            <div class="row g-3" *ngIf="bookings.cancelled.length > 0; else noRequests">
+              <div class="col-md-6 col-lg-4" *ngFor="let request of bookings.cancelled">
+                <div class="rental-card h-100">
+                  <div class="rental-image" *ngIf="request.imageUrl">
+                    <img [src]="request.imageUrl" [alt]="request.name" />
+                    <span class="status-chip" [ngClass]="{
+                      'bg-warning': request.status === 'pending',
+                      'bg-success': request.status === 'confirmed',
+                      'bg-danger': request.status !== 'pending' && request.status !== 'confirmed'
+                    }">{{ request.status }}</span>
+                  </div>
+                  <div class="rental-body">
+                    <h6 class="mb-1">{{ request.name }}</h6>
+                    <p class="text-muted small mb-2">{{ request.description }}</p>
+                    <p class="small mb-1"><strong>Owner:</strong> {{ request.owner.firstName }}</p>
+                    <p class="small mb-1">
+                      <strong>Requested:</strong> {{ request.createdAt | date : "mediumDate" }}
                     </p>
                   </div>
-                  <div *ngIf="!booking.review">
-                    <button
-                      class="btn btn-sm btn-outline-secondary"
-                      (click)="leaveReview(booking.id)"
-                    >
-                      Leave Review
-                    </button>
-                  </div>
                 </div>
               </div>
             </div>
-          </div>
-          <p class="text-muted" *ngIf="bookings.past.length === 0">
-            No past rentals.
-          </p>
-        </div>
-      </div>
-
-      <!-- Rental Requests -->
-      <div class="card shadow-sm">
-        <div class="card-header bg-info text-white">
-          <h5 class="mb-0">Rental Requests</h5>
-        </div>
-        <div class="card-body">
-          <div class="row g-3" *ngIf="bookings.cancelled.length > 0">
-            <div
-              class="col-md-6 col-lg-4"
-              *ngFor="let request of bookings.cancelled"
-            >
-              <div class="card h-100">
-                <img
-                  [src]="request.imageUrl"
-                  class="card-img-top"
-                  alt="{{ request.name }}"
-                  *ngIf="request.imageUrl"
-                />
-                <div class="card-body">
-                  <h6 class="card-title">{{ request.name }}</h6>
-                  <p class="card-text">{{ request.description }}</p>
-                  <p class="card-text">
-                    <strong>Owner:</strong> {{ request.owner.firstName }} <br />
-                    <small class="text-muted">{{ request.owner.email }}</small>
-                  </p>
-                  <p class="card-text">
-                    <strong>Requested:</strong>
-                    {{ request.createdAt | date : "mediumDate" }}
-                  </p>
-                  <p class="card-text">
-                    <span
-                      class="badge bg-{{
-                        request.status === 'pending'
-                          ? 'warning'
-                          : request.status === 'confirmed'
-                          ? 'success'
-                          : 'danger'
-                      }}"
-                    >
-                      {{ request.status }}
-                    </span>
-                  </p>
-                  <!-- <button
-                    *ngIf="request.status === 'pending'"
-                    class="btn btn-sm btn-danger mt-2"
-                    (click)="cancelRentalRequest(request.id)"
-                  >
-                    Cancel
-                  </button> -->
-                </div>
+            <ng-template #noRequests>
+              <div class="empty-state text-center p-4 border rounded-4">
+                <h6 class="fw-semibold mb-1">No requests</h6>
+                <p class="text-muted mb-0">You have no pending or cancelled requests.</p>
               </div>
-            </div>
+            </ng-template>
           </div>
-          <p class="text-muted" *ngIf="bookings.cancelled.length === 0">
-            No pending requests.
-          </p>
         </div>
-      </div>
+      </section>
     </main>
   </div>
 </div>

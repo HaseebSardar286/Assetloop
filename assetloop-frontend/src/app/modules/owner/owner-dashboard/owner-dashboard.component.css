@@ -1,59 +1,90 @@
 /* Ensure the entire container takes full viewport height */
-.d-flex {
-  height: 100vh;
+.dashboard-hero {
+  border-bottom-left-radius: 28px;
+  border-bottom-right-radius: 28px;
+  margin-bottom: -20px;
 }
 
-/* Style the main content area */
+.gradient-bg {
+  background: radial-gradient(circle at 10% 20%, #5aa6ff 0, #4a7bff 25%, #29316d 80%);
+}
+
 main {
-  margin-left: 230px; /* Match sidebar width */
+  margin-left: 230px;
   flex-grow: 1;
-  overflow-y: auto; /* Enable scrolling if content overflows */
-  padding: 1rem;
-  background-color: #f8f9fa; /* Light background for consistency */
-  transition: margin-left 0.3s ease; /* Smooth transition for responsive adjustment */
+  min-height: calc(100vh - 60px);
+  margin-top: 70px;
 }
 
-/* Adjust for header height (assuming 60px, adjust if different) */
-main {
-  margin-top: 60px; /* Offset for header */
-  height: calc(100vh - 60px); /* Full height minus header */
+.metric-card {
+  background: #fff;
+  border: 1px solid #e8ebf3;
+  border-radius: 16px;
+  padding: 16px;
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  box-shadow: 0 10px 24px rgba(17, 24, 39, 0.08);
 }
 
-/* Responsive design: Collapse sidebar on small screens */
-@media (max-width: 768px) {
-  main {
-    margin-left: 0; /* Remove sidebar margin on small screens */
-    width: 100%; /* Full width */
-    margin-top: 60px; /* Maintain header offset */
-    height: calc(100vh - 60px); /* Adjust height */
-  }
-
-  .d-flex .flex-grow-1 {
-    flex-direction: column; /* Stack content vertically */
-  }
-
-  .row {
-    flex-direction: column;
-  }
-
-  .col-md-3,
-  .col-md-6 {
-    width: 100% !important;
-  }
+.icon-circle {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-size: 1.1rem;
 }
 
-/* Card styling for consistency */
-.card {
+.glass-card {
+  border: 1px solid #e8ebf3;
+  border-radius: 18px;
+  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.08);
+}
+
+.glass-card .card-header {
   border: none;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  background: #fff;
+  border-bottom: 1px solid #eef1f7;
+  border-radius: 18px 18px 0 0;
+  padding: 14px 18px;
 }
 
-.card-header {
-  background-color: #f8f9fa;
-  font-weight: bold;
+.booking-item {
+  border: 1px solid #eef1f7;
+  border-radius: 12px;
+  padding: 12px;
+  background: #fff;
 }
 
-.card-body {
-  padding: 1.5rem;
+.btn-icon,
+.btn-icon-lg {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border-radius: 12px;
+}
+
+.btn-icon {
+  width: 40px;
+  height: 40px;
+}
+
+.btn-icon-lg {
+  width: 56px;
+  height: 56px;
+}
+
+.stat-pill {
+  min-width: 220px;
+}
+
+@media (max-width: 992px) {
+  main {
+    margin-left: 0;
+  }
+  .dashboard-hero {
+    border-radius: 0 0 20px 20px;
+  }
 }

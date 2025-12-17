@@ -5,72 +5,80 @@
       (logout)="onLogout()"
       (navigate)="onNavigate($event)"
     ></app-renter-side-bar>
-    <main class="flex-grow-1 p-4">
-      <h2 class="mb-4">Requested Assets</h2>
-      <!-- <div class="card">
-        <div class="card-header">Pending Requests</div>
-        <div class="card-body">
-          <table class="table table-striped">
-            <thead>
-              <tr>
-                <th>Requester</th>
-                <th>Asset</th>
-                <th>Request Date</th>
-                <th>Amount (PKR)</th>
-                <th>Status</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr *ngFor="let request of requests">
-                <td>{{ request.requester }}</td>
-                <td>{{ request.asset }}</td>
-                <td>{{ request.date }}</td>
-                <td>{{ request.amount }}</td>
-                <td>{{ request.status }}</td>
-                <td>
-                  <button class="btn btn-primary btn-sm me-2">Details</button>
-                  <button
-                    *ngIf="request.status === 'pending'"
-                    class="btn btn-success btn-sm me-2"
-                    (click)="updateStatus(request.id, 'confirmed')"
-                  >
-                    Approve
-                  </button>
-                  <button
-                    *ngIf="request.status === 'pending'"
-                    class="btn btn-danger btn-sm"
-                    (click)="updateStatus(request.id, 'cancelled')"
-                  >
-                    Reject
-                  </button>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div> -->
-
-      <ng-container *ngIf="loading">
-        <div class="text-center">Loading bookings...</div>
-      </ng-container>
-      <div *ngIf="error" class="alert alert-danger">{{ error }}</div>
-      <ng-container *ngIf="!loading && bookings[activeTab].length">
-        <div class="row g-4">
-          <div class="col-md-4" *ngFor="let booking of bookings[activeTab]">
-            <app-booking-item
-              [booking]="booking"
-              [activeTab]="activeTab"
-              (viewListing)="viewListing($event)"
-              (leaveReview)="leaveReview($event)"
-              (share)="share($event)"
-            ></app-booking-item>
+    <main class="flex-grow-1 bg-light">
+      <section class="dashboard-hero gradient-bg px-4 py-4 py-md-5">
+        <div class="container-fluid d-flex flex-wrap justify-content-between align-items-start gap-3">
+          <div>
+            <div class="badge text-bg-light fw-semibold mb-2">Requests</div>
+            <h2 class="text-white fw-bold mb-1">Requested assets</h2>
+            <p class="text-white-50 mb-0">Track pending, confirmed, or rejected requests.</p>
+          </div>
+          <div class="stat-pill bg-white shadow-sm rounded-4 p-3 d-flex align-items-center gap-3">
+            <div>
+              <div class="text-muted small">Pending</div>
+              <div class="fs-5 fw-bold text-dark">{{ bookings.pending.length }}</div>
+            </div>
+            <div class="vr"></div>
+            <div>
+              <div class="text-muted small">Cancelled</div>
+              <div class="fw-semibold text-dark">{{ bookings.cancelled.length }}</div>
+            </div>
           </div>
         </div>
-      </ng-container>
-      <ng-template #noBookings>
-        <div class="text-center">No bookings found.</div>
-      </ng-template>
+      </section>
+
+      <section class="container-fluid py-4">
+        <div class="tab-actions mb-3 d-flex flex-wrap gap-2">
+          <button
+            class="tab-chip"
+            [class.active]="activeTab === 'pending'"
+            (click)="activeTab = 'pending'"
+            aria-label="Pending"
+          >
+            <fa-icon [icon]="faClock"></fa-icon>
+          </button>
+          <button
+            class="tab-chip"
+            [class.active]="activeTab === 'current'"
+            (click)="activeTab = 'current'"
+            aria-label="Confirmed"
+          >
+            <fa-icon [icon]="faCheck"></fa-icon>
+          </button>
+          <button
+            class="tab-chip"
+            [class.active]="activeTab === 'cancelled'"
+            (click)="activeTab = 'cancelled'"
+            aria-label="Cancelled"
+          >
+            <fa-icon [icon]="faXmark"></fa-icon>
+          </button>
+        </div>
+
+        <ng-container *ngIf="loading">
+          <div class="text-center">Loading bookings...</div>
+        </ng-container>
+        <div *ngIf="error" class="alert alert-danger">{{ error }}</div>
+        <ng-container *ngIf="!loading && bookings[activeTab].length; else noBookings">
+          <div class="row g-3 g-md-4">
+            <div class="col-md-4" *ngFor="let booking of bookings[activeTab]">
+              <app-booking-item
+                [booking]="booking"
+                [activeTab]="activeTab"
+                (viewListing)="viewListing($event)"
+                (leaveReview)="leaveReview($event)"
+                (share)="share($event)"
+              ></app-booking-item>
+            </div>
+          </div>
+        </ng-container>
+        <ng-template #noBookings>
+          <div class="empty-state text-center p-5 border rounded-4 bg-white shadow-sm">
+            <h5 class="fw-semibold mb-2">No requests found</h5>
+            <p class="text-muted mb-0">Submit a request to see it listed here.</p>
+          </div>
+        </ng-template>
+      </section>
     </main>
   </div>
 </div>

@@ -1,6 +1,7 @@
 const Asset = require("../models/Asset");
 const Joi = require("joi");
 const Booking = require("../models/Bookings");
+const SystemSettings = require("../models/SystemSettings");
 const supabase = require("../services/supabase.service");
 const fs = require("fs").promises;
 
@@ -22,6 +23,38 @@ const assetSchema = Joi.object({
 
 exports.createAsset = async (req, res) => {
   try {
+    // Check maintenance mode
+    const settings = await SystemSettings.findOne({ _id: "system-settings" });
+    if (settings?.maintenanceMode) {
+      return res.status(503).json({ 
+        message: "System is under maintenance. Please try again later." 
+      });
+    }
+
+    // Check listing limit
+    if (settings?.maxListingsPerUser) {
+      const userAssetCount = await Asset.countDocuments({ owner: req.user.id });
+      if (userAssetCount >= settings.maxListingsPerUser) {
+        return res.status(403).json({ 
+          message: `You have reached the maximum limit of ${settings.maxListingsPerUser} listings per user.` 
+        });
+      }
+    }
+
+    // Validate file types if settings exist
+    if (settings?.allowedFileTypes && req.files) {
+      const allowedTypes = settings.allowedFileTypes.split(',').map(t => t.trim().toLowerCase());
+      const invalidFiles = req.files.filter(file => {
+        const ext = file.originalname.split('.').pop()?.toLowerCase();
+        return !ext || !allowedTypes.includes(ext);
+      });
+      if (invalidFiles.length > 0) {
+        return res.status(400).json({ 
+          message: `Invalid file types. Allowed types: ${settings.allowedFileTypes}` 
+        });
+      }
+    }
+
     // Normalize multipart text fields before validation
     const normalizedBody = { ...req.body };
     if (typeof normalizedBody.features === "string") {
@@ -145,26 +178,27 @@ exports.getAssets = async (req, res) => {
     const response = assets.map((asset) => ({
       _id: asset._id.toString(),
       id: asset._id.toString(),
-      owner: asset.owner.toString(),
-      name: asset.name,
-      address: asset.address,
-      description: asset.description,
-      price: asset.price,
-      status: asset.status,
-      availability: asset.availability,
-      category: asset.category,
-      capacity: asset.capacity,
-      startDate: asset.startDate,
-      endDate: asset.endDate,
-      images: asset.images,
-      features: asset.features,
-      amenities: asset.amenities,
-      createdAt: asset.createdAt.toISOString(),
-      updatedAt: asset.updatedAt.toISOString(),
+      owner: asset.owner ? asset.owner.toString() : '',
+      name: asset.name || '',
+      address: asset.address || '',
+      description: asset.description || '',
+      price: asset.price || 0,
+      status: asset.status || 'Inactive',
+      availability: asset.availability || 'available',
+      category: asset.category || '',
+      capacity: asset.capacity || 0,
+      startDate: asset.startDate || null,
+      endDate: asset.endDate || null,
+      images: Array.isArray(asset.images) ? asset.images : [],
+      features: Array.isArray(asset.features) ? asset.features : [],
+      amenities: Array.isArray(asset.amenities) ? asset.amenities : [],
+      createdAt: asset.createdAt ? (asset.createdAt.toISOString ? asset.createdAt.toISOString() : asset.createdAt) : new Date().toISOString(),
+      updatedAt: asset.updatedAt ? (asset.updatedAt.toISOString ? asset.updatedAt.toISOString() : asset.updatedAt) : new Date().toISOString(),
     }));
     res.json(response);
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    console.error("Error in getAssets:", error);
+    res.status(500).json({ message: error.message || "Internal server error" });
   }
 };
 
@@ -173,33 +207,54 @@ exports.getAllAssets = async (req, res) => {
     const assets = await Asset.find()
       .populate("owner", "firstName lastName email")
       .lean();
-    const response = assets.map((asset) => ({
-      _id: asset._id.toString(),
-      id: asset._id.toString(),
-      owner: {
-        id: asset.owner._id.toString(),
-        name: `${asset.owner.firstName} ${asset.owner.lastName}`,
-        email: asset.owner.email,
-      },
-      name: asset.name,
-      address: asset.address,
-      description: asset.description,
-      price: asset.price,
-      status: asset.status,
-      availability: asset.availability,
-      category: asset.category,
-      capacity: asset.capacity,
-      startDate: asset.startDate,
-      endDate: asset.endDate,
-      images: asset.images,
-      features: asset.features,
-      amenities: asset.amenities,
-      createdAt: asset.createdAt.toISOString(),
-      updatedAt: asset.updatedAt.toISOString(),
-    }));
+    
+    const response = assets.map((asset) => {
+      // Handle owner data safely
+      let ownerData = null;
+      if (asset.owner && asset.owner._id) {
+        ownerData = {
+          id: asset.owner._id.toString(),
+          name: `${asset.owner.firstName || ''} ${asset.owner.lastName || ''}`.trim(),
+          email: asset.owner.email || '',
+        };
+      } else if (asset.owner) {
+        // If owner is just an ID string
+        ownerData = {
+          id: asset.owner.toString(),
+          name: '',
+          email: '',
+        };
+      }
+
+      return {
+        _id: asset._id.toString(),
+        id: asset._id.toString(),
+        owner: ownerData,
+        name: asset.name || '',
+        address: asset.address || '',
+        description: asset.description || '',
+        price: asset.price || 0,
+        status: asset.status || 'Inactive',
+        availability: asset.availability || 'available',
+        category: asset.category || '',
+        capacity: asset.capacity || 0,
+        startDate: asset.startDate ? (asset.startDate.toISOString ? asset.startDate.toISOString() : asset.startDate) : null,
+        endDate: asset.endDate ? (asset.endDate.toISOString ? asset.endDate.toISOString() : asset.endDate) : null,
+        images: Array.isArray(asset.images) ? asset.images : [],
+        features: Array.isArray(asset.features) ? asset.features : [],
+        amenities: Array.isArray(asset.amenities) ? asset.amenities : [],
+        createdAt: asset.createdAt ? (asset.createdAt.toISOString ? asset.createdAt.toISOString() : asset.createdAt) : new Date().toISOString(),
+        updatedAt: asset.updatedAt ? (asset.updatedAt.toISOString ? asset.updatedAt.toISOString() : asset.updatedAt) : new Date().toISOString(),
+      };
+    });
+    
     res.status(200).json({ assets: response });
   } catch (error) {
-    res.status(500).json({ message: "Internal server error" });
+    console.error("Error in getAllAssets:", error);
+    res.status(500).json({ 
+      message: error.message || "Internal server error",
+      ...(process.env.NODE_ENV === 'development' && { stack: error.stack })
+    });
   }
 };
 
@@ -294,10 +349,19 @@ exports.updateAsset = async (req, res) => {
 
 exports.deleteAsset = async (req, res) => {
   try {
-    const asset = await Asset.findByIdAndDelete(req.params.id);
+    const assetId = req.params.id;
+    const ownerId = req.user.id;
+
+    // Ensure the asset belongs to the requesting owner
+    const asset = await Asset.findOneAndDelete({ _id: assetId, owner: ownerId });
     if (!asset) return res.status(404).json({ message: "Asset not found" });
-    res.json({ message: "Asset deleted successfully" });
+
+    // Cascade delete related bookings for this asset
+    await Booking.deleteMany({ asset: assetId });
+
+    res.json({ message: "Asset and related bookings deleted successfully" });
   } catch (error) {
+    console.error("Error in deleteAsset:", error);
     res.status(500).json({ message: error.message });
   }
 };

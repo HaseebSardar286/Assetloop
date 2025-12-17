@@ -9,15 +9,40 @@ import { Booking } from '../../../interfaces/bookings';
 import { User } from '../../../interfaces/user';
 import { AssetResponse } from '../../../interfaces/asset';
 import { Review } from '../../../interfaces/review';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import {
+  faUsers,
+  faBox,
+  faComments,
+  faClipboardList,
+  faArrowLeft,
+  faArrowRight,
+  faEye,
+  faTrash,
+} from '@fortawesome/free-solid-svg-icons';
 
 @Component({
   selector: 'app-admin-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterModule, HeaderComponent, AdminSidebarComponent],
+  imports: [
+    CommonModule,
+    RouterModule,
+    HeaderComponent,
+    AdminSidebarComponent,
+    FontAwesomeModule,
+  ],
   templateUrl: './admin-dashboard.component.html',
   styleUrls: ['./admin-dashboard.component.css'],
 })
 export class AdminDashboardComponent implements OnInit {
+  faUsers = faUsers;
+  faBox = faBox;
+  faComments = faComments;
+  faClipboardList = faClipboardList;
+  faArrowLeft = faArrowLeft;
+  faArrowRight = faArrowRight;
+  faEye = faEye;
+  faTrash = faTrash;
   deleteReview(arg0: string) {
     throw new Error('Method not implemented.');
   }

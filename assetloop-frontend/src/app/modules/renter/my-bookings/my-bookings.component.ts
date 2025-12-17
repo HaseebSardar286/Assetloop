@@ -7,6 +7,12 @@ import { HeaderComponent } from '../../../components/header/header.component';
 import { Bookings, Booking } from '../../../interfaces/bookings';
 import { BookingItemComponent } from '../../../components/cards/booking-item/booking-item.component';
 import { RenterService } from '../../../services/renter.service';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import {
+  faCalendarCheck,
+  faClockRotateLeft,
+  faBan,
+} from '@fortawesome/free-solid-svg-icons';
 
 @Component({
   selector: 'app-my-bookings',
@@ -17,11 +23,15 @@ import { RenterService } from '../../../services/renter.service';
     CommonModule,
     HeaderComponent,
     BookingItemComponent,
+    FontAwesomeModule,
   ],
   templateUrl: './my-bookings.component.html',
   styleUrls: ['./my-bookings.component.css'],
 })
 export class MyBookingsComponent implements OnInit {
+  faCalendarCheck = faCalendarCheck;
+  faClockRotateLeft = faClockRotateLeft;
+  faBan = faBan;
   activeTab: keyof Bookings = 'current';
 
   bookings: Bookings = { current: [], past: [], cancelled: [], pending: [] };

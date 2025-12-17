@@ -54,6 +54,23 @@ const userSchema = new mongoose.Schema(
       enum: ["pending", "approved", "rejected"],
       default: "pending",
     },
+    paymentMethods: [
+      {
+        _id: false,
+        id: { type: String, required: true },
+        type: { type: String, enum: ["card", "bank", "wallet"], default: "card" },
+        brand: { type: String },
+        last4: { type: String },
+        expMonth: { type: Number },
+        expYear: { type: Number },
+        name: { type: String },
+        details: { type: String }, // masked or summary
+        isDefault: { type: Boolean, default: false },
+        createdAt: { type: Date, default: Date.now },
+      },
+    ],
+    resetPasswordToken: { type: String },
+    resetPasswordExpires: { type: Date },
   },
   { timestamps: true }
 );

@@ -23,8 +23,10 @@ export class BookingPaymentsComponent {
   bookingId: string | null = null;
   loading = false;
   error: string | null = null;
+  info: string | null = null;
   booking: Booking | null = null;
   amountDue = 0;
+  allBookings: Booking[] = [];
 
   constructor(
     private route: ActivatedRoute,
@@ -33,8 +35,67 @@ export class BookingPaymentsComponent {
     private authService: AuthService,
     private renterService: RenterService
   ) {
-    this.bookingId = this.route.snapshot.paramMap.get('id');
+    // Try to get booking ID from route params first, then query params
+    this.bookingId = this.route.snapshot.paramMap.get('id') || 
+                     this.route.snapshot.queryParamMap.get('bookingId');
+    
+    if (this.bookingId) {
+      // If we have a booking ID, load that specific booking
+      this.loadBooking();
+    } else {
+      // If no specific booking ID, check for dynamic route changes
+      // This handles cases where the component is reused with different IDs
+      this.route.params.subscribe(params => {
+        if (params['id'] && params['id'] !== this.bookingId) {
+          this.bookingId = params['id'];
+          this.loadBooking();
+        }
+      });
+      
+      this.route.queryParams.subscribe(queryParams => {
+        if (queryParams['bookingId'] && queryParams['bookingId'] !== this.bookingId) {
+          this.bookingId = queryParams['bookingId'];
+          this.loadBooking();
+        }
+      });
+      
+      // If no booking ID is provided (e.g., when embedded as a tab), load all bookings
+      this.loadAllBookings();
+    }
+  }
+
+  loadAllBookings(): void {
+    this.loading = true;
+    this.error = null;
+    this.info = null;
+    this.renterService.getBookings().subscribe({
+      next: (bookings) => {
+        this.allBookings = bookings || [];
+        this.loading = false;
+        if (this.allBookings.length === 0) {
+          this.info = 'You have no bookings.';
+        } else {
+          this.info = `Select a booking to view payment details. You have ${this.allBookings.length} booking(s).`;
+        }
+      },
+      error: (err) => {
+        this.error = err?.error?.message || 'Failed to load bookings';
+        this.loading = false;
+      }
+    });
+  }
+
+  selectBooking(booking: Booking): void {
+    this.bookingId = booking._id || booking.id;
+    this.allBookings = [];
+    this.info = null;
     this.loadBooking();
+  }
+
+  getAmountDue(booking: Booking): number {
+    const price = Number(booking.price) || 0;
+    const paid = Number(booking.totalPaid) || 0;
+    return Math.max(0, price - paid);
   }
 
   loadBooking(): void {

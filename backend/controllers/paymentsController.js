@@ -101,7 +101,7 @@ exports.stripeWebhookHandler = async (req, res) => {
         const { bookingId, type, userId } = session.metadata || {};
 
         if (type === "booking_payment" && bookingId) {
-          const booking = await Booking.findById(bookingId);
+          const booking = await Booking.findById(bookingId).populate("owner");
           if (booking) {
             // Mark as paid/confirmed and update totalPaid
             const amountTotal = (session.amount_total || 0) / 100;
@@ -111,7 +111,7 @@ exports.stripeWebhookHandler = async (req, res) => {
             }
             await booking.save();
 
-            // Create Transaction record
+            // 1) Renter transaction: payment
             await Transaction.create({
               user: booking.renter,
               amount: amountTotal,
@@ -122,6 +122,24 @@ exports.stripeWebhookHandler = async (req, res) => {
               booking: booking._id,
               stripePaymentIntentId: session.payment_intent,
             });
+
+            // 2) Owner wallet & transaction: earning / payout
+            const owner = await User.findById(booking.owner?._id || booking.owner);
+            if (owner) {
+              owner.walletBalance = (owner.walletBalance || 0) + amountTotal;
+              await owner.save();
+
+              await Transaction.create({
+                user: owner._id,
+                amount: amountTotal,
+                currency: session.currency,
+                type: "payout", // earning for owner, withdrawable later
+                status: "completed",
+                description: `Earnings from booking ${booking.name}`,
+                booking: booking._id,
+                stripePaymentIntentId: session.payment_intent,
+              });
+            }
           }
         } else if (type === "wallet_topup" && userId) {
           const user = await User.findById(userId);
@@ -205,8 +223,14 @@ exports.addMoney = async (req, res) => {
         userId,
         type: "wallet_topup",
       },
-      success_url: successUrl || "http://localhost:4200/wallet?status=success",
-      cancel_url: cancelUrl || "http://localhost:4200/wallet?status=cancelled",
+      // Redirect back to the main payments page (tabbed wallet UI)
+      // so the route definitely exists in the Angular app.
+      success_url:
+        successUrl ||
+        "http://localhost:4200/payments?status=success&source=wallet_topup",
+      cancel_url:
+        cancelUrl ||
+        "http://localhost:4200/payments?status=cancelled&source=wallet_topup",
     });
 
     return res.status(200).json({ id: session.id, url: session.url });
@@ -218,7 +242,7 @@ exports.addMoney = async (req, res) => {
 
 exports.withdraw = async (req, res) => {
   try {
-    const { amount } = req.body;
+    const { amount, payoutMethodId } = req.body;
     const userId = req.user.id;
 
     const user = await User.findById(userId);
@@ -226,6 +250,17 @@ exports.withdraw = async (req, res) => {
 
     if ((user.walletBalance || 0) < amount) {
       return res.status(400).json({ message: "Insufficient funds" });
+    }
+
+    let payoutDescription = "Withdrawal to bank account";
+
+    if (payoutMethodId) {
+      const methods = user.paymentMethods || [];
+      const method = methods.find((m) => m.id === payoutMethodId);
+      if (!method) {
+        return res.status(400).json({ message: "Selected payout method not found" });
+      }
+      payoutDescription = `Withdrawal to ${method.details}`;
     }
 
     // For now, just deduct balance and create a withdrawal transaction
@@ -239,7 +274,7 @@ exports.withdraw = async (req, res) => {
       currency: "usd",
       type: "withdrawal",
       status: "completed", // Assume instant for mock
-      description: "Withdrawal to bank account",
+      description: payoutDescription,
     });
 
     return res.status(200).json({ success: true, balance: user.walletBalance });
@@ -269,18 +304,185 @@ exports.getTransactions = async (req, res) => {
 };
 
 exports.getPaymentMethods = async (req, res) => {
-  // Placeholder for Stripe saved cards logic
-  return res.status(200).json([]);
+  try {
+    const userId = req.user.id;
+    const user = await User.findById(userId);
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    const methods = [...(user.paymentMethods || [])].sort((a, b) =>
+      a.isDefault === b.isDefault ? 0 : a.isDefault ? -1 : 1
+    );
+    return res.status(200).json(methods);
+  } catch (error) {
+    console.error("Error fetching payment methods:", error);
+    return res.status(500).json({ message: error.message });
+  }
 };
 
 exports.addPaymentMethod = async (req, res) => {
-  // Placeholder for adding card logic
-  return res.status(200).json({ message: "Not implemented yet" });
+  try {
+    const userId = req.user.id;
+    const {
+      type = "card",
+      cardNumber,
+      cardName,
+      expiry,
+      brand,
+      walletProvider,
+      walletAccount,
+      walletName,
+      isDefault = false,
+    } = req.body;
+
+    const user = await User.findById(userId);
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    const paymentMethodId = `pm_${Date.now()}_${Math.floor(Math.random() * 1000)}`;
+    let method;
+
+    if (type === "wallet") {
+      // Handle wallet payment method
+      if (!walletProvider || !walletAccount || !walletName) {
+        return res
+          .status(400)
+          .json({ message: "walletProvider, walletAccount, and walletName are required for wallet type" });
+      }
+
+      const last4 = String(walletAccount).slice(-4);
+      method = {
+        id: paymentMethodId,
+        type: "wallet",
+        brand: walletProvider.toLowerCase(),
+        last4,
+        name: walletName,
+        details: `${walletProvider} •••• ${last4}`,
+        isDefault: false,
+        createdAt: new Date(),
+      };
+    } else {
+      // Handle card payment method
+      if (!cardNumber || !cardName || !expiry) {
+        return res
+          .status(400)
+          .json({ message: "cardNumber, cardName, and expiry are required for card type" });
+      }
+
+      const digits = String(cardNumber).replace(/\D/g, "");
+      if (digits.length < 12 || digits.length > 19) {
+        return res.status(400).json({ message: "Invalid card number" });
+      }
+
+      const [expMonthStr, expYearStr] = String(expiry).split("/").map((v) => v.trim());
+      const expMonth = Number(expMonthStr);
+      const expYear = Number(expYearStr?.length === 2 ? `20${expYearStr}` : expYearStr);
+      if (
+        Number.isNaN(expMonth) ||
+        Number.isNaN(expYear) ||
+        expMonth < 1 ||
+        expMonth > 12 ||
+        expYear < new Date().getFullYear()
+      ) {
+        return res.status(400).json({ message: "Invalid expiry" });
+      }
+
+      const last4 = digits.slice(-4);
+      const inferredBrand =
+        brand ||
+        (digits.startsWith("4")
+          ? "visa"
+          : digits.startsWith("5")
+          ? "mastercard"
+          : digits.startsWith("3")
+          ? "amex"
+          : "card");
+
+      method = {
+        id: paymentMethodId,
+        type: "card",
+        brand: inferredBrand,
+        last4,
+        expMonth,
+        expYear,
+        name: cardName,
+        details: `${inferredBrand.toUpperCase()} •••• ${last4}`,
+        isDefault: false,
+        createdAt: new Date(),
+      };
+    }
+
+    let methods = user.paymentMethods || [];
+
+    if (!methods.length || isDefault) {
+      // reset defaults
+      methods = methods.map((m) => ({ ...m.toObject?.() ?? m, isDefault: false }));
+      method.isDefault = true;
+    }
+
+    methods.push(method);
+    user.paymentMethods = methods;
+    await user.save();
+
+    const sorted = [...user.paymentMethods].sort((a, b) =>
+      a.isDefault === b.isDefault ? 0 : a.isDefault ? -1 : 1
+    );
+    return res.status(201).json(sorted);
+  } catch (error) {
+    console.error("Error adding payment method:", error);
+    return res.status(500).json({ message: error.message });
+  }
 };
 
 exports.removePaymentMethod = async (req, res) => {
-  // Placeholder
-  return res.status(200).json({ success: true });
+  try {
+    const userId = req.user.id;
+    const { id } = req.params;
+    const user = await User.findById(userId);
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    const methods = user.paymentMethods || [];
+    const toRemove = methods.find((m) => m.id === id);
+    if (!toRemove) return res.status(404).json({ message: "Payment method not found" });
+
+    const remaining = methods.filter((m) => m.id !== id);
+    if (toRemove.isDefault && remaining.length) {
+      remaining[0].isDefault = true;
+    }
+
+    user.paymentMethods = remaining;
+    await user.save();
+    return res.status(200).json({ success: true, methods: remaining });
+  } catch (error) {
+    console.error("Error removing payment method:", error);
+    return res.status(500).json({ message: error.message });
+  }
+};
+
+exports.setDefaultPaymentMethod = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const { id } = req.params;
+    const user = await User.findById(userId);
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    const methods = user.paymentMethods || [];
+    let found = false;
+    user.paymentMethods = methods.map((m) => {
+      const isMatch = m.id === id;
+      if (isMatch) found = true;
+      return { ...m.toObject?.() ?? m, isDefault: isMatch };
+    });
+
+    if (!found) return res.status(404).json({ message: "Payment method not found" });
+    await user.save();
+
+    const sorted = [...user.paymentMethods].sort((a, b) =>
+      a.isDefault === b.isDefault ? 0 : a.isDefault ? -1 : 1
+    );
+    return res.status(200).json({ success: true, methods: sorted });
+  } catch (error) {
+    console.error("Error setting default payment method:", error);
+    return res.status(500).json({ message: error.message });
+  }
 };
 
 exports.getInvoices = async (req, res) => {

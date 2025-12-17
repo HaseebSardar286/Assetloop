@@ -1,109 +1,353 @@
-<div class="container-fluid p-0">
-  <!-- Header -->
-  <header
-    class="bg-light p-3 d-flex justify-content-between align-items-center"
-  >
-    <a class="navbar-brand text-black logo">AssetLoop</a>
-    <form
-      class="d-flex w-100 px-5"
-      [formGroup]="searchForm"
-      (ngSubmit)="applyFilters()"
+<div class="home-landing">
+  <header class="home-header border-bottom">
+    <div
+      class="container d-flex align-items-center justify-content-between py-3 gap-3 flex-wrap"
     >
-      <input
-        class="form-control me-2 rounded-5"
-        type="search"
-        formControlName="keywords"
-        placeholder="Search listings..."
-      />
-      <button class="btn btn-outline-success rounded-5" type="submit">
-        <fa-icon [icon]="faSearch"></fa-icon>
-      </button>
-    </form>
-    <div class="d-flex gap-2 px-2">
-      <button type="button" class="btn btn-primary rounded-5">
-        <fa-icon [icon]="faBell"></fa-icon>
-      </button>
-      <button type="button" class="btn btn-danger rounded-5">
-        <fa-icon [icon]="faHeart"></fa-icon>
-      </button>
-    </div>
-    <div class="px-1" id="navbarNav">
-      <ul class="navbar-nav ms-auto">
-        <li class="nav-item dropdown">
-          <a
-            class="nav-link text-black"
-            id="userDropdown"
-            role="button"
-            data-bs-toggle="dropdown"
-            aria-expanded="false"
-          >
-            <button type="button" class="btn btn-dark rounded-5">
-              <fa-icon [icon]="faUser"></fa-icon>
-            </button>
-          </a>
-          <ul
-            class="dropdown-menu dropdown-menu-end"
-            aria-labelledby="userDropdown"
-          >
-            <li><a class="dropdown-item" href="#">Help/Support</a></li>
-            <li><a class="dropdown-item" (click)="logout.emit()">Logout</a></li>
-          </ul>
-        </li>
-      </ul>
+      <div class="d-flex align-items-center gap-3">
+        <a class="brand-logo" routerLink="/">AssetLoop</a>
+        <a class="btn btn-outline-primary btn-sm" routerLink="/auth/login">
+          <fa-icon [icon]="faUser" class="me-2"></fa-icon>
+          Login
+        </a>
+      </div>
+      <div class="d-flex align-items-center gap-2 flex-wrap">
+        <button
+          type="button"
+          class="btn btn-link nav-link-btn"
+          (click)="scrollToSection('asset-list')"
+        >
+          <fa-icon [icon]="faSearch" class="me-2"></fa-icon>
+          Browse listings
+        </button>
+        <button
+          type="button"
+          class="btn btn-link nav-link-btn"
+          (click)="scrollToSection('how-it-works')"
+        >
+          How it works
+        </button>
+        <button
+          type="button"
+          class="btn btn-link nav-link-btn"
+          (click)="clearFilters(); scrollToSection('asset-list')"
+        >
+          Reset filters
+        </button>
+        <a class="btn btn-primary btn-sm" routerLink="/auth/register">
+          Get started
+        </a>
+      </div>
     </div>
   </header>
 
-  <!-- Filters -->
-  <div class="filters p-3 bg-light d-flex gap-2">
-    <form
-      [formGroup]="searchForm"
-      class="d-flex gap-2 w-100 align-items-center"
-    >
-      <select class="form-select" formControlName="category">
-        <option value="All Categories">All Categories</option>
-        <option value="car">Car</option>
-        <option value="apartment">Apartment</option>
-        <option value="house">House</option>
-        <option value="tool">Tool</option>
-      </select>
-      <input
-        type="number"
-        class="form-control"
-        placeholder="Min Price"
-        formControlName="minPrice"
-      />
-      <input
-        type="number"
-        class="form-control"
-        placeholder="Max Price"
-        formControlName="maxPrice"
-      />
-      <select class="form-select" (change)="changeSort($event)">
-        <option value="recommended">Sort: Recommended</option>
-        <option value="priceLowToHigh">Price: Low to High</option>
-        <option value="priceHighToLow">Price: High to Low</option>
-      </select>
-      <button type="button" class="btn btn-primary" (click)="applyFilters()">
-        Apply Filters
-      </button>
+  <section class="hero gradient-bg">
+    <div class="container py-5">
+      <div class="row align-items-center g-4">
+        <div class="col-lg-7">
+          <div class="badge text-bg-light fw-semibold mb-3">
+            The smarter way to rent and list assets
+          </div>
+          <h1 class="display-4 fw-bold text-white mb-3">
+            Find anything you need, rent it with confidence.
+          </h1>
+          <p class="lead text-white-50 mb-4">
+            AssetLoop connects renters and owners with transparent pricing,
+            verified listings, and flexible booking. Search, compare, and book
+            in minutes.
+          </p>
+          <div class="d-flex flex-wrap gap-3 mb-4">
+            <button
+              type="button"
+              class="btn btn-light btn-lg px-4"
+              (click)="scrollToSection('asset-list')"
+            >
+              Browse marketplace
+            </button>
+            <button
+              type="button"
+              class="btn btn-outline-light btn-lg px-4"
+              (click)="scrollToSection('how-it-works')"
+            >
+              See how it works
+            </button>
+          </div>
+          <div class="d-flex align-items-center text-white-50 gap-3">
+            <div class="d-flex align-items-center gap-2">
+              <span class="hero-dot"></span>
+              <small>Verified owners</small>
+            </div>
+            <div class="d-flex align-items-center gap-2">
+              <span class="hero-dot"></span>
+              <small>Secure payments</small>
+            </div>
+            <div class="d-flex align-items-center gap-2">
+              <span class="hero-dot"></span>
+              <small>Fast support</small>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-5">
+          <div class="stats-card shadow-lg p-4 bg-white rounded-4">
+            <h5 class="fw-semibold mb-4 text-center">Why Choose AssetLoop?</h5>
+            <div class="row g-4">
+              <div class="col-6">
+                <div class="stat-item text-center">
+                  <div class="stat-icon bg-primary-subtle text-primary rounded-circle mx-auto mb-2">
+                    <fa-icon [icon]="faCheckCircle"></fa-icon>
+                  </div>
+                  <h4 class="fw-bold mb-1">500+</h4>
+                  <p class="text-muted small mb-0">Active Listings</p>
+                </div>
+              </div>
+              <div class="col-6">
+                <div class="stat-item text-center">
+                  <div class="stat-icon bg-success-subtle text-success rounded-circle mx-auto mb-2">
+                    <fa-icon [icon]="faUsers"></fa-icon>
+                  </div>
+                  <h4 class="fw-bold mb-1">100+</h4>
+                  <p class="text-muted small mb-0">Happy Users</p>
+                </div>
+              </div>
+              <div class="col-6">
+                <div class="stat-item text-center">
+                  <div class="stat-icon bg-info-subtle text-info rounded-circle mx-auto mb-2">
+                    <fa-icon [icon]="faCheckCircle"></fa-icon>
+                  </div>
+                  <h4 class="fw-bold mb-1">24/7</h4>
+                  <p class="text-muted small mb-0">Support</p>
+                </div>
+              </div>
+              <div class="col-6">
+                <div class="stat-item text-center">
+                  <div class="stat-icon bg-warning-subtle text-warning rounded-circle mx-auto mb-2">
+                    <fa-icon [icon]="faCheckCircle"></fa-icon>
+                  </div>
+                  <h4 class="fw-bold mb-1">100%</h4>
+                  <p class="text-muted small mb-0">Secure</p>
+                </div>
+              </div>
+            </div>
+            <div class="mt-4 text-center">
+              <a
+                class="btn btn-primary w-100 btn-lg"
+                routerLink="/auth/register"
+              >
+                Get Started Today
+              </a>
+              <p class="text-muted small mt-3 mb-0">
+                Join thousands of renters and owners
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="trusted py-4 bg-white">
+    <div class="container d-flex flex-wrap justify-content-center gap-4">
+      <div class="text-muted small text-uppercase fw-semibold">
+        Trusted by renters & owners
+      </div>
+      <div class="brand-chip">Fast payouts</div>
+      <div class="brand-chip">24/7 support</div>
+      <div class="brand-chip">Damage protection</div>
+      <div class="brand-chip">Verified profiles</div>
+    </div>
+  </section>
+
+  <section class="categories-section container py-5">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <div>
+        <h3 class="fw-bold mb-1">Browse by category</h3>
+        <p class="text-muted mb-0">
+          Jump straight into the most popular asset types.
+        </p>
+      </div>
       <button
         type="button"
-        class="btn btn-outline-secondary"
-        (click)="clearFilters()"
+        class="btn btn-outline-secondary btn-sm"
+        (click)="clearFilters(); scrollToSection('asset-list')"
       >
-        Clear Filters
+        View everything
       </button>
-    </form>
-  </div>
-
-  <!-- Error Display -->
-  <div class="p-4" *ngIf="error">
-    <div class="alert alert-danger">{{ error }}</div>
-  </div>
-
-  <!-- Assets Grid -->
-  <div class="p-4">
+    </div>
     <div class="row g-3">
+      <div class="col-6 col-md-3">
+        <button
+          type="button"
+          class="category-card"
+          (click)="setCategory('car')"
+        >
+          <div class="icon-circle bg-primary-subtle text-primary">
+            <fa-icon [icon]="faCar"></fa-icon>
+          </div>
+          <div>
+            <div class="fw-semibold">Cars</div>
+            <small class="text-muted">Daily & weekly rentals</small>
+          </div>
+        </button>
+      </div>
+      <div class="col-6 col-md-3">
+        <button
+          type="button"
+          class="category-card"
+          (click)="setCategory('apartment')"
+        >
+          <div class="icon-circle bg-info-subtle text-info">
+            <fa-icon [icon]="faBuilding"></fa-icon>
+          </div>
+          <div>
+            <div class="fw-semibold">Apartments</div>
+            <small class="text-muted">Short & long stays</small>
+          </div>
+        </button>
+      </div>
+      <div class="col-6 col-md-3">
+        <button
+          type="button"
+          class="category-card"
+          (click)="setCategory('house')"
+        >
+          <div class="icon-circle bg-warning-subtle text-warning">
+            <fa-icon [icon]="faHouse"></fa-icon>
+          </div>
+          <div>
+            <div class="fw-semibold">Homes</div>
+            <small class="text-muted">Family ready spaces</small>
+          </div>
+        </button>
+      </div>
+      <div class="col-6 col-md-3">
+        <button
+          type="button"
+          class="category-card"
+          (click)="setCategory('tool')"
+        >
+          <div class="icon-circle bg-success-subtle text-success">
+            <fa-icon [icon]="faWrench"></fa-icon>
+          </div>
+          <div>
+            <div class="fw-semibold">Tools</div>
+            <small class="text-muted">Pay only when you use</small>
+          </div>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <section id="how-it-works" class="how-it-works py-5 bg-light">
+    <div class="container">
+      <div class="text-center mb-4">
+        <h3 class="fw-bold mb-1">A simple, trusted flow</h3>
+        <p class="text-muted mb-0">
+          Browse listings, book securely, and communicate in one place.
+        </p>
+      </div>
+      <div class="row g-4">
+        <div class="col-md-4">
+          <div class="step-card h-100">
+            <div class="step-number">1</div>
+            <h5 class="fw-semibold mb-2">Search & compare</h5>
+            <p class="text-muted mb-0">
+              Use smart filters to find exactly what you need with transparent
+              pricing.
+            </p>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="step-card h-100">
+            <div class="step-number">2</div>
+            <h5 class="fw-semibold mb-2">Book securely</h5>
+            <p class="text-muted mb-0">
+              Reserve with protected payments and clear rules from verified
+              owners.
+            </p>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="step-card h-100">
+            <div class="step-number">3</div>
+            <h5 class="fw-semibold mb-2">Pick up or get delivered</h5>
+            <p class="text-muted mb-0">
+              Coordinate handoff easily and enjoy dedicated support along the
+              way.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="container py-5">
+    <div class="d-flex flex-wrap justify-content-between align-items-center mb-3">
+      <div>
+        <h3 class="fw-bold mb-1">Featured assets</h3>
+        <p class="text-muted mb-0">
+          Curated picks based on your filters and recent additions.
+        </p>
+      </div>
+      <div class="d-flex gap-2 align-items-center flex-wrap">
+        <form
+          [formGroup]="searchForm"
+          class="filters d-flex gap-2 flex-wrap align-items-center"
+        >
+          <input
+            type="text"
+            class="form-control"
+            placeholder="Location"
+            formControlName="location"
+          />
+          <select class="form-select" formControlName="category">
+            <option value="All Categories">All Categories</option>
+            <option value="car">Car</option>
+            <option value="apartment">Apartment</option>
+            <option value="house">House</option>
+            <option value="tool">Tool</option>
+          </select>
+          <input
+            type="number"
+            class="form-control"
+            placeholder="Min Price"
+            formControlName="minPrice"
+          />
+          <input
+            type="number"
+            class="form-control"
+            placeholder="Max Price"
+            formControlName="maxPrice"
+          />
+          <select class="form-select" formControlName="availability">
+            <option value="all">All</option>
+            <option value="available">Available</option>
+            <option value="unavailable">Unavailable</option>
+          </select>
+          <select class="form-select" (change)="changeSort($event)">
+            <option value="recommended">Sort: Recommended</option>
+            <option value="priceLowToHigh">Price: Low to High</option>
+            <option value="priceHighToLow">Price: High to Low</option>
+          </select>
+          <button type="button" class="btn btn-primary" (click)="applyFilters()">
+            Apply
+          </button>
+          <button
+            type="button"
+            class="btn btn-outline-secondary"
+            (click)="clearFilters()"
+          >
+            Reset
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Error Display -->
+    <div class="mb-4" *ngIf="error">
+      <div class="alert alert-danger mb-0">{{ error }}</div>
+    </div>
+
+    <!-- Assets Grid -->
+    <div id="asset-list" class="row g-3">
       <div class="col-md-3" *ngFor="let asset of displayedAssets">
         <app-product-item
           [asset]="asset"
@@ -112,41 +356,161 @@
           (addToCart)="onBookNow($event)"
           (removeFavourite)="removeFavourite($event)"
           (share)="share($event)"
-          (updateNotes)="updateNotes($event)"
         ></app-product-item>
       </div>
+      <div class="col-12" *ngIf="!displayedAssets.length && !error">
+        <div class="empty-state text-center p-5 border rounded-4">
+          <h5 class="fw-semibold mb-2">No listings match your filters</h5>
+          <p class="text-muted mb-3">
+            Try adjusting price, category, or clearing your search to see more
+            options.
+          </p>
+          <button
+            type="button"
+            class="btn btn-outline-primary"
+            (click)="clearFilters(); scrollToSection('asset-list')"
+          >
+            Clear filters
+          </button>
+        </div>
+      </div>
     </div>
-  </div>
 
-  <!-- Pagination -->
-  <div
-    class="d-flex justify-content-center align-items-center gap-2 p-3"
-    *ngIf="pagination.totalPages > 1"
-  >
-    <button
-      class="btn btn-outline-secondary"
-      [disabled]="pagination.page === 1"
-      (click)="changePage(pagination.page - 1)"
-    >
-      &lt;
-    </button>
-    <span
-      *ngFor="let page of [].constructor(pagination.totalPages); let i = index"
+    <!-- Pagination -->
+    <div
+      class="d-flex justify-content-center align-items-center gap-2 pt-4"
+      *ngIf="pagination.totalPages > 1"
     >
       <button
         class="btn btn-outline-secondary"
-        [class.active]="pagination.page === i + 1"
-        (click)="changePage(i + 1)"
+        [disabled]="pagination.page === 1"
+        (click)="changePage(pagination.page - 1)"
       >
-        {{ i + 1 }}
+        &lt;
       </button>
-    </span>
-    <button
-      class="btn btn-outline-secondary"
-      [disabled]="pagination.page === pagination.totalPages"
-      (click)="changePage(pagination.page + 1)"
-    >
-      &gt;
-    </button>
-  </div>
+      <span
+        *ngFor="let page of [].constructor(pagination.totalPages); let i = index"
+      >
+        <button
+          class="btn btn-outline-secondary"
+          [class.active]="pagination.page === i + 1"
+          (click)="changePage(i + 1)"
+        >
+          {{ i + 1 }}
+        </button>
+      </span>
+      <button
+        class="btn btn-outline-secondary"
+        [disabled]="pagination.page === pagination.totalPages"
+        (click)="changePage(pagination.page + 1)"
+      >
+        &gt;
+      </button>
+    </div>
+  </section>
+
+  <footer class="home-footer bg-dark text-white py-5 mt-5">
+    <div class="container">
+      <div class="row g-4">
+        <div class="col-lg-4 col-md-6">
+          <h5 class="fw-bold mb-3">AssetLoop</h5>
+          <p class="text-white-50 mb-3">
+            The smarter way to rent and list assets. Connect with verified owners
+            and renters for seamless transactions.
+          </p>
+          <div class="d-flex gap-3">
+            <a
+              href="#"
+              class="social-link"
+              aria-label="Facebook"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <fa-icon [icon]="faFacebook"></fa-icon>
+            </a>
+            <a
+              href="#"
+              class="social-link"
+              aria-label="Twitter"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <fa-icon [icon]="faTwitter"></fa-icon>
+            </a>
+            <a
+              href="#"
+              class="social-link"
+              aria-label="Instagram"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <fa-icon [icon]="faInstagram"></fa-icon>
+            </a>
+            <a
+              href="#"
+              class="social-link"
+              aria-label="LinkedIn"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <fa-icon [icon]="faLinkedin"></fa-icon>
+            </a>
+          </div>
+        </div>
+        <div class="col-lg-2 col-md-6">
+          <h6 class="fw-semibold mb-3">For Renters</h6>
+          <ul class="list-unstyled footer-links">
+            <li>
+              <a href="#" (click)="scrollToSection('asset-list'); $event.preventDefault()"
+                >Browse Assets</a
+              >
+            </li>
+            <li><a href="#" (click)="scrollToSection('how-it-works'); $event.preventDefault()">How It Works</a></li>
+            <li><a routerLink="/auth/register">Sign Up</a></li>
+            <li><a routerLink="/auth/login">Login</a></li>
+          </ul>
+        </div>
+        <div class="col-lg-2 col-md-6">
+          <h6 class="fw-semibold mb-3">For Owners</h6>
+          <ul class="list-unstyled footer-links">
+            <li><a routerLink="/auth/register">List Your Asset</a></li>
+            <li><a href="#">Owner Guide</a></li>
+            <li><a href="#">Pricing</a></li>
+            <li><a href="#">Support</a></li>
+          </ul>
+        </div>
+        <div class="col-lg-2 col-md-6">
+          <h6 class="fw-semibold mb-3">Company</h6>
+          <ul class="list-unstyled footer-links">
+            <li><a href="#">About Us</a></li>
+            <li><a href="#">Blog</a></li>
+            <li><a href="#">Careers</a></li>
+            <li><a href="#">Contact</a></li>
+          </ul>
+        </div>
+        <div class="col-lg-2 col-md-6">
+          <h6 class="fw-semibold mb-3">Legal</h6>
+          <ul class="list-unstyled footer-links">
+            <li><a href="#">Terms of Service</a></li>
+            <li><a href="#">Privacy Policy</a></li>
+            <li><a href="#">Cookie Policy</a></li>
+            <li><a href="#">Disclaimer</a></li>
+          </ul>
+        </div>
+      </div>
+      <hr class="my-4 border-secondary" />
+      <div class="row align-items-center">
+        <div class="col-md-6">
+          <p class="text-white-50 mb-0 small">
+            &copy; {{ currentYear }} AssetLoop. All rights reserved.
+          </p>
+        </div>
+        <div class="col-md-6 text-md-end">
+          <p class="text-white-50 mb-0 small">
+            Made with <span class="text-danger">♥</span> for renters and owners
+          </p>
+        </div>
+      </div>
+    </div>
+  </footer>
 </div>

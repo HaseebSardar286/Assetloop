@@ -1,22 +1,23 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
 import {
   faHeart,
   faShoppingCart,
   faShare,
   faTrash,
+  faArrowRight,
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { AssetResponse } from '../../../interfaces/asset';
 import { ChatService } from '../../../services/chat.service';
 import { Router } from '@angular/router';
 import { AuthService } from '../../../services/auth.service';
+import { SystemCurrencyPipe } from '../../../pipes/currency.pipe';
 
 @Component({
   selector: 'app-product-item',
   standalone: true,
-  imports: [CommonModule, FormsModule, FontAwesomeModule],
+  imports: [CommonModule, FontAwesomeModule, SystemCurrencyPipe],
   templateUrl: './product-item.component.html',
   styleUrls: ['./product-item.component.css'],
 })
@@ -28,12 +29,12 @@ export class ProductItemComponent {
   @Output() removeFavourite = new EventEmitter<string>();
   @Output() addToCart = new EventEmitter<string>();
   @Output() share = new EventEmitter<string>();
-  @Output() updateNotes = new EventEmitter<{ id: string; notes: string }>();
 
   faHeart = faHeart;
   faShoppingCart = faShoppingCart;
   faShare = faShare;
   faTrash = faTrash;
+  faArrowRight = faArrowRight;
 
   constructor(
     private chatService: ChatService,
@@ -55,11 +56,6 @@ export class ProductItemComponent {
 
   onShare() {
     this.share.emit(this.asset._id);
-  }
-
-  onNotesChange(event: Event) {
-    const notes = (event.target as HTMLInputElement).value;
-    this.updateNotes.emit({ id: this.asset._id, notes });
   }
 
   startChatWithOwner(): void {

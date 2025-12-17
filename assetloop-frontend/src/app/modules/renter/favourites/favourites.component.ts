@@ -6,6 +6,8 @@ import { HeaderComponent } from '../../../components/header/header.component';
 import { RenterSideBarComponent } from '../renter-side-bar/renter-side-bar.component';
 import { BookingItemComponent } from '../../../components/cards/booking-item/booking-item.component';
 import { RenterService } from '../../../services/renter.service';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { faHeart, faCartPlus, faShareNodes } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
   selector: 'app-favourites',
@@ -16,11 +18,15 @@ import { RenterService } from '../../../services/renter.service';
     HeaderComponent,
     RenterSideBarComponent,
     BookingItemComponent,
+    FontAwesomeModule,
   ],
   templateUrl: './favourites.component.html',
   styleUrls: ['./favourites.component.css'],
 })
 export class FavouritesComponent implements OnInit {
+  faHeart = faHeart;
+  faCartPlus = faCartPlus;
+  faShareNodes = faShareNodes;
   favouriteItems: Booking[] = [];
   loading = false;
   error: string | null = null;

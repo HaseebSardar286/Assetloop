@@ -6,14 +6,35 @@ import { Router } from '@angular/router';
 import { HeaderComponent } from '../../../components/header/header.component';
 import { User } from '../../../interfaces/user';
 import { RenterService } from '../../../services/renter.service';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import {
+  faUser,
+  faLock,
+  faBell,
+  faGear,
+  faRightFromBracket,
+} from '@fortawesome/free-solid-svg-icons';
 
 @Component({
   selector: 'app-renter-profile',
-  imports: [FormsModule, CommonModule, RenterSideBarComponent, HeaderComponent],
+  imports: [
+    FormsModule,
+    CommonModule,
+    RenterSideBarComponent,
+    HeaderComponent,
+    FontAwesomeModule,
+  ],
   templateUrl: './renter-profile.component.html',
   styleUrl: './renter-profile.component.css',
 })
 export class RenterProfileComponent {
+  faUser = faUser;
+  faLock = faLock;
+  faBell = faBell;
+  faGear = faGear;
+  faRightFromBracket = faRightFromBracket;
+
+  activeTab: 'profile' | 'password' | 'notifications' = 'profile';
   user: User = {
     firstName: '',
     lastName: '',
@@ -57,6 +78,10 @@ export class RenterProfileComponent {
   ngOnInit(): void {
     this.getProfile();
     this.loadSettings();
+  }
+
+  setTab(tab: 'profile' | 'password' | 'notifications'): void {
+    this.activeTab = tab;
   }
 
   getProfile() {

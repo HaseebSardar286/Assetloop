@@ -2,229 +2,302 @@
   <app-header (logout)="onLogout()"></app-header>
   <div class="d-flex flex-grow-1">
     <app-owner-side-bar (logout)="onLogout()"></app-owner-side-bar>
-    <main class="flex-grow-1 p-4 bg-light">
-      <form
-        #assetForm="ngForm"
-        (ngSubmit)="onSubmit()"
-        class="needs-validation"
-        novalidate
-      >
-        <h2 class="mb-4">Create a Listing</h2>
-        <div class="card">
-          <div class="card-header">Basic Information</div>
-          <div class="card-body">
-            <div class="row">
-              <div class="mb-3 col-md-6">
-                <label for="name" class="form-label">Asset Name</label>
-                <input
-                  type="text"
-                  class="form-control"
-                  id="name"
-                  name="name"
-                  [(ngModel)]="asset.name"
-                  required
-                />
-              </div>
-              <div class="mb-3 col-md-6">
-                <label for="address" class="form-label">Address</label>
-                <input
-                  type="text"
-                  class="form-control"
-                  id="address"
-                  name="address"
-                  [(ngModel)]="asset.address"
-                  required
-                />
-              </div>
+    <main class="flex-grow-1 bg-light">
+      <section class="dashboard-hero gradient-bg px-4 py-4 py-md-5">
+        <div class="container-fluid d-flex flex-wrap justify-content-between align-items-start gap-3">
+          <div>
+            <div class="badge text-bg-light fw-semibold mb-2">Add product</div>
+            <h2 class="text-white fw-bold mb-1">Create a listing</h2>
+            <p class="text-white-50 mb-0">Share your asset with renters and start earning.</p>
+          </div>
+          <div class="stat-pill bg-white shadow-sm rounded-4 p-3 d-flex align-items-center gap-3">
+            <div>
+              <div class="text-muted small">Images</div>
+              <div class="fs-5 fw-bold text-dark">{{ imageFiles.length }}/5</div>
             </div>
+            <div class="vr"></div>
+            <div>
+              <div class="text-muted small">Listings</div>
+              <div class="fw-semibold text-dark">{{ currentListingsCount }}/{{ maxListingsAllowed }}</div>
+            </div>
+            <div class="vr"></div>
+            <div>
+              <div class="text-muted small">Status</div>
+              <div class="fw-semibold text-dark">{{ asset.status }}</div>
+            </div>
+          </div>
+        </div>
+      </section>
 
-            <div class="mb-3 col-md-12">
-              <label for="description" class="form-label">Description</label>
-              <textarea
-                class="form-control"
-                id="description"
-                name="description"
-                [(ngModel)]="asset.description"
-                rows="3"
-                required
-              ></textarea>
-            </div>
+      <section class="container-fluid py-4">
+        <form #assetForm="ngForm" (ngSubmit)="onSubmit()" novalidate>
+          <div class="row g-4">
+            <div class="col-xl-8">
+              <div class="card glass-card p-3 mb-3">
+                <div class="d-flex align-items-center gap-2 mb-3">
+                  <div class="icon-circle">
+                    <fa-icon [icon]="faPlus"></fa-icon>
+                  </div>
+                  <div>
+                    <h5 class="mb-0">Basic info</h5>
+                    <small class="text-muted">Name, address and overview</small>
+                  </div>
+                </div>
+                <div class="row g-3">
+                  <div class="col-md-6">
+                    <label for="name" class="form-label small text-muted">Asset Name</label>
+                    <input
+                      type="text"
+                      class="form-control"
+                      id="name"
+                      name="name"
+                      [(ngModel)]="asset.name"
+                      required
+                    />
+                  </div>
+                  <div class="col-md-6">
+                    <label for="address" class="form-label small text-muted">Address</label>
+                    <input
+                      type="text"
+                      class="form-control"
+                      id="address"
+                      name="address"
+                      [(ngModel)]="asset.address"
+                      required
+                    />
+                  </div>
+                  <div class="col-12">
+                    <label for="description" class="form-label small text-muted">Description</label>
+                    <textarea
+                      class="form-control"
+                      id="description"
+                      name="description"
+                      [(ngModel)]="asset.description"
+                      rows="3"
+                      required
+                    ></textarea>
+                  </div>
+                </div>
+              </div>
 
-            <div class="row">
-              <div class="mb-3 col-md-6">
-                <label for="availability" class="form-label"
-                  >Availability</label
-                >
-                <select
-                  class="form-select"
-                  id="availability"
-                  name="availability"
-                  [(ngModel)]="asset.availability"
-                  required
-                >
-                  <option value="available">Available</option>
-                  <option value="unavailable">Unavailable</option>
-                </select>
-              </div>
-              <div class="mb-3 col-md-6">
-                <label for="price" class="form-label">Price (PKR/day)</label>
-                <input
-                  type="number"
-                  class="form-control"
-                  id="price"
-                  name="price"
-                  [(ngModel)]="asset.price"
-                  required
-                  min="0"
-                />
-              </div>
-            </div>
-
-            <div class="row" *ngIf="asset.availability === 'available'">
-              <div class="mb-3 col-md-6">
-                <label for="startDate" class="form-label">Start Date</label>
-                <input
-                  type="date"
-                  class="form-control"
-                  id="startDate"
-                  name="startDate"
-                  [(ngModel)]="asset.startDate"
-                  required
-                  min="2025-09-01"
-                />
-              </div>
-              <div class="mb-3 col-md-6">
-                <label for="endDate" class="form-label">End Date</label>
-                <input
-                  type="date"
-                  class="form-control"
-                  id="endDate"
-                  name="endDate"
-                  [(ngModel)]="asset.endDate"
-                  required
-                  [min]="asset.startDate"
-                />
-              </div>
-            </div>
-
-            <div class="row">
-              <div class="mb-3 col-md-6">
-                <label for="category" class="form-label">Category</label>
-                <select
-                  class="form-select"
-                  id="category"
-                  name="category"
-                  [(ngModel)]="asset.category"
-                  required
-                >
-                  <option *ngFor="let cat of categories" [value]="cat">
-                    {{ cat }}
-                  </option>
-                </select>
-              </div>
-              <div class="mb-3 col-md-6">
-                <label for="capacity" class="form-label"
-                  >Capacity (e.g., seats, rooms)</label
-                >
-                <input
-                  type="number"
-                  class="form-control"
-                  id="capacity"
-                  name="capacity"
-                  [(ngModel)]="asset.capacity"
-                  required
-                  min="1"
-                />
-              </div>
-            </div>
-            <div class="row">
-              <div class="mb-3 col-md-6">
-                <label class="form-label">Features</label>
-                <div class="mb-2">
-                  <select class="form-select">
-                    <option value="">Select a Feature</option>
-                    <option
-                      *ngFor="let feature of availableFeatures"
-                      [value]="feature"
+              <div class="card glass-card p-3 mb-3">
+                <div class="d-flex align-items-center gap-2 mb-3">
+                  <div class="icon-circle">
+                    <fa-icon [icon]="faCalendarDays"></fa-icon>
+                  </div>
+                  <div>
+                    <h5 class="mb-0">Availability & pricing</h5>
+                    <small class="text-muted">Set price, availability and dates</small>
+                  </div>
+                </div>
+                <div class="row g-3">
+                  <div class="col-md-6">
+                    <label for="availability" class="form-label small text-muted">Availability</label>
+                    <select
+                      class="form-select"
+                      id="availability"
+                      name="availability"
+                      [(ngModel)]="asset.availability"
+                      required
                     >
-                      {{ feature }}
-                    </option>
-                  </select>
+                      <option value="available">Available</option>
+                      <option value="unavailable">Unavailable</option>
+                    </select>
+                  </div>
+                  <div class="col-md-6">
+                    <label for="price" class="form-label small text-muted">Price (PKR/day)</label>
+                    <input
+                      type="number"
+                      class="form-control"
+                      id="price"
+                      name="price"
+                      [(ngModel)]="asset.price"
+                      required
+                      min="0"
+                    />
+                  </div>
+                  <div class="col-md-6" *ngIf="asset.availability === 'available'">
+                    <label for="startDate" class="form-label small text-muted">Start Date</label>
+                    <input
+                      type="date"
+                      class="form-control"
+                      id="startDate"
+                      name="startDate"
+                      [(ngModel)]="asset.startDate"
+                      required
+                    />
+                  </div>
+                  <div class="col-md-6" *ngIf="asset.availability === 'available'">
+                    <label for="endDate" class="form-label small text-muted">End Date</label>
+                    <input
+                      type="date"
+                      class="form-control"
+                      id="endDate"
+                      name="endDate"
+                      [(ngModel)]="asset.endDate"
+                      required
+                      [min]="asset.startDate"
+                    />
+                  </div>
                 </div>
               </div>
 
-              <div class="mb-3 col-md-6">
-                <label class="form-label">Status</label>
-                <div class="mb-2">
-                  <select class="form-select">
-                    <option *ngFor="let status of statuses" [value]="status">
-                      {{ status }}
-                    </option>
-                  </select>
+              <div class="card glass-card p-3 mb-3">
+                <div class="d-flex align-items-center gap-2 mb-3">
+                  <div class="icon-circle">
+                    <fa-icon [icon]="faTags"></fa-icon>
+                  </div>
+                  <div>
+                    <h5 class="mb-0">Category & specs</h5>
+                    <small class="text-muted">Category, capacity and status</small>
+                  </div>
+                </div>
+                <div class="row g-3">
+                  <div class="col-md-6">
+                    <label for="category" class="form-label small text-muted">Category</label>
+                    <select
+                      class="form-select"
+                      id="category"
+                      name="category"
+                      [(ngModel)]="asset.category"
+                      required
+                    >
+                      <option value="" disabled selected>Select a category</option>
+                      <option *ngFor="let cat of categories" [value]="cat">
+                        {{ cat }}
+                      </option>
+                    </select>
+                  </div>
+                  <div class="col-md-6">
+                    <label for="capacity" class="form-label small text-muted">Capacity (e.g., seats, rooms)</label>
+                    <input
+                      type="number"
+                      class="form-control"
+                      id="capacity"
+                      name="capacity"
+                      [(ngModel)]="asset.capacity"
+                      required
+                      min="1"
+                    />
+                  </div>
+                  <div class="col-md-6">
+                    <label class="form-label small text-muted">Features</label>
+                    <select class="form-select" (change)="onFeatureSelect($event)">
+                      <option value="">Select a feature</option>
+                      <option *ngFor="let feature of availableFeatures" [value]="feature">
+                        {{ feature }}
+                      </option>
+                    </select>
+                    <div class="d-flex flex-wrap gap-2 mt-2">
+                      <span
+                        class="chip"
+                        *ngFor="let feature of asset.features"
+                      >
+                        {{ feature }}
+                        <button type="button" class="btn-close btn-close-sm ms-2" aria-label="Remove" (click)="removeFeature(feature)"></button>
+                      </span>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <label class="form-label small text-muted">Status</label>
+                    <select class="form-select" [(ngModel)]="asset.status" name="status">
+                      <option *ngFor="let status of statuses" [value]="status">
+                        {{ status }}
+                      </option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              <div class="card glass-card p-3 mb-3">
+                <div class="d-flex align-items-center gap-2 mb-3">
+                  <div class="icon-circle">
+                    <fa-icon [icon]="faListCheck"></fa-icon>
+                  </div>
+                  <div>
+                    <h5 class="mb-0">Amenities</h5>
+                    <small class="text-muted">Select what you offer</small>
+                  </div>
+                </div>
+                <div class="d-flex flex-wrap gap-3">
+                  <div class="form-check" *ngFor="let amenity of availableAmenities">
+                    <input
+                      type="checkbox"
+                      class="form-check-input"
+                      [id]="'amenity_' + amenity"
+                      [value]="amenity"
+                      (change)="toggleAmenity(amenity)"
+                      [checked]="asset.amenities.includes(amenity)"
+                    />
+                    <label class="form-check-label" [for]="'amenity_' + amenity">{{ amenity }}</label>
+                  </div>
+                </div>
+                <div class="d-flex flex-wrap gap-2 mt-3">
+                  <span class="chip muted" *ngFor="let a of asset.amenities">{{ a }}</span>
+                  <span *ngIf="asset.amenities.length === 0" class="text-muted small">No amenities selected yet.</span>
                 </div>
               </div>
             </div>
-          </div>
-        </div>
 
-        <div class="mb-3 mt-3">
-          <div class="card">
-            <div class="card-header">Amenities</div>
-            <div class="card-body">
-              <div class="mb-2">
-                <div
-                  class="form-check"
-                  *ngFor="let amenity of availableAmenities"
-                >
+            <div class="col-xl-4">
+              <div class="card glass-card p-3 mb-3">
+                <div class="d-flex align-items-center gap-2 mb-3">
+                  <div class="icon-circle">
+                    <fa-icon [icon]="faCloudArrowUp"></fa-icon>
+                  </div>
+                  <div>
+                    <h5 class="mb-0">Images</h5>
+                    <small class="text-muted">Upload up to 5 photos</small>
+                  </div>
+                </div>
+                <div class="upload-box border rounded-3 p-3 text-center">
                   <input
-                    type="checkbox"
-                    class="form-check-input"
-                    [id]="'amenity_' + amenity"
-                    [value]="amenity"
-                    (change)="toggleAmenity(amenity)"
+                    type="file"
+                    class="form-control mb-2"
+                    id="images"
+                    name="images"
+                    [accept]="'.' + allowedFileTypes.join(',.')"
+                    (change)="onFileChange($event)"
+                    multiple
                   />
-                  <label
-                    class="form-check-label"
-                    [for]="'amenity_' + amenity"
-                    >{{ amenity }}</label
+                  <small class="text-muted d-block">Add high-quality images to attract renters.</small>
+                  <small class="text-muted d-block mt-1">
+                    Allowed file types: {{ allowedFileTypes.join(', ').toUpperCase() }}
+                  </small>
+                  <div *ngIf="fileTypeError" class="alert alert-danger mt-2 mb-0">
+                    {{ fileTypeError }}
+                  </div>
+                  <div *ngIf="currentListingsCount >= maxListingsAllowed" class="alert alert-warning mt-2 mb-0">
+                    You have reached the maximum limit of {{ maxListingsAllowed }} listings. Please delete an existing listing to create a new one.
+                  </div>
+                  <div class="d-flex flex-wrap gap-2 mt-2 justify-content-center" *ngIf="imageFiles.length > 0">
+                    <span class="chip" *ngFor="let file of imageFiles">{{ file.name }}</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="card glass-card p-3">
+                <div class="d-flex gap-2">
+                  <button
+                    type="submit"
+                    class="btn btn-primary flex-grow-1 d-inline-flex align-items-center justify-content-center gap-2"
+                    [disabled]="!assetForm.valid"
                   >
+                    <fa-icon [icon]="faPlus"></fa-icon> Create listing
+                  </button>
+                  <button
+                    type="button"
+                    class="btn btn-outline-secondary d-inline-flex align-items-center justify-content-center gap-2"
+                    (click)="resetForm()"
+                  >
+                    <fa-icon [icon]="faRotateRight"></fa-icon>
+                  </button>
                 </div>
               </div>
             </div>
           </div>
-        </div>
-
-        <div class="mb-3 mt-3">
-          <div class="card">
-            <div class="card-header">Images</div>
-            <div class="card-body">
-              <div class="mb-2">
-                <label class="form-label">Images</label>
-                <input
-                  type="file"
-                  class="form-control"
-                  id="images"
-                  name="images"
-                  (change)="onFileChange($event)"
-                  multiple
-                />
-                <small class="text-muted"
-                  >Select multiple images for the listing.</small
-                >
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <button
-          type="submit"
-          class="btn btn-primary"
-          [disabled]="!assetForm.valid"
-        >
-          Create Listing
-        </button>
-        <button type="button" class="btn btn-secondary ms-2">Reset</button>
-      </form>
+        </form>
+      </section>
     </main>
   </div>
 </div>

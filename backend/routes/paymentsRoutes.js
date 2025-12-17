@@ -9,6 +9,7 @@ const {
     getPaymentMethods,
     addPaymentMethod,
     removePaymentMethod,
+    setDefaultPaymentMethod,
     getInvoices,
     getRefunds,
 } = require("../controllers/paymentsController");
@@ -33,6 +34,7 @@ router.get("/transactions", getTransactions);
 router.get("/methods", getPaymentMethods);
 router.post("/methods", addPaymentMethod);
 router.delete("/methods/:id", removePaymentMethod);
+router.post("/methods/:id/default", setDefaultPaymentMethod);
 
 // Invoices & Refunds
 router.get("/invoices", getInvoices);

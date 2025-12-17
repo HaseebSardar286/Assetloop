@@ -9,6 +9,14 @@ import { AuthService } from '../../../services/auth.service';
 import { HeaderComponent } from '../../../components/header/header.component';
 import { OwnerSideBarComponent } from '../owner-side-bar/owner-side-bar.component';
 import { RentalRequestItemsComponent } from '../../../components/cards/rental-request-items/rental-request-items.component';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import {
+  faInbox,
+  faClockRotateLeft,
+  faCheck,
+  faXmark,
+  faArrowRight,
+} from '@fortawesome/free-solid-svg-icons';
 
 @Component({
   selector: 'app-rental-requests',
@@ -19,6 +27,7 @@ import { RentalRequestItemsComponent } from '../../../components/cards/rental-re
     HeaderComponent,
     OwnerSideBarComponent,
     RentalRequestItemsComponent,
+    FontAwesomeModule,
   ],
   templateUrl: './rental-requests.component.html',
   styleUrls: ['./rental-requests.component.css'],
@@ -34,6 +43,12 @@ export class RentalRequestsComponent implements OnInit {
     private authService: AuthService,
     private router: Router
   ) {}
+
+  faInbox = faInbox;
+  faClockRotateLeft = faClockRotateLeft;
+  faCheck = faCheck;
+  faXmark = faXmark;
+  faArrowRight = faArrowRight;
 
   ngOnInit(): void {
     this.loadBookings();

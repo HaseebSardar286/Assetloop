@@ -1,71 +1,53 @@
-/* Ensure the entire container takes full viewport height */
-.d-flex {
-  height: 100vh;
+.gradient-bg {
+  background: radial-gradient(circle at 10% 20%, #5aa6ff 0, #4a7bff 25%, #29316d 80%);
+  color: #fff;
 }
 
-/* Style the main content area */
-main {
-  margin-left: 230px; /* Match sidebar width */
-  flex-grow: 1;
-  overflow-y: auto; /* Enable scrolling if content overflows */
-  padding: 1rem;
-  background-color: #f8f9fa; /* Light background for consistency */
-  transition: margin-left 0.3s ease; /* Smooth transition for responsive adjustment */
+.dashboard-hero {
+  border-bottom-left-radius: 28px;
+  border-bottom-right-radius: 28px;
+  margin-bottom: -20px;
 }
 
-/* Adjust for header height (assuming 60px, adjust if different) */
-main {
-  margin-top: 60px; /* Offset for header */
-  height: calc(100vh - 60px); /* Full height minus header */
+.stat-pill {
+  border: 1px solid #e8ebf3;
+  min-width: 220px;
 }
 
-/* Responsive design: Collapse sidebar on small screens */
-@media (max-width: 768px) {
-  main {
-    margin-left: 0; /* Remove sidebar margin on small screens */
-    width: 100%; /* Full width */
-    margin-top: 60px; /* Maintain header offset */
-    height: calc(100vh - 60px); /* Adjust height */
-  }
-
-  .d-flex .flex-grow-1 {
-    flex-direction: column; /* Stack content vertically */
-  }
+.glass-card {
+  border: 1px solid #e8ebf3;
+  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.08);
+  border-radius: 16px;
 }
 
-/* Card styling for consistency */
-.card {
-  border: none;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+.icon-circle {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
 }
 
-.card-header {
-  background-color: #f8f9fa;
-  font-weight: bold;
+.btn-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
 }
 
-.card-body {
-  padding: 1.5rem;
+.table thead th {
+  border-bottom: 1px solid #e8ebf3;
+  color: #475569;
+  font-weight: 600;
 }
 
-.btn-sm {
-  padding: 0.25rem 0.5rem;
-  font-size: 0.875rem;
-}
-
-/* Style the toggle switch */
-.form-switch .form-check-input {
-  width: 2.5em;
-  height: 1.5em;
-}
-
-.form-switch .form-check-label {
-  margin-left: 0.5rem;
+.table td {
   vertical-align: middle;
 }
 
-/* Modal styling */
 .modal {
   display: none;
 }
@@ -74,28 +56,10 @@ main {
   display: block;
 }
 
-.modal-dialog {
-  margin: 1.75rem auto;
-}
-
 .modal-content {
   border: none;
-  border-radius: 8px;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-}
-
-.modal-header {
-  padding: 1rem;
-  border-bottom: 1px solid #eee;
-}
-
-.modal-body {
-  padding: 1rem;
-}
-
-.modal-footer {
-  padding: 1rem;
-  border-top: 1px solid #eee;
+  border-radius: 12px;
+  box-shadow: 0 20px 40px rgba(15, 23, 42, 0.2);
 }
 
 .modal-backdrop {
@@ -104,6 +68,34 @@ main {
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: rgba(0, 0, 0, 0.45);
   z-index: 1040;
+}
+
+main {
+  margin-left: 230px;
+  flex-grow: 1;
+  min-height: calc(100vh - 60px);
+  margin-top: 70px;
+  padding: 0;
+  background-color: #f8f9fa;
+}
+
+.dashboard-hero .container-fluid,
+section.container-fluid {
+  max-width: 1200px;
+}
+
+.container-fluid {
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
+}
+
+@media (max-width: 992px) {
+  main {
+    margin-left: 0;
+  }
+  .dashboard-hero {
+    border-radius: 0 0 20px 20px;
+  }
 }

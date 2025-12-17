@@ -7,6 +7,8 @@ import { BookingItemComponent } from '../../../components/cards/booking-item/boo
 import { Booking, Bookings } from '../../../interfaces/bookings';
 import { Router } from '@angular/router';
 import { RenterService } from '../../../services/renter.service';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { faClock, faCheck, faXmark } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
   selector: 'app-requested-assets',
@@ -16,11 +18,15 @@ import { RenterService } from '../../../services/renter.service';
     NgFor,
     NgIf,
     BookingItemComponent,
+    FontAwesomeModule,
   ],
   templateUrl: './requested-assets.component.html',
   styleUrl: './requested-assets.component.css',
 })
 export class RequestedAssetsComponent {
+  faClock = faClock;
+  faCheck = faCheck;
+  faXmark = faXmark;
   activeTab: keyof Bookings = 'pending';
   bookings: Bookings = { current: [], past: [], cancelled: [], pending: [] };
   loading = false;

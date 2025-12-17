@@ -1,0 +1,216 @@
+<div class="d-flex flex-column vh-100">
+  <app-header></app-header>
+  <div class="d-flex flex-grow-1">
+    <app-owner-side-bar></app-owner-side-bar>
+    <main class="flex-grow-1 bg-light">
+      <section class="dashboard-hero gradient-bg px-4 py-4 py-md-5">
+        <div
+          class="container-fluid d-flex flex-wrap justify-content-between align-items-start gap-3"
+        >
+          <div>
+            <div class="badge text-bg-light fw-semibold mb-2">
+              Owner wallet
+            </div>
+            <h2 class="text-white fw-bold mb-1">Wallet & earnings</h2>
+            <p class="text-white-50 mb-0">
+              View your earnings from bookings and withdraw them to your bank or
+              mobile wallet.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section class="container-fluid py-4">
+        <div *ngIf="loading" class="mb-2">
+          <div class="spinner-border spinner-border-sm" role="status">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+        </div>
+        <div class="alert alert-danger" *ngIf="error">{{ error }}</div>
+        <div class="alert alert-info" *ngIf="!error">
+          Payments are processed via Stripe. For this FYP, owner withdrawals are
+          simulated by updating your in-app wallet balance only.
+        </div>
+
+        <div class="row g-4">
+          <div class="col-lg-4">
+            <div class="card glass-card h-100">
+              <div class="card-body d-flex flex-column justify-content-between">
+                <div>
+                  <div class="text-muted small mb-1">Available balance</div>
+                  <div class="h3 mb-3 fw-bold">
+                    PKR {{ balance | number : '1.0-0' }}
+                  </div>
+                  <div class="row g-2 mb-2">
+                    <div class="col-6">
+                      <div class="small text-muted">Total earnings</div>
+                      <div class="fw-semibold">
+                        PKR {{ totalEarnings | number : '1.0-0' }}
+                      </div>
+                    </div>
+                    <div class="col-6">
+                      <div class="small text-muted">Total withdrawn</div>
+                      <div class="fw-semibold">
+                        PKR {{ totalWithdrawn | number : '1.0-0' }}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div>
+                  <label class="form-label small text-muted"
+                    >Withdraw amount</label
+                  >
+                  <div class="input-group mb-2">
+                    <span class="input-group-text">PKR</span>
+                    <input
+                      type="number"
+                      class="form-control"
+                      [(ngModel)]="amount"
+                      min="0"
+                      [max]="balance"
+                    />
+                  </div>
+                  <label class="form-label small text-muted"
+                    >Payout destination</label
+                  >
+                  <select
+                    class="form-select mb-2"
+                    [(ngModel)]="selectedPayoutMethodId"
+                    [disabled]="!payoutMethods.length"
+                  >
+                    <option [ngValue]="null" *ngIf="!payoutMethods.length">
+                      No payout methods configured
+                    </option>
+                    <option
+                      *ngFor="let m of payoutMethods"
+                      [ngValue]="m.id"
+                    >
+                      {{ m.details }}
+                      <span *ngIf="m.isDefault"> (Default) </span>
+                    </option>
+                  </select>
+                  <button
+                    class="btn btn-warning w-100"
+                    type="button"
+                    (click)="withdraw()"
+                    [disabled]="loading || amount <= 0 || amount > balance"
+                  >
+                    Withdraw to bank / wallet
+                  </button>
+                  <p class="small text-muted mt-2 mb-0">
+                    For this FYP demo, withdrawals are simulated and update your
+                    in-app balance only. Select a payout method above so we can
+                    record where the funds are going.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-lg-8">
+            <div class="card glass-card h-100">
+              <div
+                class="card-header d-flex justify-content-between align-items-center"
+              >
+                <div>
+                  <h5 class="mb-0">Recent wallet transactions</h5>
+                  <small class="text-muted"
+                    >Filter by type to focus on earnings or withdrawals.</small
+                  >
+                </div>
+                <div class="btn-group btn-group-sm" role="group">
+                  <button
+                    type="button"
+                    class="btn"
+                    [ngClass]="{
+                      'btn-primary': filteredType === 'all',
+                      'btn-outline-primary': filteredType !== 'all'
+                    }"
+                    (click)="setFilter('all')"
+                  >
+                    All
+                  </button>
+                  <button
+                    type="button"
+                    class="btn"
+                    [ngClass]="{
+                      'btn-primary': filteredType === 'earnings',
+                      'btn-outline-primary': filteredType !== 'earnings'
+                    }"
+                    (click)="setFilter('earnings')"
+                  >
+                    Earnings
+                  </button>
+                  <button
+                    type="button"
+                    class="btn"
+                    [ngClass]="{
+                      'btn-primary': filteredType === 'withdrawals',
+                      'btn-outline-primary': filteredType !== 'withdrawals'
+                    }"
+                    (click)="setFilter('withdrawals')"
+                  >
+                    Withdrawals
+                  </button>
+                </div>
+              </div>
+              <div class="card-body p-0">
+                <table class="table mb-0 align-middle">
+                  <thead class="table-light">
+                    <tr>
+                      <th>Date</th>
+                      <th>Type</th>
+                      <th>Description</th>
+                      <th class="text-end">Amount (PKR)</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr *ngFor="let t of getFilteredTransactions()">
+                      <td>{{ t.createdAt | date : 'short' }}</td>
+                      <td>{{ t.type | titlecase }}</td>
+                      <td>{{ t.description || '-' }}</td>
+                      <td class="text-end">
+                        <span
+                          [ngClass]="{
+                            'text-success': t.amount > 0,
+                            'text-danger': t.amount < 0
+                          }"
+                        >
+                          {{ t.amount | number : '1.0-0' }}
+                        </span>
+                      </td>
+                    </tr>
+                    <tr *ngIf="!getFilteredTransactions().length">
+                      <td colspan="4" class="text-center text-muted py-3">
+                        No wallet transactions yet.
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="row g-4 mt-1">
+          <div class="col-12">
+            <div class="card glass-card">
+              <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Payout methods</h5>
+                <small class="text-muted">
+                  Add or manage the cards / wallets you can withdraw to.
+                </small>
+              </div>
+              <div class="card-body">
+                <!-- Reuse the shared payment methods UI (card + wallet) -->
+                <app-payment-methods></app-payment-methods>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+</div>
+
+

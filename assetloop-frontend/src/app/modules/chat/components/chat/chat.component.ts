@@ -11,6 +11,8 @@ import { ChatEmptyStateComponent } from '../chat-empty-state/chat-empty-state.co
 import { ChatService, ChatConversation } from '../../../../services/chat.service';
 import { AuthService } from '../../../../services/auth.service';
 import { interval, Subscription, filter } from 'rxjs';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { faMessage, faArrowRotateRight } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
   selector: 'app-chat',
@@ -25,11 +27,14 @@ import { interval, Subscription, filter } from 'rxjs';
     ChatWindowComponent,
     ChatInfoPanelComponent,
     ChatEmptyStateComponent,
+    FontAwesomeModule,
   ],
   templateUrl: './chat.component.html',
   styleUrls: ['./chat.component.css'],
 })
 export class ChatComponent implements OnInit, OnDestroy {
+  faMessage = faMessage;
+  faArrowRotateRight = faArrowRotateRight;
   selectedChatId: string | null = null;
   userRole: string = '';
   conversations: ChatConversation[] = [];

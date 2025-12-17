@@ -6,6 +6,15 @@ import { HeaderComponent } from '../../../components/header/header.component';
 import { AdminSidebarComponent } from '../admin-sidebar/admin-sidebar.component';
 import { AdminService } from '../../../services/admin.service';
 import { Review } from '../../../interfaces/review';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import {
+  faSearch,
+  faEye,
+  faEdit,
+  faTrash,
+  faArrowLeft,
+  faArrowRight,
+} from '@fortawesome/free-solid-svg-icons';
 
 @Component({
   selector: 'app-reviews-management',
@@ -16,11 +25,19 @@ import { Review } from '../../../interfaces/review';
     FormsModule,
     HeaderComponent,
     AdminSidebarComponent,
+    FontAwesomeModule,
   ],
   templateUrl: './reviews-management.component.html',
   styleUrls: ['./reviews-management.component.css'],
 })
 export class ReviewsManagementComponent implements OnInit {
+  faSearch = faSearch;
+  faEye = faEye;
+  faEdit = faEdit;
+  faTrash = faTrash;
+  faArrowLeft = faArrowLeft;
+  faArrowRight = faArrowRight;
+
   allReviews: Review[] = [];
   filteredReviews: Review[] = [];
   displayedReviews: Review[] = [];
@@ -51,9 +68,6 @@ export class ReviewsManagementComponent implements OnInit {
         this.filteredReviews = this.allReviews;
         this.updatePagination();
         this.loading = false;
-        if (this.allReviews.length === 0) {
-          this.error = 'No reviews found';
-        }
         console.log('Loaded reviews:', this.allReviews);
       },
       error: (err) => {

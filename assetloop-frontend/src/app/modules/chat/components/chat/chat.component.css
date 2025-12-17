@@ -1,21 +1,53 @@
-.chat-container {
-  flex-grow: 1;
-  display: flex;
+.dashboard-hero {
+  border-bottom-left-radius: 28px;
+  border-bottom-right-radius: 28px;
+  margin-bottom: -20px;
+}
+
+.gradient-bg {
+  background: radial-gradient(circle at 10% 20%, #5aa6ff 0, #4a7bff 25%, #29316d 80%);
 }
 
 main {
-  margin-left: 200px; /* Width of sidebar */
+  margin-left: 230px;
   flex-grow: 1;
-  overflow-y: auto;
-  padding: 1rem;
+  min-height: calc(100vh - 60px);
+  margin-top: 60px;
 }
 
-@media (max-width: 768px) {
+.chat-container {
+  flex-grow: 1;
+  display: flex;
+  border-radius: 18px;
+}
+
+.glass-card {
+  border: 1px solid #e8ebf3;
+  border-radius: 18px;
+  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.08);
+}
+
+.btn-icon {
+  width: 40px;
+  height: 40px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  padding: 0;
+}
+
+.stat-pill {
+  min-width: 200px;
+}
+
+@media (max-width: 992px) {
   main {
     margin-left: 0;
-    width: 100%;
   }
-
+  .dashboard-hero {
+    border-radius: 0 0 20px 20px;
+  }
   .chat-container {
     flex-direction: column;
   }

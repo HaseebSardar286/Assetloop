@@ -1,36 +1,231 @@
-.logo {
-  font-size: 1.5rem;
-  font-weight: 600;
-  color: #000;
+.home-landing {
+  background: #f7f8fb;
 }
 
-.search-bar {
+.home-header {
+  background: #fff;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.home-header .brand-logo {
+  font-weight: 800;
+  color: #1f2a44;
+  text-decoration: none;
+  font-size: 1.1rem;
+}
+
+.nav-link-btn {
+  color: #1f2a44;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.nav-link-btn:hover {
+  color: #1a73e8;
+  text-decoration: underline;
+}
+
+.gradient-bg {
+  background: radial-gradient(circle at 10% 20%, #5aa6ff 0, #4a7bff 25%, #29316d 80%);
+  color: #fff;
+  border-bottom-left-radius: 32px;
+  border-bottom-right-radius: 32px;
+}
+
+.hero-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.8);
+}
+
+.search-card {
   position: relative;
 }
 
-.search-bar input {
-  border-radius: 20px;
-  padding-right: 40px;
-}
-
-.search-bar button {
+.search-card .search-icon {
   position: absolute;
-  right: 10px;
+  right: 12px;
   top: 50%;
   transform: translateY(-50%);
+  pointer-events: none;
 }
 
-a {
-  color: #000;
-  text-decoration: none;
+.stats-card {
+  position: relative;
+}
+
+.stat-icon {
+  width: 60px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+}
+
+.stat-item h4 {
+  font-size: 1.75rem;
+  color: #1f2a44;
+}
+
+.brand-chip {
+  padding: 8px 14px;
+  border-radius: 999px;
+  border: 1px solid #e6e8f0;
+  background: #f8f9fc;
+  font-weight: 600;
+  font-size: 0.85rem;
+  color: #5f6472;
+}
+
+.categories-section .category-card {
+  width: 100%;
+  background: #fff;
+  border: 1px solid #e8ebf3;
+  border-radius: 18px;
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  transition: all 0.15s ease;
+  color: inherit;
+}
+
+.categories-section .category-card:hover {
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.06);
+  transform: translateY(-2px);
+}
+
+.icon-circle {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-size: 1.1rem;
+}
+
+.how-it-works .step-card {
+  background: #fff;
+  border-radius: 18px;
+  padding: 18px;
+  border: 1px solid #e8ebf3;
+  box-shadow: 0 6px 16px rgba(20, 37, 63, 0.04);
+}
+
+.how-it-works .step-number {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  background: #eef2ff;
+  color: #3b5bdb;
+  display: grid;
+  place-items: center;
+  font-weight: 700;
+  margin-bottom: 12px;
 }
 
 .filters select,
 .filters input {
   flex: 1;
-  max-width: 200px;
+  min-width: 160px;
 }
 
-.row .col-md-4 {
-  display: flex;
+.filters {
+  background: #fff;
+  padding: 10px;
+  border-radius: 14px;
+  border: 1px solid #e8ebf3;
+}
+
+.empty-state {
+  background: #fff;
+}
+
+.home-footer {
+  margin-top: auto;
+}
+
+.home-footer .footer-links {
+  list-style: none;
+  padding: 0;
+}
+
+.home-footer .footer-links li {
+  margin-bottom: 8px;
+}
+
+.home-footer .footer-links a {
+  color: rgba(255, 255, 255, 0.7);
+  text-decoration: none;
+  transition: color 0.2s ease;
+  font-size: 0.9rem;
+}
+
+.home-footer .footer-links a:hover {
+  color: #fff;
+  text-decoration: underline;
+}
+
+.home-footer .social-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.8);
+  text-decoration: none;
+  transition: all 0.2s ease;
+  font-size: 1.1rem;
+}
+
+.home-footer .social-link:hover {
+  background: rgba(255, 255, 255, 0.2);
+  color: #fff;
+  transform: translateY(-2px);
+}
+
+.search-card .form-control[type="date"]::-webkit-calendar-picker-indicator {
+  opacity: 0;
+  position: absolute;
+  right: 0;
+  width: 100%;
+  height: 100%;
+  cursor: pointer;
+}
+
+.search-card .form-control[type="date"] {
+  padding-right: 40px;
+}
+
+@media (max-width: 992px) {
+  .gradient-bg {
+    border-bottom-left-radius: 24px;
+    border-bottom-right-radius: 24px;
+  }
+
+  .home-header {
+    position: static;
+  }
+}
+
+@media (max-width: 768px) {
+  .filters select,
+  .filters input {
+    min-width: 100%;
+  }
+
+  .home-footer .row > div {
+    margin-bottom: 2rem;
+  }
+
+  .home-footer .row > div:last-child {
+    margin-bottom: 0;
+  }
 }

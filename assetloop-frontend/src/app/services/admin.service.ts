@@ -1,11 +1,12 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { AdminMetrics } from '../interfaces/admin';
 import { Booking } from '../interfaces/bookings';
 import { Review } from '../interfaces/review';
 import { User } from '../interfaces/user';
 import { AssetResponse } from '../interfaces/asset';
+import { Transaction } from '../interfaces/payments';
 import { environment } from '../../environments/environment';
 
 @Injectable({
@@ -141,6 +142,50 @@ export class AdminService {
 
   deleteReview(id: string): Observable<any> {
     return this.http.delete(`${this.apiUrl}/reviews/${id}`, {
+      headers: this.getHeaders(),
+    });
+  }
+
+  getAllTransactions(params?: {
+    status?: string;
+    type?: string;
+    search?: string;
+    page?: number;
+    limit?: number;
+  }): Observable<{
+    transactions: Transaction[];
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+  }> {
+    let httpParams = new HttpParams();
+    if (params?.status) httpParams = httpParams.set('status', params.status);
+    if (params?.type) httpParams = httpParams.set('type', params.type);
+    if (params?.search) httpParams = httpParams.set('search', params.search);
+    if (params?.page) httpParams = httpParams.set('page', params.page.toString());
+    if (params?.limit) httpParams = httpParams.set('limit', params.limit.toString());
+
+    return this.http.get<{
+      transactions: Transaction[];
+      total: number;
+      page: number;
+      limit: number;
+      totalPages: number;
+    }>(`${this.apiUrl}/transactions`, {
+      headers: this.getHeaders(),
+      params: httpParams,
+    });
+  }
+
+  updateTransactionStatus(id: string, status: string): Observable<{
+    message: string;
+    transaction: Transaction;
+  }> {
+    return this.http.put<{
+      message: string;
+      transaction: Transaction;
+    }>(`${this.apiUrl}/transactions/${id}/status`, { status }, {
       headers: this.getHeaders(),
     });
   }

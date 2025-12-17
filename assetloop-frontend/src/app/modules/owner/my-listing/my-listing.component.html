@@ -5,71 +5,122 @@
       (logout)="onLogout()"
       (navigate)="onNavigate($event)"
     ></app-owner-side-bar>
-    <main class="flex-grow-1 p-4 bg-light">
-      <h2 class="mb-4">My Listings</h2>
-      <div class="card">
-        <div class="card-header">Your Assets</div>
-        <div class="card-body">
-          <table class="table table-striped">
-            <thead>
-              <tr>
-                <th>Title</th>
-                <th>Address</th>
-                <th>Status</th>
-                <th>From</th>
-                <th>Till</th>
-                <th>Price (PKR/day)</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr *ngFor="let asset of assets">
-                <td>{{ asset.name }}</td>
-                <td>{{ asset.address }}</td>
-                <td>{{ asset.status }}</td>
-                <td>{{ asset.startDate }}</td>
-                <td>{{ asset.endDate }}</td>
-                <td>{{ asset.price }} PKR /day</td>
-                <td>
-                  <button
-                    class="btn btn-info btn-sm me-2"
-                    [routerLink]="['/owner/view', asset.id]"
-                  >
-                    View
-                  </button>
-                  <button
-                    class="btn btn-warning btn-sm me-2"
-                    (click)="openModal(asset)"
-                  >
-                    Edit
-                  </button>
-                  <button
-                    *ngIf="asset.status === 'Active'"
-                    class="btn btn-danger btn-sm me-2"
-                  >
-                    De-activate
-                  </button>
-                  <button
-                    *ngIf="asset.status === 'Inactive'"
-                    class="btn btn-primary btn-sm me-2"
-                  >
-                    Activate
-                  </button>
-                  <!-- <div class="form-check form-switch">
-                    <input
-                      type="checkbox"
-                      class="form-check-input"
-                      [id]="'switch_' + listing.id"
-                      [checked]="listing.status === 'available'"
-                      (change)="toggleAvailability(listing.id)"
-                    />
-                  </div> -->
-                </td>
-              </tr>
-            </tbody>
-          </table>
+    <main class="flex-grow-1 bg-light">
+      <section class="dashboard-hero gradient-bg px-4 py-4 py-md-5">
+        <div class="container-fluid d-flex flex-wrap justify-content-between align-items-start gap-3">
+          <div>
+            <div class="badge text-bg-light fw-semibold mb-2">My products</div>
+            <h2 class="text-white fw-bold mb-1">Your listings</h2>
+            <p class="text-white-50 mb-0">Manage and monitor all assets in one place.</p>
+          </div>
+          <div class="stat-pill bg-white shadow-sm rounded-4 p-3 d-flex align-items-center gap-3">
+            <div>
+              <div class="text-muted small">Total assets</div>
+              <div class="fs-5 fw-bold text-dark">{{ assets.length }}</div>
+            </div>
+            <div class="vr"></div>
+            <div>
+              <div class="text-muted small">Active</div>
+              <div class="fw-semibold text-dark">{{ activeCount }}</div>
+            </div>
+          </div>
         </div>
-      </div>
+      </section>
+
+      <section class="container-fluid py-4">
+        <div class="glass-card card p-3">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <div>
+              <h5 class="mb-1">Your assets</h5>
+              <small class="text-muted">Track status, pricing, and availability</small>
+            </div>
+            <button class="btn btn-primary d-inline-flex align-items-center gap-2">
+              <fa-icon [icon]="faPlus"></fa-icon>
+              Add new
+            </button>
+          </div>
+
+          <div class="table-responsive">
+            <table class="table align-middle">
+              <thead>
+                <tr>
+                  <th>Title</th>
+                  <th>Address</th>
+                  <th>Status</th>
+                  <th>From</th>
+                  <th>Till</th>
+                  <th>Price (PKR/day)</th>
+                  <th class="text-end">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let asset of assets">
+                  <td class="fw-semibold">{{ asset.name }}</td>
+                  <td class="text-muted small">{{ asset.address }}</td>
+                  <td>
+                    <span
+                      class="badge"
+                      [ngClass]="{
+                        'bg-success-subtle text-success': (asset.status || '').toLowerCase() === 'active',
+                        'bg-secondary-subtle text-secondary': (asset.status || '').toLowerCase() !== 'active'
+                      }"
+                    >
+                      {{ asset.status }}
+                    </span>
+                  </td>
+                  <td class="text-muted small">{{ asset.startDate | date : 'MM/dd/yyyy' }}</td>
+                  <td class="text-muted small">{{ asset.endDate | date : 'MM/dd/yyyy' }}</td>
+                  <td class="fw-semibold">PKR {{ asset.price }}</td>
+                  <td class="text-end d-flex justify-content-end gap-2">
+                    <button
+                      class="btn btn-icon btn-outline-primary"
+                      [routerLink]="['/owner/assets', asset.id || asset._id]"
+                      aria-label="View"
+                    >
+                      <fa-icon [icon]="faEye"></fa-icon>
+                    </button>
+                    <button
+                      class="btn btn-icon btn-outline-warning"
+                      (click)="openModal(asset)"
+                      aria-label="Edit"
+                    >
+                      <fa-icon [icon]="faPen"></fa-icon>
+                    </button>
+                    <button
+                      *ngIf="(asset.status || '').toLowerCase() === 'active'"
+                      class="btn btn-icon btn-outline-danger"
+                      aria-label="Deactivate"
+                      (click)="toggleStatus(asset)"
+                    >
+                      <fa-icon [icon]="faToggleOn"></fa-icon>
+                    </button>
+                    <button
+                      *ngIf="(asset.status || '').toLowerCase() !== 'active'"
+                      class="btn btn-icon btn-outline-success"
+                      aria-label="Activate"
+                      (click)="toggleStatus(asset)"
+                    >
+                      <fa-icon [icon]="faToggleOff"></fa-icon>
+                    </button>
+                    <button
+                      class="btn btn-icon btn-outline-danger"
+                      aria-label="Delete"
+                      (click)="deleteAsset(asset)"
+                    >
+                      <fa-icon [icon]="faTrash"></fa-icon>
+                    </button>
+                  </td>
+                </tr>
+                <tr *ngIf="assets.length === 0">
+                  <td colspan="7" class="text-center py-4 text-muted">
+                    No listings yet. Click "Add new" to create your first asset.
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
 
       <!-- Update Modal -->
       <div
@@ -79,7 +130,7 @@
         [style.display]="selectedListing !== null ? 'block' : 'none'"
         (click)="closeModal()"
       >
-        <div class="modal-dialog" (click)="$event.stopPropagation()">
+        <div class="modal-dialog modal-dialog-centered" (click)="$event.stopPropagation()">
           <div class="modal-content">
             <div class="modal-header">
               <h5 class="modal-title">Edit Listing</h5>
@@ -90,7 +141,11 @@
                 aria-label="Close"
               ></button>
             </div>
-            <div class="modal-body">
+            <div class="modal-body" *ngIf="selectedListing">
+              <div class="mb-3 d-flex flex-column gap-1">
+                <div class="fw-semibold">{{ selectedListing.name || 'Untitled listing' }}</div>
+                <div class="text-muted small">{{ selectedListing.address || 'No address provided' }}</div>
+              </div>
               <form #editForm="ngForm">
                 <div class="mb-3">
                   <label for="editName" class="form-label">Title</label>
@@ -98,7 +153,7 @@
                     type="text"
                     class="form-control"
                     id="editName"
-                    (ngModel)="(selectedListing.name)"
+                    [(ngModel)]="selectedListing.name"
                     name="name"
                   />
                 </div>
@@ -108,7 +163,7 @@
                     type="text"
                     class="form-control"
                     id="editAddress"
-                    (ngModel)="(selectedListing.address)"
+                    [(ngModel)]="selectedListing.address"
                     name="address"
                   />
                 </div>
@@ -120,7 +175,7 @@
                     type="number"
                     class="form-control"
                     id="editPrice"
-                    (ngModel)="(selectedListing.price)"
+                    [(ngModel)]="selectedListing.price"
                     name="price"
                     min="0"
                   />
@@ -130,32 +185,30 @@
                   <select
                     class="form-select"
                     id="editStatus"
-                    (ngModel)="(selectedListing.status)"
+                    [(ngModel)]="selectedListing.status"
                     name="status"
                   >
-                    <option value="available">Available</option>
-                    <option value="unavailable">Unavailable</option>
+                    <option value="Active">Active</option>
+                    <option value="Inactive">Inactive</option>
                   </select>
                 </div>
               </form>
             </div>
-            <div class="modal-dialog">
-              <div class="modal-footer">
-                <button
-                  type="button"
-                  class="btn btn-secondary"
-                  (click)="closeModal()"
-                >
-                  Close
-                </button>
-                <!-- <button
-                  type="button"
-                  class="btn btn-primary"
-                  (click)="saveChanges()"
-                >
-                  Save Changes
-                </button> -->
-              </div>
+            <div class="modal-footer">
+              <button
+                type="button"
+                class="btn btn-outline-secondary"
+                (click)="closeModal()"
+              >
+                Close
+              </button>
+              <button
+                type="button"
+                class="btn btn-primary"
+                (click)="saveChanges()"
+              >
+                Save changes
+              </button>
             </div>
           </div>
         </div>

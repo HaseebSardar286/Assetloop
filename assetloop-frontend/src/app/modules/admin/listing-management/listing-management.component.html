@@ -2,153 +2,183 @@
   <app-header (logout)="onLogout()"></app-header>
   <div class="d-flex flex-grow-1">
     <app-admin-sidebar></app-admin-sidebar>
-    <main class="flex-grow-1 p-4 bg-light">
-      <h2 class="mb-4">Listing Management</h2>
-      <!-- Search Card -->
-      <div class="card mb-4">
-        <div class="card-header">Search Listings</div>
-        <div class="card-body">
-          <div class="input-group">
-            <input
-              type="text"
-              class="form-control"
-              placeholder="Search by name, owner, or status..."
-              [(ngModel)]="searchTerm"
-              (input)="searchListings()"
-            />
-            <button
-              class="btn btn-outline-secondary"
-              type="button"
-              (click)="clearSearch()"
-            >
-              Clear
-            </button>
+    <main class="flex-grow-1 bg-light">
+      <section class="dashboard-hero gradient-bg px-4 py-4 py-md-5">
+        <div class="container-fluid">
+          <div class="badge text-bg-light fw-semibold mb-2">Listing Management</div>
+          <h2 class="text-white fw-bold mb-1">Manage Listings</h2>
+          <p class="text-white-50 mb-0">
+            View and manage all asset listings
+          </p>
+        </div>
+      </section>
+
+      <section class="container-fluid py-4">
+        <!-- Search Card -->
+        <div class="card glass-card mb-4">
+          <div class="card-header bg-success text-white">
+            <h5 class="mb-0">Search Listings</h5>
           </div>
-        </div>
-      </div>
-      <!-- Listings Card -->
-      <div class="card">
-        <div class="card-header">
-          All Listings ({{ filteredListings.length || 0 }})
-        </div>
-        <div class="card-body">
-          <!-- Loading Spinner -->
-          <div *ngIf="loading" class="text-center mt-5">
-            <div class="spinner-border text-primary" role="status">
-              <span class="visually-hidden">Loading...</span>
+          <div class="card-body">
+            <div class="d-flex gap-2 flex-wrap align-items-end">
+              <div class="flex-grow-1" style="min-width: 300px;">
+                <div class="position-relative">
+                  <input
+                    type="text"
+                    class="form-control form-control-lg"
+                    placeholder="Search by name, owner, or status..."
+                    [(ngModel)]="searchTerm"
+                    (input)="searchListings()"
+                  />
+                  <fa-icon
+                    [icon]="faSearch"
+                    class="search-icon text-muted"
+                  ></fa-icon>
+                </div>
+              </div>
+              <button
+                class="btn btn-outline-success"
+                type="button"
+                (click)="clearSearch()"
+              >
+                Clear
+              </button>
             </div>
-            <p class="mt-2">Loading listings...</p>
-          </div>
-          <table class="table table-striped" *ngIf="!loading">
-            <thead>
-              <tr>
-                <th>ID</th>
-                <th>Name</th>
-                <th>Owner</th>
-                <th>Status</th>
-                <th>Price (PKR/day)</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr *ngFor="let listing of paginatedListings">
-                <td>{{ listing._id }}</td>
-                <td>{{ listing.name || "N/A" }}</td>
-                <td>
-                  {{ listing.owner.firstName }} {{ listing.owner.lastName }}
-                </td>
-                <td>
-                  <span
-                    class="badge"
-                    [ngClass]="{
-                      'bg-danger': listing.status.toLowerCase() === 'inactive',
-                      'bg-primary': listing.status.toLowerCase() === 'active'
-                    }"
-                  >
-                    {{ listing.status || "N/A" }}
-                  </span>
-                </td>
-                <td>{{ listing.price || "N/A" }}</td>
-                <td>
-                  <button
-                    class="btn btn-info btn-sm me-2"
-                    [routerLink]="['/admin/listings/details', listing._id]"
-                  >
-                    <fa-icon [icon]="faEye" class="btn-primary"></fa-icon>
-                  </button>
-                  <button
-                    class="btn btn-warning btn-sm me-2"
-                    *ngIf="listing.status?.toLowerCase() === 'active'"
-                    [routerLink]="['/admin/status-listing', listing._id]"
-                  >
-                    <fa-icon [icon]="faLock" class="btn-primary"></fa-icon>
-                  </button>
-                  <button
-                    class="btn btn-success btn-sm me-2"
-                    *ngIf="listing.status?.toLowerCase() === 'inactive'"
-                    [routerLink]="['/admin/status-listing', listing._id]"
-                  >
-                    <fa-icon [icon]="faUnlock" class="btn-primary"></fa-icon>
-                  </button>
-                  <button
-                    class="btn btn-danger btn-sm"
-                    (click)="deleteListing(listing._id)"
-                  >
-                    <fa-icon [icon]="faTrash" class="btn-primary"></fa-icon>
-                  </button>
-                </td>
-              </tr>
-              <tr *ngIf="paginatedListings.length === 0">
-                <td colspan="6" class="text-center text-muted">
-                  No listings found
-                </td>
-              </tr>
-            </tbody>
-          </table>
-          <!-- Pagination -->
-          <nav aria-label="Listings pagination" *ngIf="totalPages > 1">
-            <ul class="pagination justify-content-center mt-3">
-              <li class="page-item" [class.disabled]="currentPage === 1">
-                <a
-                  class="page-link"
-                  (click)="changePage(currentPage - 1)"
-                  href="#"
-                  >Previous</a
-                >
-              </li>
-              <li
-                class="page-item"
-                *ngFor="let page of [].constructor(totalPages); let i = index"
-                [class.active]="currentPage === i + 1"
-              >
-                <a class="page-link" (click)="changePage(i + 1)" href="#">{{
-                  i + 1
-                }}</a>
-              </li>
-              <li
-                class="page-item"
-                [class.disabled]="currentPage === totalPages"
-              >
-                <a
-                  class="page-link"
-                  (click)="changePage(currentPage + 1)"
-                  href="#"
-                  >Next</a
-                >
-              </li>
-            </ul>
-          </nav>
-          <!-- Error Message -->
-          <div *ngIf="error" class="alert alert-danger mt-4" role="alert">
-            {{ error }}
-            <button
-              type="button"
-              class="btn-close"
-              (click)="error = null"
-            ></button>
           </div>
         </div>
-      </div>
+        <!-- Listings Card -->
+        <div class="card glass-card">
+          <div class="card-header d-flex justify-content-between align-items-center bg-success text-white">
+            <h5 class="mb-0">All Listings</h5>
+            <span class="badge bg-white text-success">{{ filteredListings.length || 0 }}</span>
+          </div>
+          <div class="card-body">
+            <!-- Loading Spinner -->
+            <div *ngIf="loading" class="text-center py-5">
+              <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading...</span>
+              </div>
+              <p class="mt-3 text-muted">Loading listings...</p>
+            </div>
+            <div class="table-responsive" *ngIf="!loading">
+              <table class="table table-hover mb-0">
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Owner</th>
+                    <th>Status</th>
+                    <th>Price (PKR/day)</th>
+                    <th class="text-end">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let listing of paginatedListings">
+                    <td class="text-muted small">{{ listing._id.substring(0, 8) }}...</td>
+                    <td class="fw-semibold">{{ listing.name || "N/A" }}</td>
+                    <td>
+                      {{ listing.owner.firstName || '' }} {{ listing.owner.lastName || '' }}
+                    </td>
+                    <td>
+                      <span
+                        class="badge"
+                        [ngClass]="{
+                          'bg-danger': listing.status.toLowerCase() === 'inactive',
+                          'bg-success': listing.status.toLowerCase() === 'active'
+                        }"
+                      >
+                        {{ listing.status || "N/A" }}
+                      </span>
+                    </td>
+                    <td class="fw-semibold">PKR {{ listing.price || "N/A" }}</td>
+                    <td class="text-end">
+                      <div class="d-flex gap-2 justify-content-end">
+                        <button
+                          class="btn btn-icon btn-outline-info"
+                          [routerLink]="['/admin/listings/details', listing._id]"
+                          title="View Details"
+                        >
+                          <fa-icon [icon]="faEye"></fa-icon>
+                        </button>
+                        <button
+                          class="btn btn-icon btn-outline-warning"
+                          *ngIf="listing.status?.toLowerCase() === 'active'"
+                          [routerLink]="['/admin/status-listing', listing._id]"
+                          title="Deactivate"
+                        >
+                          <fa-icon [icon]="faLock"></fa-icon>
+                        </button>
+                        <button
+                          class="btn btn-icon btn-outline-success"
+                          *ngIf="listing.status?.toLowerCase() === 'inactive'"
+                          [routerLink]="['/admin/status-listing', listing._id]"
+                          title="Activate"
+                        >
+                          <fa-icon [icon]="faUnlock"></fa-icon>
+                        </button>
+                        <button
+                          class="btn btn-icon btn-outline-danger"
+                          (click)="deleteListing(listing._id)"
+                          title="Delete"
+                        >
+                          <fa-icon [icon]="faTrash"></fa-icon>
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                  <tr *ngIf="paginatedListings.length === 0">
+                    <td colspan="6" class="text-center text-muted py-5">
+                      <p class="mb-0">No listings found</p>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <!-- Pagination -->
+            <nav aria-label="Listings pagination" *ngIf="totalPages > 1">
+              <ul class="pagination justify-content-center mt-3">
+                <li class="page-item" [class.disabled]="currentPage === 1">
+                  <button
+                    class="page-link"
+                    (click)="changePage(currentPage - 1)"
+                    aria-label="Previous page"
+                  >
+                    <fa-icon [icon]="faArrowLeft"></fa-icon>
+                  </button>
+                </li>
+                <li
+                  class="page-item"
+                  *ngFor="let page of [].constructor(totalPages); let i = index"
+                  [class.active]="currentPage === i + 1"
+                >
+                  <button class="page-link" (click)="changePage(i + 1)">{{ i + 1 }}</button>
+                </li>
+                <li
+                  class="page-item"
+                  [class.disabled]="currentPage === totalPages"
+                >
+                  <button
+                    class="page-link"
+                    (click)="changePage(currentPage + 1)"
+                    aria-label="Next page"
+                  >
+                    <fa-icon [icon]="faArrowRight"></fa-icon>
+                  </button>
+                </li>
+              </ul>
+            </nav>
+            <!-- Error Message -->
+            <div *ngIf="error" class="alert alert-danger mt-4" role="alert">
+              {{ error }}
+              <button
+                type="button"
+                class="btn-close"
+                (click)="error = null"
+              ></button>
+            </div>
+          </div>
+        </div>
+      </section>
     </main>
   </div>
 </div>

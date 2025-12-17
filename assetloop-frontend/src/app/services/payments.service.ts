@@ -57,10 +57,13 @@ export class PaymentsService {
     );
   }
 
-  withdraw(amount: number): Observable<{ success: boolean; balance: number }> {
+  withdraw(
+    amount: number,
+    payoutMethodId?: number | string
+  ): Observable<{ success: boolean; balance: number }> {
     return this.http.post<{ success: boolean; balance: number }>(
       `${this.apiUrl}/wallet/withdraw`,
-      { amount },
+      { amount, payoutMethodId },
       { headers: this.getHeaders() }
     );
   }
@@ -74,21 +77,21 @@ export class PaymentsService {
 
   addPaymentMethod(
     method: Omit<PaymentMethod, 'id' | 'isDefault'> & { isDefault?: boolean }
-  ): Observable<PaymentMethod> {
-    return this.http.post<PaymentMethod>(`${this.apiUrl}/methods`, method, {
+  ): Observable<PaymentMethod[]> {
+    return this.http.post<PaymentMethod[]>(`${this.apiUrl}/methods`, method, {
       headers: this.getHeaders(),
     });
   }
 
-  removePaymentMethod(id: number | string): Observable<{ success: boolean }> {
-    return this.http.delete<{ success: boolean }>(
+  removePaymentMethod(id: number | string): Observable<{ success: boolean; methods?: PaymentMethod[] }> {
+    return this.http.delete<{ success: boolean; methods?: PaymentMethod[] }>(
       `${this.apiUrl}/methods/${id}`,
       { headers: this.getHeaders() }
     );
   }
 
-  setDefaultPaymentMethod(id: number | string): Observable<{ success: boolean }> {
-    return this.http.post<{ success: boolean }>(
+  setDefaultPaymentMethod(id: number | string): Observable<{ success: boolean; methods?: PaymentMethod[] }> {
+    return this.http.post<{ success: boolean; methods?: PaymentMethod[] }>(
       `${this.apiUrl}/methods/${id}/default`,
       {},
       { headers: this.getHeaders() }

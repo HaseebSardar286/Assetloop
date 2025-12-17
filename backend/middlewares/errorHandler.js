@@ -1,11 +1,18 @@
 // middlewares/errorHandler.js
 const errorHandler = (err, req, res, next) => {
+  // Don't send response if headers have already been sent
+  if (res.headersSent) {
+    return next(err);
+  }
+
   console.error('Error details:', {
     message: err.message,
     stack: err.stack,
+    name: err.name,
+    code: err.code,
     url: req.url,
     method: req.method,
-    body: req.body,
+    body: process.env.NODE_ENV === 'development' ? req.body : undefined,
     params: req.params,
     query: req.query
   });
@@ -21,9 +28,9 @@ const errorHandler = (err, req, res, next) => {
 
   // Mongoose duplicate key error
   if (err.code === 11000) {
-    const field = Object.keys(err.keyValue)[0];
+    const field = Object.keys(err.keyValue || {})[0];
     return res.status(400).json({
-      message: `${field} already exists`
+      message: `${field || 'Field'} already exists`
     });
   }
 
@@ -31,6 +38,14 @@ const errorHandler = (err, req, res, next) => {
   if (err.name === 'CastError') {
     return res.status(400).json({
       message: 'Invalid ID format'
+    });
+  }
+
+  // Mongoose connection errors
+  if (err.name === 'MongoServerError' || err.name === 'MongoNetworkError') {
+    console.error('MongoDB connection error:', err.message);
+    return res.status(500).json({
+      message: 'Database connection error. Please try again later.'
     });
   }
 
@@ -48,9 +63,13 @@ const errorHandler = (err, req, res, next) => {
   }
 
   // Default error
-  res.status(err.statusCode || 500).json({
+  const statusCode = err.statusCode || err.status || 500;
+  res.status(statusCode).json({
     message: err.message || 'Internal Server Error',
-    ...(process.env.NODE_ENV === 'development' && { stack: err.stack })
+    ...(process.env.NODE_ENV === 'development' && { 
+      stack: err.stack,
+      error: err 
+    })
   });
 };
 

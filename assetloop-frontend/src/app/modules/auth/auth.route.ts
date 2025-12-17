@@ -5,6 +5,7 @@ import { UserVerificationComponent } from './user-verification/user-verification
 import { ForgotPasswordComponent } from './forgot-password/forgot-password.component';
 import { OtpComponent } from './otp/otp.component';
 import { ChangePasswordComponent } from './change-password/change-password.component';
+import { ResetPasswordComponent } from './reset-password/reset-password.component';
 
 export const AUTH_ROUTES: Routes = [
   {
@@ -36,6 +37,11 @@ export const AUTH_ROUTES: Routes = [
     path: 'change-password',
     component: ChangePasswordComponent,
     data: { title: 'Change Password' },
+  },
+  {
+    path: 'reset-password',
+    component: ResetPasswordComponent,
+    data: { title: 'Reset Password' },
   },
   {
     path: 'verification',

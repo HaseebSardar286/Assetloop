@@ -15,7 +15,21 @@ import {
   faBell,
   faHeart,
   faSearch,
+  faCar,
+  faBuilding,
+  faHouse,
+  faWrench,
+  faMapMarkerAlt,
+  faUsers,
+  faCalendarAlt,
+  faCheckCircle,
 } from '@fortawesome/free-solid-svg-icons';
+import {
+  faFacebook,
+  faTwitter,
+  faInstagram,
+  faLinkedin,
+} from '@fortawesome/free-brands-svg-icons';
 import { AssetResponse } from '../../interfaces/asset';
 import { RenterService } from '../../services/renter.service';
 
@@ -40,6 +54,18 @@ export class HomeComponent {
   faBell = faBell;
   faHeart = faHeart;
   faSearch = faSearch;
+  faCar = faCar;
+  faBuilding = faBuilding;
+  faHouse = faHouse;
+  faWrench = faWrench;
+  faMapMarkerAlt = faMapMarkerAlt;
+  faUsers = faUsers;
+  faCalendarAlt = faCalendarAlt;
+  faCheckCircle = faCheckCircle;
+  faFacebook = faFacebook;
+  faTwitter = faTwitter;
+  faInstagram = faInstagram;
+  faLinkedin = faLinkedin;
   searchQuery: string = '';
   category: string = '';
   location: string = '';
@@ -60,6 +86,7 @@ export class HomeComponent {
   };
   error: string | null = null;
   sortBy: string = 'recommended';
+  currentYear: number = new Date().getFullYear();
 
   constructor(
     private fb: FormBuilder,
@@ -71,6 +98,10 @@ export class HomeComponent {
       category: ['All Categories'],
       minPrice: [''],
       maxPrice: [''],
+      location: [''],
+      availability: ['all'],
+      startDate: [''],
+      endDate: [''],
     });
   }
 
@@ -79,7 +110,7 @@ export class HomeComponent {
   }
 
   loadAssets(): void {
-    this.renterService.getAllAssets({}).subscribe({
+    this.renterService.getAllAssets().subscribe({
       next: (response) => {
         this.allAssets = response.assets;
         this.applyFilters();
@@ -92,7 +123,16 @@ export class HomeComponent {
   }
 
   applyFilters(): void {
-    const { keywords, category, minPrice, maxPrice } = this.searchForm.value;
+    const {
+      keywords,
+      category,
+      minPrice,
+      maxPrice,
+      location,
+      availability,
+      startDate,
+      endDate,
+    } = this.searchForm.value;
     let filtered = [...this.allAssets];
 
     if (keywords) {
@@ -123,6 +163,37 @@ export class HomeComponent {
       }
     }
 
+    if (location) {
+      const locationTerm = location.toLowerCase();
+      filtered = filtered.filter((asset) =>
+        asset.address.toLowerCase().includes(locationTerm)
+      );
+    }
+
+    if (availability && availability !== 'all') {
+      filtered = filtered.filter(
+        (asset) => asset.availability === availability
+      );
+    }
+
+    if (startDate) {
+      const start = new Date(startDate);
+      filtered = filtered.filter((asset) => {
+        if (!asset.startDate) return true;
+        const assetStart = new Date(asset.startDate);
+        return assetStart <= start;
+      });
+    }
+
+    if (endDate) {
+      const end = new Date(endDate);
+      filtered = filtered.filter((asset) => {
+        if (!asset.endDate) return true;
+        const assetEnd = new Date(asset.endDate);
+        return assetEnd >= end;
+      });
+    }
+
     if (this.sortBy === 'priceLowToHigh') {
       filtered.sort((a, b) => a.price - b.price);
     } else if (this.sortBy === 'priceHighToLow') {
@@ -142,6 +213,12 @@ export class HomeComponent {
     this.updateDisplayedAssets();
   }
 
+  setCategory(category: string): void {
+    this.searchForm.patchValue({ category });
+    this.applyFilters();
+    this.scrollToSection('asset-list');
+  }
+
   updateDisplayedAssets(): void {
     const start = (this.pagination.page - 1) * this.pagination.limit;
     const end = start + this.pagination.limit;
@@ -154,6 +231,10 @@ export class HomeComponent {
       category: 'All Categories',
       minPrice: '',
       maxPrice: '',
+      location: '',
+      availability: 'all',
+      startDate: '',
+      endDate: '',
     });
     this.sortBy = 'recommended';
     this.applyFilters();
@@ -169,11 +250,6 @@ export class HomeComponent {
 
   share(id: string) {
     console.log(`Sharing item ${id}`);
-  }
-
-  updateNotes(event: { id: string; notes: string }) {
-    const asset = this.assets.find((a) => a.id === event.id);
-    if (asset) asset.notes = event.notes;
   }
 
   applySearch() {
@@ -194,5 +270,13 @@ export class HomeComponent {
 
   viewDetails(assetId: string): void {
     this.router.navigate([`/asset/${assetId}`]);
+  }
+
+  scrollToSection(sectionId: string): void {
+    if (typeof document === 'undefined') return;
+    const target = document.getElementById(sectionId);
+    if (target) {
+      target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
   }
 }

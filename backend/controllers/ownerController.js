@@ -110,14 +110,14 @@ exports.getOwnerReviews = async (req, res) => {
       .lean();
 
     const reviews = bookings
-      .filter((b) => b.review)
+      .filter((b) => b.review && typeof b.review === 'object')
       .map((b) => ({
-        rating: b.review.rating,
-        comment: b.review.comment,
-        createdAt: b.review.createdAt,
-        reviewer: `${b.renter?.firstName || ""} ${
-          b.renter?.lastName || ""
-        }`.trim(),
+        rating: b.review?.rating || 0,
+        comment: b.review?.comment || '',
+        createdAt: b.review?.createdAt || new Date(),
+        reviewer: b.renter && typeof b.renter === 'object'
+          ? `${b.renter.firstName || ""} ${b.renter.lastName || ""}`.trim() || 'Unknown'
+          : 'Unknown',
       }));
 
     res.status(200).json({ reviews });
@@ -194,38 +194,35 @@ exports.getActiveBookings = async (req, res) => {
       validBookings.map((booking) => ({
         id: booking._id,
         _id: booking._id,
-        name: booking.name,
-        description: booking.description,
-        price: booking.price,
-        renter: booking.renter
+        name: booking.name || '',
+        description: booking.description || '',
+        price: booking.price || 0,
+        renter: booking.renter && typeof booking.renter === 'object'
           ? {
               _id: booking.renter._id,
-              firstName: booking.renter.firstName,
-              lastName: booking.renter.lastName,
-              email: booking.renter.email,
+              firstName: booking.renter.firstName || '',
+              lastName: booking.renter.lastName || '',
+              email: booking.renter.email || '',
             }
           : undefined,
-        startDate: booking.startDate,
-        endDate: booking.endDate,
-        status: booking.status,
-        totalPaid: booking.totalPaid,
-        review: booking.review
-          ? { rating: booking.review.rating, comment: booking.review.comment }
+        startDate: booking.startDate || null,
+        endDate: booking.endDate || null,
+        status: booking.status || 'pending',
+        totalPaid: booking.totalPaid || 0,
+        review: booking.review && typeof booking.review === 'object'
+          ? { rating: booking.review.rating || 0, comment: booking.review.comment || '' }
           : undefined,
-        address: booking.address,
-        imageUrl:
-          booking.imageUrl && booking.imageUrl.startsWith("/uploads/")
-            ? `http://localhost:${process.env.PORT || 5000}${booking.imageUrl}`
-            : booking.imageUrl,
-        category: booking.category,
-        notes: booking.notes,
-        createdAt: booking.createdAt,
-        requestDate: booking.requestDate || booking.createdAt,
-        asset: booking.asset
+        address: booking.address || '',
+        imageUrl: booking.imageUrl || '',
+        category: booking.category || '',
+        notes: booking.notes || '',
+        createdAt: booking.createdAt || new Date(),
+        requestDate: booking.requestDate || booking.createdAt || new Date(),
+        asset: booking.asset && typeof booking.asset === 'object'
           ? {
-              name: booking.asset.name,
-              address: booking.asset.address,
-              price: booking.asset.price,
+              name: booking.asset.name || '',
+              address: booking.asset.address || '',
+              price: booking.asset.price || 0,
             }
           : undefined,
       }))

@@ -12,6 +12,10 @@ import {
   faLock,
   faUnlock,
   faEye,
+  faSearch,
+  faTimes,
+  faArrowLeft,
+  faArrowRight,
 } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
@@ -33,6 +37,10 @@ export class ListingManagementComponent implements OnInit {
   faLock = faLock;
   faUnlock = faUnlock;
   faEye = faEye;
+  faSearch = faSearch;
+  faTimes = faTimes;
+  faArrowLeft = faArrowLeft;
+  faArrowRight = faArrowRight;
 
   listings: AssetResponse[] = [];
   filteredListings: AssetResponse[] = [];

@@ -1,36 +1,78 @@
-/* Fix the sidebar */
-.d-flex.flex-column.flex-shrink-0.p-3.bg-dark.text-white {
-  position: fixed;
-  top: 60px; /* Height of the header */
-  left: 0;
-  bottom: 0;
-  width: 230px;
-  overflow-y: auto;
+.details-hero {
+  border-bottom-left-radius: 28px;
+  border-bottom-right-radius: 28px;
+  margin-bottom: -20px;
 }
 
-/* Ensure main content adjusts for fixed header and sidebar */
-main {
-  margin-left: 230px;
-  margin-top: 60px; /* Height of the header */
-  padding: 20px;
-  background-color: #f8f9fa;
-  overflow-y: auto;
-  height: calc(100vh - 56px); /* Full viewport height minus header height */
+.gradient-bg {
+  background: radial-gradient(circle at 10% 20%, #5aa6ff 0, #4a7bff 25%, #29316d 80%);
 }
 
-/* Adjust row and columns to account for padding and margins */
-.row {
-  margin: 0;
+.stats-card {
+  min-width: 180px;
 }
 
-.col-md-3,
-.col-md-9 {
-  padding: 0 15px;
+.image-pane {
+  position: relative;
+  height: 100%;
+  min-height: 260px;
+  overflow: hidden;
+}
+
+.object-fit-cover {
+  object-fit: cover;
+}
+
+.category-chip {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  background: rgba(0, 0, 0, 0.65);
+  color: #fff;
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  letter-spacing: 0.05em;
+}
+
+.rating-pill {
+  background: #eef2ff;
+  border-radius: 12px;
+  padding: 6px 10px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: #3b5bdb;
+}
+
+.amenities {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.amenity-pill {
+  background: #f1f3f9;
+  border-radius: 999px;
+  padding: 6px 10px;
+  font-size: 0.85rem;
+  color: #4b5563;
+}
+
+.btn-icon {
+  display: inline-flex;
+  width: 42px;
+  height: 42px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
 }
 
 /* Star rating display */
 .star-display {
-  font-size: 1.2rem;
+  font-size: 1.1rem;
   line-height: 1;
   color: #ddd;
 }
@@ -53,4 +95,19 @@ main {
   border-bottom: none !important;
   margin-bottom: 0 !important;
   padding-bottom: 0 !important;
+}
+
+main {
+  margin-left: 230px;
+  margin-top: 60px;
+  min-height: calc(100vh - 60px);
+}
+
+@media (max-width: 992px) {
+  main {
+    margin-left: 0;
+  }
+  .details-hero {
+    border-radius: 0 0 20px 20px;
+  }
 }

@@ -2,123 +2,149 @@
   <app-header></app-header>
   <div class="d-flex flex-grow-1">
     <app-renter-side-bar></app-renter-side-bar>
-    <main class="flex-grow-1 p-4 bg-light">
-      <h2 class="mb-4">My Cart</h2>
+    <main class="flex-grow-1 bg-light">
+      <section class="dashboard-hero gradient-bg px-4 py-4 py-md-5">
+        <div class="container-fluid d-flex flex-wrap justify-content-between align-items-start gap-3">
+          <div>
+            <div class="badge text-bg-light fw-semibold mb-2">Cart</div>
+            <h2 class="text-white fw-bold mb-1">Ready to book</h2>
+            <p class="text-white-50 mb-0">Review dates, quantities, and checkout securely.</p>
+          </div>
+          <div class="stat-pill bg-white shadow-sm rounded-4 p-3 d-flex align-items-center gap-3">
+            <div>
+              <div class="text-muted small">Items</div>
+              <div class="fs-5 fw-bold text-dark">{{ items.length }}</div>
+            </div>
+            <div class="vr"></div>
+            <div>
+              <div class="text-muted small">Total</div>
+              <div class="fw-semibold text-dark">${{ total() | number : '1.0-2' }}</div>
+            </div>
+          </div>
+        </div>
+      </section>
 
-      <div class="card p-3" *ngIf="items.length; else empty">
-        <div class="table-responsive">
-          <table class="table align-middle">
-            <thead>
-              <tr>
-                <th>Item</th>
-                <th>Price / night</th>
-                <th style="width: 140px">Quantity</th>
-                <th>Total</th>
-                <th></th>
-              </tr>
-            </thead>
-            <tbody>
-              <ng-container *ngFor="let item of items">
+      <section class="container-fluid py-4">
+        <div class="card glass-card p-3" *ngIf="items.length; else empty">
+          <div class="table-responsive">
+            <table class="table align-middle">
+              <thead>
                 <tr>
-                  <td>
-                    <div class="d-flex align-items-center">
-                      <img
-                        [src]="item.imageUrl || '/images/download.jpg'"
-                        alt="{{ item.name }}"
-                        style="width: 60px; height: 60px; object-fit: cover"
-                        class="rounded me-2"
+                  <th>Item</th>
+                  <th>Price / night</th>
+                  <th style="width: 140px">Qty</th>
+                  <th>Total</th>
+                  <th class="text-end">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <ng-container *ngFor="let item of items">
+                  <tr>
+                    <td>
+                      <div class="d-flex align-items-center gap-2">
+                        <img
+                          [src]="item.imageUrl || '/images/download.jpg'"
+                          alt="{{ item.name }}"
+                          class="rounded thumb"
+                        />
+                        <div>
+                          <div class="fw-semibold">{{ item.name }}</div>
+                          <small class="text-muted">{{ item.address }}</small>
+                        </div>
+                      </div>
+                    </td>
+                    <td>${{ item.pricePerNight }}</td>
+                    <td>
+                      <input
+                        type="number"
+                        class="form-control form-control-sm"
+                        [value]="item.quantity"
+                        min="1"
+                        (change)="updateQuantityInput(item, $event)"
                       />
-                      <div>
-                        <div class="fw-semibold">{{ item.name }}</div>
-                        <small class="text-muted">{{ item.address }}</small>
+                    </td>
+                    <td>${{ lineTotal(item) | number : "1.0-2" }}</td>
+                    <td class="text-end">
+                      <button
+                        class="btn btn-icon btn-outline-danger"
+                        (click)="remove(item)"
+                        aria-label="Remove item"
+                      >
+                        <fa-icon [icon]="faTrash"></fa-icon>
+                      </button>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td colspan="5">
+                      <div class="row g-2 align-items-center">
+                        <div class="col-auto">
+                          <small class="text-muted"
+                            >Select dates for {{ item.name }}:</small
+                          >
+                        </div>
+                        <div class="col-auto">
+                          <input
+                            type="date"
+                            class="form-control form-control-sm"
+                            [value]="
+                              (datesByItem[item.id] &&
+                                datesByItem[item.id].startDate) ||
+                              ''
+                            "
+                            (change)="setStartDate(item.id, $event)"
+                          />
+                        </div>
+                        <div class="col-auto">to</div>
+                        <div class="col-auto">
+                          <input
+                            type="date"
+                            class="form-control form-control-sm"
+                            [value]="
+                              (datesByItem[item.id] &&
+                                datesByItem[item.id].endDate) ||
+                              ''
+                            "
+                            (change)="setEndDate(item.id, $event)"
+                          />
+                        </div>
+                        <div class="col">
+                          <input
+                            type="text"
+                            class="form-control form-control-sm"
+                            placeholder="Notes (optional)"
+                            [value]="
+                              (datesByItem[item.id] &&
+                                datesByItem[item.id].notes) ||
+                              ''
+                            "
+                            (input)="setNotes(item.id, $event)"
+                          />
+                        </div>
                       </div>
-                    </div>
-                  </td>
-                  <td>${{ item.pricePerNight }}</td>
-                  <td>
-                    <input
-                      type="number"
-                      class="form-control form-control-sm"
-                      [value]="item.quantity"
-                      min="1"
-                      (change)="updateQuantityInput(item, $event)"
-                    />
-                  </td>
-                  <td>${{ lineTotal(item) | number : "1.0-2" }}</td>
-                  <td class="text-end">
-                    <button
-                      class="btn btn-sm btn-outline-danger"
-                      (click)="remove(item)"
-                    >
-                      Remove
-                    </button>
-                  </td>
-                </tr>
-                <tr>
-                  <td colspan="5">
-                    <div class="row g-2 align-items-center">
-                      <div class="col-auto">
-                        <small class="text-muted"
-                          >Select dates for {{ item.name }}:</small
-                        >
-                      </div>
-                      <div class="col-auto">
-                        <input
-                          type="date"
-                          class="form-control form-control-sm"
-                          [value]="
-                            (datesByItem[item.id] &&
-                              datesByItem[item.id].startDate) ||
-                            ''
-                          "
-                          (change)="setStartDate(item.id, $event)"
-                        />
-                      </div>
-                      <div class="col-auto">to</div>
-                      <div class="col-auto">
-                        <input
-                          type="date"
-                          class="form-control form-control-sm"
-                          [value]="
-                            (datesByItem[item.id] &&
-                              datesByItem[item.id].endDate) ||
-                            ''
-                          "
-                          (change)="setEndDate(item.id, $event)"
-                        />
-                      </div>
-                      <div class="col">
-                        <input
-                          type="text"
-                          class="form-control form-control-sm"
-                          placeholder="Notes (optional)"
-                          [value]="
-                            (datesByItem[item.id] &&
-                              datesByItem[item.id].notes) ||
-                            ''
-                          "
-                          (input)="setNotes(item.id, $event)"
-                        />
-                      </div>
-                    </div>
-                  </td>
-                </tr>
-              </ng-container>
-            </tbody>
-          </table>
+                    </td>
+                  </tr>
+                </ng-container>
+              </tbody>
+            </table>
+          </div>
+          <div class="d-flex justify-content-between align-items-center mt-2 flex-wrap gap-2">
+            <button class="btn btn-outline-secondary btn-icon" (click)="clear()" aria-label="Clear cart">
+              <fa-icon [icon]="faBroom"></fa-icon>
+            </button>
+            <div class="fs-5">Grand Total: ${{ total() | number : "1.0-2" }}</div>
+            <button class="btn btn-primary d-inline-flex align-items-center gap-2" (click)="checkout()">
+              Checkout <fa-icon [icon]="faArrowRight"></fa-icon>
+            </button>
+          </div>
         </div>
-        <div class="d-flex justify-content-between align-items-center mt-2">
-          <button class="btn btn-outline-secondary" (click)="clear()">
-            Clear Cart
-          </button>
-          <div class="fs-5">Grand Total: ${{ total() | number : "1.0-2" }}</div>
-          <button class="btn btn-primary" (click)="checkout()">Checkout</button>
-        </div>
-      </div>
 
-      <ng-template #empty>
-        <div class="text-center text-muted">Your cart is empty.</div>
-      </ng-template>
+        <ng-template #empty>
+          <div class="empty-state text-center p-5 border rounded-4 bg-white shadow-sm">
+            <h5 class="fw-semibold mb-2">Your cart is empty</h5>
+            <p class="text-muted mb-0">Add items from listings to get started.</p>
+          </div>
+        </ng-template>
+      </section>
     </main>
   </div>
 </div>

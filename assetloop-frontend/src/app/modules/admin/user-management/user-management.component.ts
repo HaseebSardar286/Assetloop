@@ -7,7 +7,7 @@ import { AdminSidebarComponent } from '../admin-sidebar/admin-sidebar.component'
 import { AdminService } from '../../../services/admin.service';
 import { User } from '../../../interfaces/user';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { faTrash, faEye } from '@fortawesome/free-solid-svg-icons';
+import { faTrash, faEye, faSearch, faTimes, faArrowLeft, faArrowRight } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
   selector: 'app-user-management',
@@ -26,6 +26,10 @@ import { faTrash, faEye } from '@fortawesome/free-solid-svg-icons';
 export class UserManagementComponent implements OnInit {
   faTrash = faTrash;
   faEye = faEye;
+  faSearch = faSearch;
+  faTimes = faTimes;
+  faArrowLeft = faArrowLeft;
+  faArrowRight = faArrowRight;
 
   users: User[] = [];
   filteredUsers: User[] = [];

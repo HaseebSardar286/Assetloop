@@ -1,1 +1,160 @@
-<p>payment-form works!</p>
+<div class="d-flex flex-column vh-100">
+  <app-header></app-header>
+  <div class="d-flex flex-grow-1">
+    <app-renter-side-bar></app-renter-side-bar>
+    <main class="flex-grow-1 bg-light">
+      <section class="dashboard-hero gradient-bg px-4 py-4 py-md-5">
+        <div class="container-fluid d-flex flex-wrap justify-content-between align-items-start gap-3">
+          <div>
+            <div class="badge text-bg-light fw-semibold mb-2">Payments</div>
+            <h2 class="text-white fw-bold mb-1">Secure checkout</h2>
+            <p class="text-white-50 mb-0">Add a card to complete your booking.</p>
+          </div>
+          <div class="stat-pill bg-white shadow-sm rounded-4 p-3 d-flex align-items-center gap-3">
+            <div>
+              <div class="text-muted small">Status</div>
+              <div class="fs-5 fw-bold text-dark">SSL secured</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="container-fluid py-4">
+        <div class="row g-4">
+          <div class="col-lg-7">
+            <div class="card glass-card p-4">
+              <div class="d-flex align-items-center gap-2 mb-3">
+                <fa-icon [icon]="faCreditCard"></fa-icon>
+                <h5 class="mb-0">Card details</h5>
+              </div>
+              <form [formGroup]="paymentForm" (ngSubmit)="submit()" class="d-flex flex-column gap-3">
+                <div class="row g-3">
+                  <div class="col-12">
+                    <label class="form-label small text-muted">Name on card</label>
+                    <div class="input-group">
+                      <span class="input-group-text"><fa-icon [icon]="faUser"></fa-icon></span>
+                      <input type="text" class="form-control" formControlName="cardName" placeholder="Cardholder name" />
+                    </div>
+                  </div>
+                  <div class="col-12">
+                    <label class="form-label small text-muted">Card number</label>
+                    <div class="input-group">
+                      <span class="input-group-text"><fa-icon [icon]="faCreditCard"></fa-icon></span>
+                      <input
+                        type="text"
+                        class="form-control"
+                        formControlName="cardNumber"
+                        placeholder="1234 5678 9012 3456"
+                        inputmode="numeric"
+                      />
+                    </div>
+                  </div>
+                  <div class="col-6 col-md-4">
+                    <label class="form-label small text-muted">Expiry</label>
+                    <div class="input-group">
+                      <span class="input-group-text"><fa-icon [icon]="faCalendar"></fa-icon></span>
+                      <input type="text" class="form-control" formControlName="expiry" placeholder="MM/YY" />
+                    </div>
+                  </div>
+                  <div class="col-6 col-md-4">
+                    <label class="form-label small text-muted">CVV</label>
+                    <div class="input-group">
+                      <span class="input-group-text"><fa-icon [icon]="faLock"></fa-icon></span>
+                      <input type="password" class="form-control" formControlName="cvv" placeholder="•••" />
+                    </div>
+                  </div>
+                  <div class="col-md-4">
+                    <label class="form-label small text-muted">Postal / Zip</label>
+                    <input type="text" class="form-control" formControlName="postal" placeholder="12345" />
+                  </div>
+                  <div class="col-md-6">
+                    <label class="form-label small text-muted">Country</label>
+                    <div class="input-group">
+                      <span class="input-group-text"><fa-icon [icon]="faLocationDot"></fa-icon></span>
+                      <input type="text" class="form-control" formControlName="country" placeholder="Country" />
+                    </div>
+                  </div>
+                  <div class="col-md-6 d-flex align-items-center pt-2">
+                    <div class="form-check">
+                      <input class="form-check-input" type="checkbox" id="saveCard" formControlName="saveCard" />
+                      <label class="form-check-label" for="saveCard">Save card for next time</label>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="d-flex align-items-center gap-3">
+                  <button class="btn btn-primary d-inline-flex align-items-center gap-2" type="submit" [disabled]="loading">
+                    {{ loading ? 'Processing...' : 'Pay now' }}
+                  </button>
+                  <div *ngIf="success" class="text-success small">Payment saved successfully.</div>
+                  <div *ngIf="error" class="text-danger small">{{ error }}</div>
+                </div>
+              </form>
+            </div>
+          </div>
+          <div class="col-lg-5">
+            <div class="card glass-card p-4 h-100">
+              <h6 class="fw-semibold mb-3">What happens next?</h6>
+              <ul class="list-unstyled mb-0 text-muted small d-flex flex-column gap-2">
+                <li>• We store only a masked summary (brand, last4, expiry), not the full card.</li>
+                <li>• You can set a default card or remove it below.</li>
+                <li>• Charges occur only after booking confirmation.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="row g-3 mt-3">
+          <div class="col-12">
+            <div class="card glass-card p-3">
+              <div class="d-flex justify-content-between align-items-center mb-2">
+                <h6 class="mb-0">Saved payment methods</h6>
+                <span class="badge bg-light text-dark">{{ methods.length }}</span>
+              </div>
+              <ng-container *ngIf="methods.length; else noMethods">
+                <div class="list-group">
+                  <div
+                    class="list-group-item d-flex justify-content-between align-items-center flex-wrap gap-2"
+                    *ngFor="let m of methods"
+                  >
+                    <div class="d-flex align-items-center gap-2">
+                      <fa-icon [icon]="faCreditCard" class="text-primary"></fa-icon>
+                      <div>
+                        <div class="fw-semibold">
+                          {{ m.brand?.toUpperCase() || m.type }} •••• {{ m.last4 }}
+                          <span class="badge bg-success ms-2" *ngIf="m.isDefault">Default</span>
+                        </div>
+                        <div class="text-muted small">
+                          Expires {{ m.expMonth }}/{{ m.expYear }} · {{ m.name || 'Saved card' }}
+                        </div>
+                      </div>
+                    </div>
+                    <div class="d-flex align-items-center gap-2">
+                      <button
+                        class="btn btn-outline-primary btn-sm"
+                        (click)="setDefault(m.id)"
+                        [disabled]="m.isDefault"
+                      >
+                        Make default
+                      </button>
+                      <button
+                        class="btn btn-outline-danger btn-sm"
+                        (click)="remove(m.id)"
+                        aria-label="Remove method"
+                      >
+                        Remove
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </ng-container>
+              <ng-template #noMethods>
+                <div class="text-muted small">No saved methods yet. Add a card above to see it here.</div>
+              </ng-template>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+</div>

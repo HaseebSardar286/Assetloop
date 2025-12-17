@@ -20,6 +20,8 @@ const {
   approvePendingUser,
   rejectPendingUser,
   getUserSummary,
+  getAllTransactions,
+  updateTransactionStatus,
 } = require("../controllers/adminController");
 
 const router = express.Router();
@@ -59,5 +61,9 @@ router.delete("/reviews/:id", deleteReview);
 // System settings
 router.get("/settings", getSystemSettings);
 router.put("/settings", updateSystemSettings);
+
+// Transaction management
+router.get("/transactions", getAllTransactions);
+router.put("/transactions/:id/status", updateTransactionStatus);
 
 module.exports = router;

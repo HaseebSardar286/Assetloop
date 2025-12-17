@@ -1,60 +1,65 @@
-/* Ensure the entire container takes full viewport height */
-.d-flex {
-  height: 100vh;
+.dashboard-hero {
+  border-bottom-left-radius: 28px;
+  border-bottom-right-radius: 28px;
+  margin-bottom: -20px;
 }
 
-/* Style the main content area */
+.gradient-bg {
+  background: radial-gradient(circle at 10% 20%, #5aa6ff 0, #4a7bff 25%, #29316d 80%);
+}
+
 main {
-  margin-left: 230px; /* Match sidebar width */
+  margin-left: 230px;
   flex-grow: 1;
-  overflow-y: auto; /* Enable scrolling if content overflows */
-  padding: 1rem;
-  background-color: #f8f9fa; /* Light background for consistency */
-  transition: margin-left 0.3s ease; /* Smooth transition for responsive adjustment */
-}
-
-/* Adjust for header height (assuming 60px, adjust if different) */
-main {
-  margin-top: 60px; /* Offset for header */
-  height: calc(100vh - 60px); /* Full height minus header */
-}
-
-/* Responsive design: Collapse sidebar on small screens */
-@media (max-width: 768px) {
-  main {
-    margin-left: 0; /* Remove sidebar margin on small screens */
-    width: 100%; /* Full width */
-    margin-top: 60px; /* Maintain header offset */
-    height: calc(100vh - 60px); /* Adjust height */
-  }
-
-  .d-flex .flex-grow-1 {
-    flex-direction: column; /* Stack content vertically */
-  }
-}
-
-/* Card styling for consistency */
-.card {
-  border: none;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.card-header {
+  margin-top: 60px;
+  overflow-y: auto;
   background-color: #f8f9fa;
-  font-weight: bold;
 }
 
-.card-body {
-  padding: 1.5rem;
+.glass-card {
+  border: 1px solid #e8ebf3;
+  border-radius: 18px;
+  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.08);
 }
 
-.btn-sm {
-  padding: 0.25rem 0.5rem;
+.glass-card .card-header {
+  border: none;
+  border-bottom: 1px solid #eef1f7;
+  border-radius: 18px 18px 0 0;
+  padding: 14px 18px;
+}
+
+.btn-icon {
+  width: 40px;
+  height: 40px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border-radius: 12px;
+}
+
+.table {
+  margin-bottom: 0;
+}
+
+.table thead th {
+  font-weight: 600;
   font-size: 0.875rem;
+  padding: 0.75rem;
+  border-bottom: 2px solid #e8ebf3;
 }
 
-.btn:disabled {
-  opacity: 0.65;
-  cursor: not-allowed;
+.table tbody td {
+  padding: 0.75rem;
+  vertical-align: middle;
+}
+
+@media (max-width: 992px) {
+  main {
+    margin-left: 0;
+  }
+  .dashboard-hero {
+    border-radius: 0 0 20px 20px;
+  }
 }

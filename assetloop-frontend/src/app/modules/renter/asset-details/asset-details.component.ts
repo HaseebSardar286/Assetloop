@@ -3,9 +3,19 @@ import { CommonModule } from '@angular/common';
 import { Router, ActivatedRoute, RouterModule } from '@angular/router';
 import { HeaderComponent } from '../../../components/header/header.component';
 import { RenterSideBarComponent } from '../renter-side-bar/renter-side-bar.component';
+import { OwnerSideBarComponent } from '../../owner/owner-side-bar/owner-side-bar.component';
 import { RenterService } from '../../../services/renter.service';
 import { ChatService } from '../../../services/chat.service';
 import { AuthService } from '../../../services/auth.service';
+import { OwnerService } from '../../../services/owner.service';
+import { map } from 'rxjs/operators';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import {
+  faHeart,
+  faShoppingCart,
+  faComments,
+} from '@fortawesome/free-solid-svg-icons';
+import { SystemCurrencyPipe } from '../../../pipes/currency.pipe';
 
 @Component({
   selector: 'app-asset-details',
@@ -15,11 +25,18 @@ import { AuthService } from '../../../services/auth.service';
     RouterModule,
     HeaderComponent,
     RenterSideBarComponent,
+    OwnerSideBarComponent,
+    FontAwesomeModule,
+    SystemCurrencyPipe,
   ],
   templateUrl: './asset-details.component.html',
   styleUrl: './asset-details.component.css',
 })
 export class AssetDetailsComponent {
+  faHeart = faHeart;
+  faShoppingCart = faShoppingCart;
+  faComments = faComments;
+
   assetId: string | null = null;
   loading = false;
   error: string | null = null;
@@ -32,6 +49,7 @@ export class AssetDetailsComponent {
   }> = [];
   averageRating = 0;
   totalReviews = 0;
+  isOwnerView = false;
 
   // Expose Math to template
   Math = Math;
@@ -39,6 +57,7 @@ export class AssetDetailsComponent {
   constructor(
     private route: ActivatedRoute,
     private renterService: RenterService,
+    private ownerService: OwnerService,
     private chatService: ChatService,
     private authService: AuthService,
     private router: Router
@@ -46,13 +65,18 @@ export class AssetDetailsComponent {
 
   ngOnInit(): void {
     this.assetId = this.route.snapshot.paramMap.get('id');
+    this.isOwnerView = this.router.url.startsWith('/owner');
     if (this.assetId) {
       this.loading = true;
       // Reuse all assets endpoint and pick the one by id for now
-      this.renterService.getAllAssets({}).subscribe({
-        next: (res) => {
-          this.asset = (res.assets || []).find(
-            (a: any) => a._id === this.assetId
+      const loader$ = this.isOwnerView
+        ? this.ownerService.getAssets()
+        : this.renterService.getAllAssets().pipe(map((res) => res.assets || []));
+
+      loader$.subscribe({
+        next: (assets: any[]) => {
+          this.asset = (assets || []).find(
+            (a: any) => (a._id || a.id) === this.assetId
           );
           if (!this.asset) {
             this.error = 'Asset not found';
@@ -69,7 +93,7 @@ export class AssetDetailsComponent {
           }
           this.loading = false;
         },
-        error: (err) => {
+        error: (err: any) => {
           this.error = err?.error?.message || 'Failed to load asset details';
           this.loading = false;
         },

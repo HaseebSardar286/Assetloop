@@ -7,6 +7,13 @@ import { HeaderComponent } from '../../../components/header/header.component';
 import { ProductItemComponent } from '../../../components/cards/product-item/product-item.component';
 import { RenterService } from '../../../services/renter.service';
 import { AssetResponse } from '../../../interfaces/asset';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import {
+  faFilter,
+  faRotateLeft,
+  faChevronLeft,
+  faChevronRight,
+} from '@fortawesome/free-solid-svg-icons';
 
 @Component({
   selector: 'app-search-listings',
@@ -18,11 +25,17 @@ import { AssetResponse } from '../../../interfaces/asset';
     RenterSideBarComponent,
     HeaderComponent,
     ProductItemComponent,
+    FontAwesomeModule,
   ],
   templateUrl: './search-listings.component.html',
   styleUrls: ['./search-listings.component.css'],
 })
 export class SearchListingsComponent implements OnInit {
+  faFilter = faFilter;
+  faRotateLeft = faRotateLeft;
+  faChevronLeft = faChevronLeft;
+  faChevronRight = faChevronRight;
+
   searchForm: FormGroup;
   allAssets: AssetResponse[] = [];
   filteredAssets: AssetResponse[] = [];
@@ -53,7 +66,7 @@ export class SearchListingsComponent implements OnInit {
   }
 
   loadAssets(): void {
-    this.renterService.getAllAssets({}).subscribe({
+    this.renterService.getAllAssets().subscribe({
       next: (response) => {
         this.allAssets = response.assets;
         this.applyFilters();

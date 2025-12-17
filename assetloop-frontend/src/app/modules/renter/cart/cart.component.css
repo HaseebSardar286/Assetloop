@@ -1,37 +1,55 @@
-.table td,
-.table th {
-  vertical-align: middle;
+.dashboard-hero {
+  border-bottom-left-radius: 28px;
+  border-bottom-right-radius: 28px;
+  margin-bottom: -20px;
 }
 
-.btn {
-  white-space: nowrap;
-}
-/* Fix the sidebar */
-.d-flex.flex-column.flex-shrink-0.p-3.bg-dark.text-white {
-  position: fixed;
-  top: 60px; /* Height of the header */
-  left: 0;
-  bottom: 0;
-  width: 230px;
-  overflow-y: auto;
+.gradient-bg {
+  background: radial-gradient(circle at 10% 20%, #5aa6ff 0, #4a7bff 25%, #29316d 80%);
 }
 
-/* Ensure main content adjusts for fixed header and sidebar */
 main {
   margin-left: 230px;
-  margin-top: 60px; /* Height of the header */
-  padding: 20px;
-  background-color: #f8f9fa;
-  overflow-y: auto;
-  height: calc(100vh - 56px); /* Full viewport height minus header height */
+  flex-grow: 1;
+  min-height: calc(100vh - 60px);
+  margin-top: 60px;
 }
 
-/* Adjust row and columns to account for padding and margins */
-.row {
-  margin: 0;
+.glass-card {
+  border: 1px solid #e8ebf3;
+  border-radius: 18px;
+  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.08);
 }
 
-.col-md-3,
-.col-md-9 {
-  padding: 0 15px;
+.thumb {
+  width: 60px;
+  height: 60px;
+  object-fit: cover;
+}
+
+.btn-icon {
+  width: 40px;
+  height: 40px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  padding: 0;
+}
+
+.empty-state {
+  background: #fff;
+}
+
+.stat-pill {
+  min-width: 220px;
+}
+
+@media (max-width: 992px) {
+  main {
+    margin-left: 0;
+  }
+  .dashboard-hero {
+    border-radius: 0 0 20px 20px;
+  }
 }

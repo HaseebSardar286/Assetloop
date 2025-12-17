@@ -1,53 +1,76 @@
-<div class="card h-100 shadow-sm position-relative">
-  <img
-    [src]="asset.images[0] || '/images/download.jpg'"
-    class="card-img-top"
-    [alt]="asset.name"
-  />
-  <div class="card-body">
-    <h5 class="card-title">{{ asset.name }}</h5>
-    <p class="card-text">
-      <strong>Category:</strong> {{ asset.category || "N/A" }}
-    </p>
-    <p class="card-text"><strong>Location:</strong> {{ asset.address }}</p>
-    <p class="card-text"><strong>Price:</strong> ${{ asset.price }}/night</p>
-    <p class="card-text">{{ asset.description }}</p>
-    <p class="card-text">
-      <small class="text-muted">{{ asset.amenities.join(", ") }}</small>
-    </p>
-    <span *ngIf="likedCount" class="badge bg-info">{{ likedCount }} Likes</span>
-    <input
-      type="text"
-      class="form-control mt-2"
-      placeholder="Add a note..."
-      (input)="onNotesChange($event)"
+<div class="product-card h-100 shadow-sm position-relative">
+  <div class="img-wrapper">
+    <img
+      [src]="asset.images[0] || '/images/download.jpg'"
+      class="card-img-top"
+      [alt]="asset.name"
     />
+    <div class="price-chip">
+      {{ asset.price | systemCurrency }}<span class="small text-muted">/night</span>
+    </div>
+    <div class="category-chip text-uppercase">
+      {{ asset.category || 'N/A' }}
+    </div>
+    <span *ngIf="likedCount" class="badge bg-info likes-chip">
+      {{ likedCount }} ♥
+    </span>
   </div>
-  <div class="card-footer d-flex justify-content-between align-items-center">
-    <div>
+
+  <div class="card-body">
+    <div class="d-flex justify-content-between align-items-start mb-2">
+      <h5 class="card-title mb-0">{{ asset.name }}</h5>
       <button
-        class="btn btn-outline-danger btn-sm me-2"
+        type="button"
+        class="btn btn-icon"
+        [class.btn-primary-soft]="isFavourite"
+        [class.btn-outline-secondary]="!isFavourite"
         (click)="onRemoveFavourite()"
+        [attr.aria-label]="isFavourite ? 'Remove favourite' : 'Add to favourites'"
       >
-        <fa-icon [icon]="faTrash" *ngIf="isFavourite"></fa-icon>
-        <fa-icon [icon]="faHeart" *ngIf="!isFavourite"></fa-icon>
-        {{ isFavourite ? "Remove Favourite" : "Add to Favourites" }}
-      </button>
-      <button
-        class="btn btn-outline-primary btn-sm me-2"
-        (click)="onAddToCart()"
-      >
-        <fa-icon [icon]="faShoppingCart"></fa-icon> Book Now
-      </button>
-      <button class="btn btn-outline-secondary btn-sm me-2" (click)="onShare()">
-        <fa-icon [icon]="faShare"></fa-icon> Share
-      </button>
-      <button class="btn btn-outline-success btn-sm" (click)="startChatWithOwner()">
-        💬 Chat
+        <fa-icon [icon]="isFavourite ? faTrash : faHeart"></fa-icon>
       </button>
     </div>
-    <button class="btn btn-primary btn-sm" (click)="onViewListing()">
-      View Listing
+    <p class="card-subtitle text-muted mb-1">
+      {{ asset.address }}
+    </p>
+    <p class="card-text text-truncate-2 mb-2">
+      {{ asset.description }}
+    </p>
+    <p class="card-text text-muted small mb-0">
+      {{ asset.amenities.join(', ') }}
+    </p>
+  </div>
+
+  <div class="card-footer d-flex justify-content-between align-items-center">
+    <div class="d-flex gap-2">
+      <button
+        class="btn btn-outline-primary btn-icon"
+        (click)="onAddToCart()"
+        aria-label="Book now"
+      >
+        <fa-icon [icon]="faShoppingCart"></fa-icon>
+      </button>
+      <button
+        class="btn btn-outline-secondary btn-icon"
+        (click)="onShare()"
+        aria-label="Share listing"
+      >
+        <fa-icon [icon]="faShare"></fa-icon>
+      </button>
+      <button
+        class="btn btn-outline-success btn-icon"
+        (click)="startChatWithOwner()"
+        aria-label="Chat with owner"
+      >
+        💬
+      </button>
+    </div>
+    <button
+      class="btn btn-primary btn-icon"
+      (click)="onViewListing()"
+      aria-label="View listing"
+    >
+      <fa-icon [icon]="faArrowRight"></fa-icon>
     </button>
   </div>
 </div>

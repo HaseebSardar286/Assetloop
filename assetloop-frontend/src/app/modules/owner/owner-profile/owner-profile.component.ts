@@ -6,14 +6,34 @@ import { HeaderComponent } from '../../../components/header/header.component';
 import { OwnerSideBarComponent } from '../owner-side-bar/owner-side-bar.component';
 import { OwnerService } from '../../../services/owner.service';
 import { User } from '../../../interfaces/user';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import {
+  faUser,
+  faLock,
+  faBell,
+  faGear,
+  faRightFromBracket,
+} from '@fortawesome/free-solid-svg-icons';
 
 @Component({
   selector: 'app-owner-profile',
-  imports: [FormsModule, CommonModule, OwnerSideBarComponent, HeaderComponent],
+  imports: [
+    FormsModule,
+    CommonModule,
+    OwnerSideBarComponent,
+    HeaderComponent,
+    FontAwesomeModule,
+  ],
   templateUrl: './owner-profile.component.html',
   styleUrl: './owner-profile.component.css',
 })
 export class OwnerProfileComponent {
+  faUser = faUser;
+  faLock = faLock;
+  faBell = faBell;
+  faGear = faGear;
+  faRightFromBracket = faRightFromBracket;
+
   user: User = {
     firstName: '',
     lastName: '',
@@ -52,6 +72,8 @@ export class OwnerProfileComponent {
     bookings: 2,
     reviews: 1,
   };
+
+  activeTab: 'profile' | 'password' | 'notifications' = 'profile';
 
   constructor(private router: Router, private ownerService: OwnerService) {}
   ngOnInit(): void {
@@ -131,6 +153,10 @@ export class OwnerProfileComponent {
   onSaveChanges() {
     console.log('Profile saved:', this.user);
     // Add your save logic here
+  }
+
+  setTab(tab: 'profile' | 'password' | 'notifications') {
+    this.activeTab = tab;
   }
 
   onLogout() {

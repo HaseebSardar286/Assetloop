@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule, Router } from '@angular/router';
@@ -6,6 +6,16 @@ import { HeaderComponent } from '../../../components/header/header.component';
 import { OwnerSideBarComponent } from '../owner-side-bar/owner-side-bar.component';
 import { AssetForm, AssetResponse } from '../../../interfaces/asset';
 import { OwnerService } from '../../../services/owner.service';
+import { SystemSettingsService } from '../../../services/system-settings.service';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import {
+  faPlus,
+  faCloudArrowUp,
+  faCalendarDays,
+  faTags,
+  faListCheck,
+  faRotateRight,
+} from '@fortawesome/free-solid-svg-icons';
 
 @Component({
   selector: 'app-create-asset',
@@ -16,11 +26,19 @@ import { OwnerService } from '../../../services/owner.service';
     RouterModule,
     HeaderComponent,
     OwnerSideBarComponent,
+    FontAwesomeModule,
   ],
   templateUrl: './create-asset.component.html',
   styleUrls: ['./create-asset.component.css'],
 })
-export class CreateAssetComponent {
+export class CreateAssetComponent implements OnInit {
+  faPlus = faPlus;
+  faCloudArrowUp = faCloudArrowUp;
+  faCalendarDays = faCalendarDays;
+  faTags = faTags;
+  faListCheck = faListCheck;
+  faRotateRight = faRotateRight;
+
   asset: AssetForm = {
     name: '',
     address: '',
@@ -30,7 +48,7 @@ export class CreateAssetComponent {
     endDate: '',
     availability: 'available',
     status: 'Active',
-    category: 'car',
+    category: '',
     capacity: '',
     images: [],
     features: [],
@@ -38,17 +56,142 @@ export class CreateAssetComponent {
   };
 
   imageFiles: File[] = [];
-  categories = ['car', 'apartment', 'house', 'tool'];
-  availableFeatures = ['AC', 'Parking', 'Wi-Fi', 'Kitchen', 'Pet-Friendly'];
-  availableAmenities = ['Gym', 'Pool', 'Security', 'Laundry', '24/7 Support'];
+  categories = ['Car', 'Apartment', 'House', 'Tool', 'Electronics', 'Event Gear'];
+  currentListingsCount: number = 0;
+  maxListingsAllowed: number = 10;
+  allowedFileTypes: string[] = ['jpg', 'png', 'pdf'];
+  fileTypeError: string | null = null;
+  availableFeatures = [
+    // Cars
+    'Air Conditioning',
+    'Heated Seats',
+    'Sunroof',
+    'Bluetooth',
+    'Apple CarPlay',
+    'Android Auto',
+    'Rear Camera',
+    'Parking Sensors',
+    'Cruise Control',
+    'Alloy Wheels',
+    'Roof Rack',
+    // Apartments/Houses
+    'Furnished',
+    'Wi‑Fi',
+    'Backup Power/UPS',
+    'Inverter/Generator',
+    'Smart Lock',
+    'CCTV',
+    'Intercom',
+    'Elevator Access',
+    'Balcony/Terrace',
+    'Maid Room',
+    'Store Room',
+    // Tools/Equipment
+    'Cordless',
+    'High Torque',
+    'Brushless Motor',
+    'Water Resistant',
+    'Heavy Duty',
+    // Electronics
+    '4K Display',
+    'HDR',
+    'Smart TV',
+    'Noise Cancelling',
+    'Dolby Atmos',
+    'Wi‑Fi 6',
+    // Event Gear
+    'Battery Powered',
+    'Portable',
+    'Outdoor Rated',
+  ];
+  availableAmenities = [
+    // Cars
+    'Comprehensive Insurance',
+    'Unlimited KM',
+    'Roadside Assistance',
+    'Child Seat',
+    'Dash Cam',
+    // Apartments/Houses
+    'Gym',
+    'Pool',
+    'Security Guard',
+    '24/7 CCTV',
+    'Covered Parking',
+    'Elevator',
+    'RO/Filtered Water',
+    'Gas Supply',
+    'Air Conditioning',
+    'Heating',
+    'Laundry Room',
+    'Dishwasher',
+    'Pet Friendly',
+    'Wheelchair Access',
+    'Cleaning Service',
+    'Solar Backup',
+    // Tools/Equipment
+    'Protective Gear Included',
+    'Extra Blades/Bits',
+    'Carrying Case',
+    'On-site Support',
+    // Electronics
+    'HDMI/DisplayPort Cables',
+    'Tripod/Stand',
+    'Spare Batteries',
+    'Fast Charger',
+    // Event Gear
+    'Delivery Available',
+    'Setup Included',
+    'On-site Technician',
+    'Extension Cords',
+  ];
   statuses = ['Active', 'Inactive'];
 
-  constructor(private ownerService: OwnerService, private router: Router) {}
+  constructor(
+    private ownerService: OwnerService,
+    private router: Router,
+    private systemSettingsService: SystemSettingsService
+  ) {}
+
+  ngOnInit(): void {
+    // Load system settings and current listings count
+    this.systemSettingsService.getSettings().subscribe({
+      next: (settings) => {
+        this.maxListingsAllowed = settings.maxListingsPerUser || 10;
+        this.allowedFileTypes = settings.allowedFileTypes
+          ? settings.allowedFileTypes.split(',').map(t => t.trim().toLowerCase())
+          : ['jpg', 'png', 'pdf'];
+      },
+    });
+
+    // Get current listings count
+    this.ownerService.getAssets().subscribe({
+      next: (assets) => {
+        this.currentListingsCount = assets.length;
+      },
+      error: (err) => {
+        console.error('Failed to load assets:', err);
+      },
+    });
+  }
 
   onFileChange(event: Event) {
     const input = event.target as HTMLInputElement;
     if (input.files) {
-      this.imageFiles = Array.from(input.files).slice(0, 5); // Limit to 5 images
+      this.fileTypeError = null;
+      const files = Array.from(input.files);
+      
+      // Validate file types
+      const invalidFiles = files.filter(file => {
+        const ext = file.name.split('.').pop()?.toLowerCase();
+        return !ext || !this.allowedFileTypes.includes(ext);
+      });
+
+      if (invalidFiles.length > 0) {
+        this.fileTypeError = `Invalid file types. Allowed types: ${this.allowedFileTypes.join(', ').toUpperCase()}`;
+        return;
+      }
+
+      this.imageFiles = files.slice(0, 5); // Limit to 5 images
     }
   }
 
@@ -62,6 +205,15 @@ export class CreateAssetComponent {
     this.asset.features = this.asset.features.filter((f) => f !== feature);
   }
 
+  onFeatureSelect(event: Event) {
+    const selectEl = event.target as HTMLSelectElement | null;
+    const value = selectEl?.value;
+    if (value) {
+      this.addFeature(value);
+      if (selectEl) selectEl.value = '';
+    }
+  }
+
   toggleAmenity(amenity: string) {
     const index = this.asset.amenities.indexOf(amenity);
     if (index > -1) {
@@ -72,6 +224,18 @@ export class CreateAssetComponent {
   }
 
   onSubmit() {
+    // Check listing limit before submission
+    if (this.currentListingsCount >= this.maxListingsAllowed) {
+      alert(`You have reached the maximum limit of ${this.maxListingsAllowed} listings per user.`);
+      return;
+    }
+
+    // Validate file types
+    if (this.imageFiles.length === 0) {
+      alert('Please select at least one image.');
+      return;
+    }
+
     const formData = new FormData();
     formData.append('name', this.asset.name);
     formData.append('address', this.asset.address);
@@ -93,7 +257,7 @@ export class CreateAssetComponent {
     this.ownerService.createAsset(formData).subscribe({
       next: (response: AssetResponse) => {
         alert('Asset created successfully!');
-        this.router.navigate(['/assets']);
+        this.router.navigate(['/owner/my-listings']);
       },
       error: (err) => {
         alert(err.error?.message || 'Failed to create asset');
