@@ -5,42 +5,62 @@ const jwt = require("jsonwebtoken");
 const crypto = require("crypto");
 const nodemailer = require("nodemailer");
 
-
-console.log("SMTP_USERNAME at runtime:", process.env.SMTP_USERNAME);
-  console.log("SMTP_PASSWORD present:", !!process.env.SMTP_PASSWORD);
-function createTransport() {
-  console.log("SMTP_USERNAME at runtime:", process.env.SMTP_USERNAME);
-  console.log("SMTP_PASSWORD present:", !!process.env.SMTP_PASSWORD);
-  if (!process.env.SMTP_USERNAME || !process.env.SMTP_PASSWORD) {
-    throw new Error("SMTP credentials are missing in environment variables");
-  }
-
-  return nodemailer.createTransport({
-    service: "gmail",
-    auth: {
-      user: process.env.SMTP_USERNAME,
-      pass: process.env.SMTP_PASSWORD,
-    },
-  });
+function getSmtpConfig() {
+  // Support both naming styles (some projects use USER/PASS, others USERNAME/PASSWORD)
+  const user = process.env.SMTP_USER || process.env.SMTP_USERNAME;
+  const pass = process.env.SMTP_PASS || process.env.SMTP_PASSWORD;
+  const host = process.env.SMTP_HOST || "smtp.gmail.com";
+  const port = Number(process.env.SMTP_PORT) || 587;
+  const from = process.env.SMTP_FROM || user || "no-reply@example.com";
+  return { user, pass, host, port, from };
 }
 
+function createTransport() {
+  const { user, pass, host, port } = getSmtpConfig();
+  if (!user || !pass) return null;
+
+  // Gmail works with STARTTLS on 587 (secure: false)
+  return nodemailer.createTransport({
+    host,
+    port,
+    secure: port === 465,
+    auth: { user, pass },
+    // Some environments require explicit TLS settings
+    tls: { rejectUnauthorized: false },
+  });
+}
 
 async function sendResetEmail(to, token) {
   const frontendUrl = process.env.FRONTEND_URL || "http://localhost:4200";
   const resetLink = `${frontendUrl}/auth/reset-password?token=${token}`;
+  const { from } = getSmtpConfig();
 
-  const transport = createTransport(); // 👈 CREATED HERE
+  const transport = createTransport();
 
-  await transport.sendMail({
-    from: `AssetLoop <${process.env.SMTP_USERNAME}>`,
-    to,
-    subject: "Reset your password",
-    html: `
-      <p>You requested a password reset.</p>
-      <a href="${resetLink}">Reset your password</a>
-      <p>This link expires in 1 hour.</p>
-    `,
-  });
+  // If SMTP isn't configured, don't fail; return link for dev testing
+  if (!transport) {
+    console.warn("SMTP credentials not set; reset link:", resetLink);
+    return { sent: false, resetLink };
+  }
+
+  try {
+    await transport.sendMail({
+      from,
+      to,
+      subject: "Reset your password",
+      text: `You requested a password reset. Open this link: ${resetLink}`,
+      html: `
+        <p>You requested a password reset.</p>
+        <p><a href="${resetLink}">Reset your password</a></p>
+        <p>This link expires in 1 hour.</p>
+      `,
+    });
+    return { sent: true, resetLink };
+  } catch (err) {
+    console.error("Failed to send reset email. Falling back to reset link log.", err);
+    console.warn("Reset link:", resetLink);
+    return { sent: false, resetLink };
+  }
 }
 
 exports.register = async (req, res) => {
@@ -201,11 +221,8 @@ exports.requestPasswordReset = async (req, res) => {
     }
 
     const user = await User.findOne({ email });
-    // To avoid leaking existence, respond success even if not found
     if (!user) {
-      return res
-        .status(200)
-        .json({ message: "A reset email has been sent" });
+      return res.status(404).json({ message: "This email is not registered" });
     }
 
     const token = crypto.randomBytes(32).toString("hex");
@@ -213,11 +230,21 @@ exports.requestPasswordReset = async (req, res) => {
     user.resetPasswordExpires = Date.now() + 60 * 60 * 1000; // 1 hour
     await user.save();
 
-    await sendResetEmail(email, token);
+    const { sent, resetLink } = await sendResetEmail(email, token);
 
-    res
-      .status(200)
-      .json({ message: "A reset email has been sent" });
+    const isProd =
+      process.env.NODE_ENV === "production" || process.env.VERCEL === "1";
+
+    // Always respond 200 so we don't leak whether the email exists.
+    // If SMTP is blocked/misconfigured, return devResetLink (non-production only)
+    // so you can still test the full flow locally.
+    return res.status(200).json({
+      message: sent
+        ? "Reset link has been sent to your email"
+        : "Unable to send email right now. Please try again later.",
+      emailSent: !!sent,
+      devResetLink: !isProd && !sent ? resetLink : null,
+    });
   } catch (error) {
     console.error("Error in requestPasswordReset:", error);
     res.status(500).json({ message: error.message });

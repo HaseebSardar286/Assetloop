@@ -127,4 +127,21 @@ export class PaymentsService {
       headers: this.getHeaders(),
     });
   }
+
+  // Test payment methods (for development/testing without Stripe)
+  testBookingPayment(bookingId: string): Observable<{ success: boolean; message: string; amount: number; bookingId: string }> {
+    return this.http.post<{ success: boolean; message: string; amount: number; bookingId: string }>(
+      `${this.apiUrl}/test/booking-payment`,
+      { bookingId },
+      { headers: this.getHeaders() }
+    );
+  }
+
+  testWalletTopup(amount: number): Observable<{ success: boolean; message: string; amount: number; balance: number }> {
+    return this.http.post<{ success: boolean; message: string; amount: number; balance: number }>(
+      `${this.apiUrl}/test/wallet-topup`,
+      { amount },
+      { headers: this.getHeaders() }
+    );
+  }
 }

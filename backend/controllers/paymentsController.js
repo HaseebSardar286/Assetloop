@@ -18,7 +18,7 @@ function getStripe() {
 
 exports.createCheckoutSession = async (req, res) => {
   try {
-    const { bookingId, successUrl, cancelUrl, currency = "usd" } = req.body;
+    const { bookingId, successUrl, cancelUrl, currency = "pkr" } = req.body;
     const userId = req.user.id;
 
     if (!bookingId) {
@@ -193,7 +193,7 @@ exports.getWallet = async (req, res) => {
 
 exports.addMoney = async (req, res) => {
   try {
-    const { amount, currency = "usd", successUrl, cancelUrl } = req.body;
+    const { amount, currency = "pkr", successUrl, cancelUrl } = req.body;
     const userId = req.user.id;
 
     if (!amount || amount <= 0) {
@@ -271,7 +271,7 @@ exports.withdraw = async (req, res) => {
     await Transaction.create({
       user: userId,
       amount: -amount,
-      currency: "usd",
+      currency: "pkr",
       type: "withdrawal",
       status: "completed", // Assume instant for mock
       description: payoutDescription,
@@ -538,6 +538,120 @@ exports.getRefunds = async (req, res) => {
     return res.status(200).json(formattedRefunds);
   } catch (error) {
     console.error("Error fetching refunds:", error);
+    return res.status(500).json({ message: error.message });
+  }
+};
+
+// Test payment endpoints (simulate successful payments without Stripe)
+// These are useful for development/testing without needing Stripe CLI or webhooks
+exports.testBookingPayment = async (req, res) => {
+  try {
+    const { bookingId } = req.body;
+    const userId = req.user.id;
+
+    if (!bookingId) {
+      return res.status(400).json({ message: "bookingId is required" });
+    }
+
+    const booking = await Booking.findById(bookingId).populate("owner");
+    if (!booking) {
+      return res.status(404).json({ message: "Booking not found" });
+    }
+
+    if (booking.renter.toString() !== userId) {
+      return res.status(403).json({ message: "Not authorized to pay for this booking" });
+    }
+
+    const amountTotal = Math.max(0, booking.price || 0);
+    if (amountTotal <= 0) {
+      return res.status(400).json({ message: "Invalid booking amount" });
+    }
+
+    // Simulate successful payment - update booking
+    booking.totalPaid = (booking.totalPaid || 0) + amountTotal;
+    if (booking.status === "pending") {
+      booking.status = "confirmed";
+    }
+    await booking.save();
+
+    // Create renter transaction
+    await Transaction.create({
+      user: booking.renter,
+      amount: amountTotal,
+      currency: "pkr",
+      type: "payment",
+      status: "completed",
+      description: `Test Payment for booking ${booking.name}`,
+      booking: booking._id,
+      stripePaymentIntentId: `test_pi_${Date.now()}`,
+    });
+
+    // Credit owner wallet
+    const owner = await User.findById(booking.owner?._id || booking.owner);
+    if (owner) {
+      owner.walletBalance = (owner.walletBalance || 0) + amountTotal;
+      await owner.save();
+
+      await Transaction.create({
+        user: owner._id,
+        amount: amountTotal,
+        currency: "pkr",
+        type: "payout",
+        status: "completed",
+        description: `Test Earnings from booking ${booking.name}`,
+        booking: booking._id,
+        stripePaymentIntentId: `test_pi_${Date.now()}`,
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: "Test payment completed successfully",
+      amount: amountTotal,
+      bookingId: booking._id,
+    });
+  } catch (error) {
+    console.error("Error in test booking payment:", error);
+    return res.status(500).json({ message: error.message });
+  }
+};
+
+exports.testWalletTopup = async (req, res) => {
+  try {
+    const { amount } = req.body;
+    const userId = req.user.id;
+
+    if (!amount || amount <= 0) {
+      return res.status(400).json({ message: "Invalid amount" });
+    }
+
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // Simulate successful top-up
+    user.walletBalance = (user.walletBalance || 0) + amount;
+    await user.save();
+
+    await Transaction.create({
+      user: user._id,
+      amount: amount,
+      currency: "pkr",
+      type: "deposit",
+      status: "completed",
+      description: "Test Wallet Top-up",
+      stripePaymentIntentId: `test_pi_${Date.now()}`,
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: "Test wallet top-up completed successfully",
+      amount: amount,
+      balance: user.walletBalance,
+    });
+  } catch (error) {
+    console.error("Error in test wallet topup:", error);
     return res.status(500).json({ message: error.message });
   }
 };

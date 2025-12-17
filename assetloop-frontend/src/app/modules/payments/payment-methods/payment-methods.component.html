@@ -82,7 +82,7 @@
                 type="text"
                 class="form-control"
                 formControlName="cardNumber"
-                placeholder="1234 5678 9012 3456"
+                placeholder="4242 4242 4242 4242"
                 inputmode="numeric"
                 (input)="formatCardNumber($event)"
                 [class.is-invalid]="paymentForm.get('cardNumber')?.invalid && paymentForm.get('cardNumber')?.touched"
@@ -90,6 +90,9 @@
               <div class="invalid-feedback" *ngIf="paymentForm.get('cardNumber')?.invalid && paymentForm.get('cardNumber')?.touched">
                 Valid card number is required (12-19 digits)
               </div>
+              <small class="form-text text-muted">
+                Test cards accepted: 4242 4242 4242 4242 (Visa), 5555 5555 5555 4444 (Mastercard)
+              </small>
             </div>
             <div class="col-md-6">
               <label class="form-label">Expiry Date <span class="text-danger">*</span></label>

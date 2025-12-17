@@ -1,7 +1,7 @@
 <div class="card transaction-card">
   <div class="card-body">
     <h6 class="card-title">Transaction #{{ transaction.id }}</h6>
-    <p class="card-text">Amount: {{ transaction.currency | uppercase }} {{ transaction.amount }}</p>
+    <p class="card-text">Amount: PKR {{ transaction.amount | number : "1.0-0" }}</p>
     <p class="card-text">
       Status:
       <span *ngIf="transaction.status === 'successful' || transaction.status === 'completed'" class="text-success"

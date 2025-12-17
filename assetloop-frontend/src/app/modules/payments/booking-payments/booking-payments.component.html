@@ -24,9 +24,9 @@
         <p class="mb-1">{{ b.address }}</p>
         <div class="d-flex justify-content-between">
           <small>
-            <strong>Price:</strong> ${{ b.price | number : "1.0-0" }} | 
-            <strong>Paid:</strong> ${{ (b.totalPaid || 0) | number : "1.0-0" }} | 
-            <strong>Due:</strong> ${{ getAmountDue(b) | number : "1.0-0" }}
+            <strong>Price:</strong> PKR {{ b.price | number : "1.0-0" }} | 
+            <strong>Paid:</strong> PKR {{ (b.totalPaid || 0) | number : "1.0-0" }} | 
+            <strong>Due:</strong> PKR {{ getAmountDue(b) | number : "1.0-0" }}
           </small>
           <small>{{ b.startDate | date : "shortDate" }} - {{ b.endDate | date : "shortDate" }}</small>
         </div>
@@ -42,10 +42,10 @@
         <div class="text-muted mb-2">{{ booking.address }}</div>
         <div class="row">
           <div class="col-md-4">
-            <strong>Price:</strong> ${{ booking.price | number : "1.0-0" }}
+            <strong>Price:</strong> PKR {{ booking.price | number : "1.0-0" }}
           </div>
           <div class="col-md-4">
-            <strong>Paid:</strong> ${{
+            <strong>Paid:</strong> PKR {{
             booking.totalPaid || 0 | number : "1.0-0"
             }}
           </div>
@@ -55,7 +55,7 @@
                 'badge bg-success': amountDue <= 0,
                 'badge bg-warning text-dark': amountDue > 0
               }">
-              ${{ amountDue | number : "1.0-0" }}
+              PKR {{ amountDue | number : "1.0-0" }}
             </span>
           </div>
         </div>
@@ -91,7 +91,7 @@
             'bg-warning text-dark': payment.status === 'pending',
             'bg-danger': payment.status === 'failed'
           }">{{ payment.status | titlecase }}</span>
-          <span class="fw-bold">{{ payment.amount | currency:'USD' }}</span>
+          <span class="fw-bold">PKR {{ payment.amount | number : "1.0-0" }}</span>
         </div>
       </li>
     </ul>
@@ -101,7 +101,7 @@
 
     <div class="mt-2">
       <h4>Security Deposit</h4>
-      <p>${{ securityDeposit }}</p>
+      <p>PKR {{ securityDeposit | number : "1.0-0" }}</p>
     </div>
 
     <div class="form-check mt-2">
@@ -110,8 +110,11 @@
     </div>
 
     <div class="mt-4">
-      <button class="btn btn-primary" (click)="payNow()" [disabled]="loading || amountDue <= 0">
-        {{ loading ? "Redirecting..." : amountDue > 0 ? "Pay Now" : "Paid" }}
+      <button class="btn btn-primary me-2" (click)="payNow()" [disabled]="loading || amountDue <= 0">
+        {{ loading ? "Redirecting..." : amountDue > 0 ? "Pay with Stripe" : "Paid" }}
+      </button>
+      <button class="btn btn-success" (click)="testPayment()" [disabled]="loading || amountDue <= 0" title="Simulate payment without Stripe (for testing)">
+        Test Payment
       </button>
     </div>
   </ng-container>

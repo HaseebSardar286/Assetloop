@@ -131,7 +131,7 @@ export class BookingPaymentsComponent {
                 method: 'card',
                 date: new Date().toISOString().slice(0, 10),
                 type: 'payment',
-                currency: 'usd'
+                currency: 'pkr'
               } as Transaction] : [];
 
               this.upcomingPayments = [...pastPayments, ...upcoming];
@@ -147,7 +147,7 @@ export class BookingPaymentsComponent {
                 method: 'card',
                 date: new Date().toISOString().slice(0, 10),
                 type: 'payment',
-                currency: 'usd'
+                currency: 'pkr'
               } as Transaction] : [];
               this.loading = false;
             }
@@ -182,7 +182,7 @@ export class BookingPaymentsComponent {
         // Use current app origin for success/cancel
         successUrl: window.location.origin + '/payments?status=success&bookingId=' + this.bookingId,
         cancelUrl: window.location.origin + '/payments?status=cancelled&bookingId=' + this.bookingId,
-        currency: 'usd',
+        currency: 'pkr',
       })
       .subscribe({
         next: (resp) => {
@@ -198,5 +198,42 @@ export class BookingPaymentsComponent {
           this.error = err?.error?.message || 'Failed to create checkout session';
         },
       });
+  }
+
+  testPayment(): void {
+    if (!this.authService.isAuthenticated()) {
+      alert('Please login to pay for the booking');
+      this.router.navigate(['/auth/login']);
+      return;
+    }
+
+    if (!this.bookingId) {
+      alert('Invalid booking identifier');
+      return;
+    }
+
+    if (this.amountDue <= 0) {
+      alert('No amount due for this booking');
+      return;
+    }
+
+    if (!confirm(`Simulate payment of PKR ${this.amountDue.toFixed(2)}? This will complete the payment without Stripe.`)) {
+      return;
+    }
+
+    this.loading = true;
+    this.error = null;
+    this.paymentsService.testBookingPayment(this.bookingId).subscribe({
+      next: (resp) => {
+        this.loading = false;
+        this.info = resp.message || 'Test payment completed successfully!';
+        // Reload booking to show updated balance
+        this.loadBooking();
+      },
+      error: (err) => {
+        this.loading = false;
+        this.error = err?.error?.message || 'Failed to process test payment';
+      },
+    });
   }
 }

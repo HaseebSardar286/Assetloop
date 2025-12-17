@@ -83,10 +83,17 @@ export class PaymentMethodsComponent {
 
   cardNumberValidator = (control: any) => {
     if (!control.value) return null;
+    // Extract only digits (handles formatted numbers with spaces)
     const digits = control.value.replace(/\D/g, '');
+    
+    // Accept any card number with 12-19 digits (including test/dummy cards)
+    // Common test cards: 4242 4242 4242 4242 (Visa), 5555 5555 5555 4444 (Mastercard), etc.
     if (digits.length < 12 || digits.length > 19) {
       return { invalidCardNumber: true };
     }
+    
+    // Basic Luhn algorithm check (optional - can be skipped for test cards)
+    // For now, we'll accept any 12-19 digit number to allow dummy/test cards
     return null;
   };
 
@@ -269,12 +276,25 @@ export class PaymentMethodsComponent {
 
   formatCardNumber(event: Event): void {
     const input = event.target as HTMLInputElement;
-    let value = input.value.replace(/\D/g, '');
-    if (value.length > 0) {
-      value = value.match(/.{1,4}/g)?.join(' ') || value;
-      if (value.length > 19) value = value.slice(0, 19);
+    // Extract only digits
+    let digits = input.value.replace(/\D/g, '');
+    
+    // Limit to 19 digits (max card length)
+    if (digits.length > 19) {
+      digits = digits.slice(0, 19);
     }
-    this.paymentForm.patchValue({ cardNumber: value }, { emitEvent: false });
+    
+    // Format with spaces every 4 digits
+    let formatted = '';
+    if (digits.length > 0) {
+      formatted = digits.match(/.{1,4}/g)?.join(' ') || digits;
+    }
+    
+    // Update the form control value and trigger validation
+    this.paymentForm.patchValue({ cardNumber: formatted }, { emitEvent: true });
+    
+    // Update the input value to show formatted number
+    input.value = formatted;
   }
 
   formatExpiry(event: Event): void {

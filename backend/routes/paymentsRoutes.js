@@ -12,6 +12,8 @@ const {
     setDefaultPaymentMethod,
     getInvoices,
     getRefunds,
+    testBookingPayment,
+    testWalletTopup,
 } = require("../controllers/paymentsController");
 
 const router = express.Router();
@@ -39,5 +41,9 @@ router.post("/methods/:id/default", setDefaultPaymentMethod);
 // Invoices & Refunds
 router.get("/invoices", getInvoices);
 router.get("/refunds", getRefunds);
+
+// Test payment endpoints (for development/testing without Stripe)
+router.post("/test/booking-payment", testBookingPayment);
+router.post("/test/wallet-topup", testWalletTopup);
 
 module.exports = router;

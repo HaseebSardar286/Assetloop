@@ -45,7 +45,10 @@ export class WalletOverviewComponent {
   }
 
   addMoney(): void {
-    if (this.addWithdrawAmount <= 0) return;
+    if (this.addWithdrawAmount < 1) {
+      this.error = 'Minimum amount is PKR 1.00';
+      return;
+    }
     this.loading = true;
     this.error = null;
     this.paymentsService.addMoney(this.addWithdrawAmount).subscribe({

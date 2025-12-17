@@ -13,7 +13,7 @@ const transactionSchema = new mongoose.Schema(
         },
         currency: {
             type: String,
-            default: "usd",
+            default: "pkr",
         },
         type: {
             type: String,

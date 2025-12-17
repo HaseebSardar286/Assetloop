@@ -17,6 +17,7 @@ export class ForgotPasswordComponent {
   loading = false;
   message: string | null = null;
   error: string | null = null;
+  devResetLink: string | null = null;
 
   constructor(private router: Router, private http: HttpClient) {}
 
@@ -25,13 +26,17 @@ export class ForgotPasswordComponent {
     this.loading = true;
     this.error = null;
     this.message = null;
+    this.devResetLink = null;
 
     this.http
       .post(`${environment.apiBaseUrl}/auth/forgot-password`, { email: this.email })
       .subscribe({
-        next: () => {
+        next: (res: any) => {
           this.loading = false;
-          this.message = 'If an account exists, we sent a reset link to your email.';
+          this.message = res?.message || 'Reset link has been sent to your email.';
+          if (res?.devResetLink) {
+            this.devResetLink = res.devResetLink;
+          }
         },
         error: (err) => {
           this.loading = false;

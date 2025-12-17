@@ -30,11 +30,11 @@
       <div class="row">
         <div class="col-6">
           <small class="text-muted">Rent</small>
-          <div>{{ invoice.amounts.rent | currency:'USD' }}</div>
+          <div>PKR {{ invoice.amounts.rent | number : "1.0-0" }}</div>
         </div>
         <div class="col-6">
           <small class="text-muted">Fees</small>
-          <div>{{ invoice.amounts.fees | currency:'USD' }}</div>
+          <div>PKR {{ invoice.amounts.fees | number : "1.0-0" }}</div>
         </div>
       </div>
     </li>
