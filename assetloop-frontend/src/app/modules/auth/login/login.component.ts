@@ -19,16 +19,27 @@ export class LoginComponent {
     rememberMe: false,
   };
 
+  loading = false;
+  error: string | null = null;
+  showPassword = false;
+
   constructor(private router: Router, private authService: AuthService) {}
 
   onSubmit() {
-    // Simulate login logic (replace with actual API call)
+    if (this.loading) return;
+
+    // Basic front-end validation
     if (!this.user.email || !this.user.password) {
-      alert('Please fill all fields!');
+      this.error = 'Please fill in both email and password.';
       return;
     }
+
+    this.loading = true;
+    this.error = null;
+
     this.authService.login(this.user).subscribe({
       next: (res) => {
+        this.loading = false;
         if (res && res.user) {
           const token = res.token;
           if (token) {
@@ -42,16 +53,18 @@ export class LoginComponent {
             } else if (role === 'admin') {
               this.router.navigate(['/admin/dashboard']);
             } else {
-              alert('Unknown role');
+              this.error = 'Unknown role returned from server.';
             }
           }
         } else {
-          alert('Login failed. Invalid response from server.');
+          this.error = 'Login failed. Invalid response from server.';
         }
       },
       error: (err) => {
+        this.loading = false;
         console.error('Login failed with error:', err);
-        alert(err.error?.message || 'Login failed due to an unknown error');
+        this.error =
+          err.error?.message || 'Login failed due to an unknown error.';
       },
     });
   }
@@ -61,5 +74,9 @@ export class LoginComponent {
 
   register() {
     this.router.navigate(['/auth/register']);
+  }
+
+  togglePasswordVisibility(): void {
+    this.showPassword = !this.showPassword;
   }
 }

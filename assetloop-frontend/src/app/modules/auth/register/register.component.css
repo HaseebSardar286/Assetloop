@@ -1,8 +1,57 @@
-input,
-label,
-p {
-  font-size: 15px;
+.auth-page {
+  min-height: 100vh;
+  padding: 24px 12px;
+  background: radial-gradient(circle at 10% 20%, #5aa6ff 0, #4a7bff 25%, #29316d 80%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
-a {
-  cursor: pointer;
+
+.auth-card {
+  max-width: 980px;
+  width: 100%;
+  border-radius: 22px;
+  overflow: hidden;
+}
+
+.auth-side {
+  background: linear-gradient(135deg, rgba(28, 34, 67, 0.854), rgba(62, 97, 178, 0.552));
+  backdrop-filter: blur(10px);
+  border-right: 1px solid rgba(255, 255, 255, 0.25);
+}
+
+.auth-submit-btn {
+  height: 46px;
+  font-weight: 600;
+}
+
+.password-group .form-control {
+  border-right: 0;
+}
+
+.toggle-password-btn {
+  font-size: 0.8rem;
+  color: #4b5563;
+}
+
+.toggle-password-btn:hover {
+  color: #111827;
+}
+
+button.btn-link {
+  text-decoration: none;
+}
+
+button.btn-link:hover {
+  text-decoration: underline;
+}
+
+@media (max-width: 767.98px) {
+  .auth-page {
+    padding: 16px;
+  }
+
+  .auth-card {
+    border-radius: 18px;
+  }
 }

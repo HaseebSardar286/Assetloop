@@ -132,6 +132,25 @@ export class OwnerDashboardComponent implements OnInit {
     this.router.navigate(['/auth/login']);
   }
 
+  // Quick action navigation helpers
+  goToAssets(): void {
+    this.router.navigate(['/owner/assets']);
+  }
+
+  goToEarnings(): void {
+    this.router.navigate(['/owner/wallet']);
+  }
+
+  goToReviews(): void {
+    // Route to profile where reviews/overall account status are visible
+    this.router.navigate(['/owner/profile']);
+  }
+
+  goToDisputes(): void {
+    // For now, reuse rental requests page as the place to manage issues/disputes
+    this.router.navigate(['/owner/rentals']);
+  }
+
   onNavigate(event: Event): void {
     const target = event.target as HTMLAnchorElement;
     if (target && target.getAttribute('href')) {

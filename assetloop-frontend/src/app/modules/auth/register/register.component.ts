@@ -30,6 +30,11 @@ export class RegisterComponent {
     verificationStatus: 'pending',
   };
 
+  loading = false;
+  error: string | null = null;
+  showPassword = false;
+  showConfirmPassword = false;
+
   countries: string[] = ['Pakistan', 'India', 'United States', 'UK', 'Canada'];
   selectedCountry: string | null = null;
   cities: string[] = [];
@@ -46,8 +51,10 @@ export class RegisterComponent {
   constructor(private router: Router, private authService: AuthService) {}
 
   onSubmit() {
+    if (this.loading) return;
+
     if (this.user.password !== this.user.confirmPassword) {
-      alert('Passwords do not match!');
+      this.error = 'Passwords do not match.';
       return;
     }
 
@@ -59,19 +66,25 @@ export class RegisterComponent {
       !this.user.role ||
       !this.user.terms
     ) {
-      alert('Please fill all required fields, including agreeing to terms!');
+      this.error = 'Please fill all required fields and agree to the terms.';
       return;
     }
 
+    this.loading = true;
+    this.error = null;
+
     this.authService.register(this.user).subscribe({
       next: (res) => {
+        this.loading = false;
         const pendingUserId = res?.pendingUserId;
         this.router.navigate(['/auth/verification'], {
           queryParams: { pendingUserId },
         });
       },
       error: (err) => {
-        alert(err.error.message || 'Registration failed. Please try again!');
+        this.loading = false;
+        this.error =
+          err.error?.message || 'Registration failed. Please try again.';
       },
     });
   }
@@ -87,5 +100,13 @@ export class RegisterComponent {
 
   login() {
     this.router.navigate(['/auth/login']);
+  }
+
+  togglePasswordVisibility(): void {
+    this.showPassword = !this.showPassword;
+  }
+
+  toggleConfirmPasswordVisibility(): void {
+    this.showConfirmPassword = !this.showConfirmPassword;
   }
 }

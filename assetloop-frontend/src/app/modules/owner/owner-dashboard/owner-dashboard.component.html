@@ -119,16 +119,36 @@
             <div class="card glass-card h-100">
               <div class="card-header">Quick actions</div>
               <div class="card-body d-flex flex-wrap gap-2">
-                <button class="btn btn-icon-lg btn-outline-primary" aria-label="Manage assets">
+                <!-- Manage assets -> owner assets/listings page -->
+                <button
+                  class="btn btn-icon-lg btn-outline-primary"
+                  aria-label="Manage assets"
+                  [routerLink]="['/owner/assets']"
+                >
                   <fa-icon [icon]="faScrewdriverWrench"></fa-icon>
                 </button>
-                <button class="btn btn-icon-lg btn-outline-success" aria-label="View earnings">
+                <!-- View earnings -> owner wallet/earnings page -->
+                <button
+                  class="btn btn-icon-lg btn-outline-success"
+                  aria-label="View earnings"
+                  [routerLink]="['/owner/wallet']"
+                >
                   <fa-icon [icon]="faChartLine"></fa-icon>
                 </button>
-                <button class="btn btn-icon-lg btn-outline-info" aria-label="Check reviews">
+                <!-- Check reviews -> owner profile (shows account status & reviews count) -->
+                <button
+                  class="btn btn-icon-lg btn-outline-info"
+                  aria-label="Check reviews"
+                  [routerLink]="['/owner/chat']"
+                >
                   <fa-icon [icon]="faComments"></fa-icon>
                 </button>
-                <button class="btn btn-icon-lg btn-outline-warning" aria-label="Resolve disputes">
+                <!-- Resolve disputes -> rental requests (where owner handles booking issues) -->
+                <button
+                  class="btn btn-icon-lg btn-outline-warning"
+                  aria-label="Resolve disputes"
+                  [routerLink]="['/owner/rentals']"
+                >
                   <fa-icon [icon]="faArrowUpRightFromSquare"></fa-icon>
                 </button>
               </div>

@@ -12,6 +12,8 @@ import { Router } from '@angular/router';
 export class ChangePasswordComponent {
   newPassword: string = '';
   confirmPassword: string = '';
+  showPassword = false;
+  showConfirmPassword = false;
 
   constructor(private router: Router) {}
 
@@ -24,12 +26,19 @@ export class ChangePasswordComponent {
     ) {
       console.log('Password changed successfully:', this.newPassword);
       // Add your password change logic here
-      // this.router.navigate(['/auth/login']);
     }
     this.router.navigate(['/auth/login']);
   }
 
   onLogin() {
     this.router.navigate(['/auth/login']);
+  }
+
+  togglePasswordVisibility(): void {
+    this.showPassword = !this.showPassword;
+  }
+
+  toggleConfirmPasswordVisibility(): void {
+    this.showConfirmPassword = !this.showConfirmPassword;
   }
 }

@@ -11,6 +11,7 @@ import { Router } from '@angular/router';
 })
 export class OtpComponent {
   otp: string = '';
+  message: string | null = null;
 
   constructor(private router: Router) {}
 
@@ -25,5 +26,6 @@ export class OtpComponent {
   resendOtp() {
     console.log('Resend OTP');
     // Add your resend OTP logic here
+    this.message = 'A new OTP has been sent to your email (demo).';
   }
 }

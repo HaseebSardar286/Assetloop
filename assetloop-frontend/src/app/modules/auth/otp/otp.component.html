@@ -1,46 +1,73 @@
-<div class="container mt-5">
-  <div class="row justify-content-center">
-    <div class="col-md-5">
-      <div class="card">
-        <div class="card-body">
-          <h2 class="card-title text-center">Verify OTP</h2>
-          <p class="text-center text-muted">
-            Enter the 6-digit code sent to your email
+<div class="auth-page d-flex align-items-center justify-content-center">
+  <div class="auth-card card border-0 shadow-lg overflow-hidden">
+    <div class="row g-0">
+      <div
+        class="col-md-5 d-none d-md-flex flex-column justify-content-between auth-side px-4 py-4"
+      >
+        <div>
+          <h3 class="text-white fw-bold mb-2">Check your email</h3>
+          <p class="text-white-50 small mb-3">
+            We sent a 6-digit one-time code to your registered email address.
           </p>
-
-          <form #otpForm="ngForm" (ngSubmit)="onSubmit()">
-            <div class="mb-4">
-              <label class="form-check-label">OTP</label>
-              <input
-                type="text"
-                name="otp"
-                (ngModel)="(otp)"
-                #otp="ngModel"
-                required
-                pattern="[0-9]{6}"
-                maxlength="6"
-                class="form-control"
-                placeholder="Enter 6-digit code"
-              />
-              <div *ngIf="otp.invalid && otp.touched" class="text-danger">
-                A valid 6-digit OTP is required.
-              </div>
-            </div>
-
-            <button
-              type="submit"
-              [disabled]="!otpForm.valid"
-              class="btn btn-primary w-100"
-            >
-              Verify OTP
-            </button>
-
-            <p class="text-center mt-4">
-              Didn't receive the code?
-              <a (click)="resendOtp()" class="text-decoration-none">Resend</a>
-            </p>
-          </form>
+          <ul class="list-unstyled text-white-50 small mb-0">
+            <li>• Code expires after a short time</li>
+            <li>• Do not share this code with anyone</li>
+          </ul>
         </div>
+      </div>
+
+      <div class="col-12 col-md-7 px-4 py-4 px-md-5 py-md-5 bg-white">
+        <h2 class="mb-1 fw-bold text-dark text-center">Verify code</h2>
+        <p class="text-muted text-center mb-3">
+          Enter the 6-digit OTP we sent to your email.
+        </p>
+
+        <form #otpForm="ngForm" (ngSubmit)="onSubmit()" novalidate>
+          <div *ngIf="message" class="alert alert-success py-2 mb-3">
+            {{ message }}
+          </div>
+
+          <div class="mb-3">
+            <label class="form-check-label">OTP</label>
+            <input
+              type="text"
+              name="otp"
+              [(ngModel)]="otp"
+              #otpCtrl="ngModel"
+              required
+              pattern="[0-9]{6}"
+              maxlength="6"
+              class="form-control text-center tracking-wide"
+              placeholder="••••••"
+              autocomplete="one-time-code"
+            />
+            <div
+              *ngIf="otpCtrl.invalid && otpCtrl.touched"
+              class="text-danger small mt-1 text-center"
+            >
+              A valid 6-digit OTP is required.
+            </div>
+          </div>
+
+          <button
+            type="submit"
+            [disabled]="!otpForm.valid"
+            class="btn btn-primary w-100 auth-submit-btn"
+          >
+            Verify OTP
+          </button>
+
+          <p class="text-center mt-3 small text-muted">
+            Didn’t receive the code?
+            <button
+              type="button"
+              class="btn btn-link p-0 small"
+              (click)="resendOtp()"
+            >
+              Resend
+            </button>
+          </p>
+        </form>
       </div>
     </div>
   </div>
