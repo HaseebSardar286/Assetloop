@@ -59,6 +59,12 @@ export class RenterService {
     );
   }
 
+  getAssetById(id: string): Observable<AssetResponse> {
+    return this.http.get<AssetResponse>(`${this.apiUrl}/assets/${id}`, {
+      headers: this.getHeaders(),
+    });
+  }
+
   getDashboardStats(): Observable<RenterDashboardStats> {
     return this.http.get<RenterDashboardStats>(
       `${this.apiUrl}/dashboard-stats`,

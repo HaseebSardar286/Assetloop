@@ -1,12 +1,7 @@
 <div class="d-flex flex-column vh-100">
   <app-header></app-header>
   <div class="d-flex flex-grow-1">
-    <ng-container *ngIf="isOwnerView; else renterSidebar">
-      <app-owner-side-bar></app-owner-side-bar>
-    </ng-container>
-    <ng-template #renterSidebar>
-      <app-renter-side-bar></app-renter-side-bar>
-    </ng-template>
+    <app-renter-side-bar></app-renter-side-bar>
     <main class="flex-grow-1 bg-light">
       <section class="details-hero gradient-bg px-4 py-4 py-md-5">
         <div class="container-fluid d-flex flex-wrap justify-content-between align-items-start gap-3">

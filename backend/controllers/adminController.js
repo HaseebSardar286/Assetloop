@@ -288,7 +288,7 @@ exports.getAssets = async (req, res) => {
         description: asset.description || '',
         price: asset.price || 0,
         status: asset.status || 'Inactive',
-        availability: asset.availability || 'available',
+        availability: asset.availability || 'Available',
         category: asset.category || '',
         capacity: asset.capacity || 0,
         startDate: asset.startDate || null,

@@ -19,6 +19,8 @@ export class ResetPasswordComponent {
   loading = false;
   message: string | null = null;
   error: string | null = null;
+  showPassword = false;
+  showConfirmPassword = false;
 
   constructor(
     private route: ActivatedRoute,
@@ -57,6 +59,14 @@ export class ResetPasswordComponent {
           this.error = err?.error?.message || 'Failed to reset password';
         },
       });
+  }
+
+  togglePasswordVisibility(): void {
+    this.showPassword = !this.showPassword;
+  }
+
+  toggleConfirmPasswordVisibility(): void {
+    this.showConfirmPassword = !this.showConfirmPassword;
   }
 }
 

@@ -46,7 +46,7 @@ export class CreateAssetComponent implements OnInit {
     price: '',
     startDate: '',
     endDate: '',
-    availability: 'available',
+    availability: 'Available',
     status: 'Active',
     category: '',
     capacity: '',
@@ -56,7 +56,7 @@ export class CreateAssetComponent implements OnInit {
   };
 
   imageFiles: File[] = [];
-  categories = ['Car', 'Apartment', 'House', 'Tool', 'Electronics', 'Event Gear'];
+  categories = ['Car', 'Apartment', 'House', 'Tool', 'Electronics'];
   currentListingsCount: number = 0;
   maxListingsAllowed: number = 10;
   allowedFileTypes: string[] = ['jpg', 'png', 'pdf'];
@@ -257,7 +257,7 @@ export class CreateAssetComponent implements OnInit {
     this.ownerService.createAsset(formData).subscribe({
       next: (response: AssetResponse) => {
         alert('Asset created successfully!');
-        this.router.navigate(['/owner/my-listings']);
+        this.router.navigate(['/owner/assets']);
       },
       error: (err) => {
         alert(err.error?.message || 'Failed to create asset');
@@ -273,9 +273,9 @@ export class CreateAssetComponent implements OnInit {
       price: '',
       startDate: '',
       endDate: '',
-      availability: 'available',
+      availability: 'Available',
       status: 'Active',
-      category: 'car',
+      category: '',
       capacity: '',
       images: [],
       features: [],

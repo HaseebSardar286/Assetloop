@@ -4,6 +4,7 @@ const User = require("../models/User");
 const Asset = require("../models/Asset");
 const Booking = require("../models/Bookings");
 const mongoose = require("mongoose");
+const { ObjectId } = mongoose.Types;
 
 // Get or create conversation between users for a specific asset
 exports.getOrCreateConversation = async (req, res) => {
@@ -104,10 +105,10 @@ exports.getConversations = async (req, res) => {
     const unreadCounts = await Message.aggregate([
       {
         $match: {
-          conversation: { $in: conversationIds.map(id => mongoose.Types.ObjectId(id)) },
-          sender: { $ne: mongoose.Types.ObjectId(userId) },
+          conversation: { $in: conversationIds.map(id => new ObjectId(id)) },
+          sender: { $ne: new ObjectId(userId) },
           isRead: false
-        }
+}
       },
       {
         $group: {

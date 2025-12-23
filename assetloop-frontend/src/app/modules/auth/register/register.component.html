@@ -142,7 +142,7 @@
                     (click)="togglePasswordVisibility()"
                     tabindex="-1"
                   >
-                    {{ showPassword ? 'Hide' : 'Show' }}
+                    <i class="bi {{ showPassword ? 'bi-eye-slash-fill' : 'bi-eye-fill' }}"></i>
                   </button>
                 </div>
                 <div
@@ -171,7 +171,7 @@
                     (click)="toggleConfirmPasswordVisibility()"
                     tabindex="-1"
                   >
-                    {{ showConfirmPassword ? 'Hide' : 'Show' }}
+                    <i class="bi {{ showConfirmPassword ? 'bi-eye-slash-fill' : 'bi-eye-fill' }}"></i>
                   </button>
                 </div>
                 <div

@@ -3,7 +3,7 @@ const Joi = require("joi");
 const Booking = require("../models/Bookings");
 const SystemSettings = require("../models/SystemSettings");
 const supabase = require("../services/supabase.service");
-const fs = require("fs").promises;
+const fs = require("fs").promises; // Added a comment to force recompile/restart
 
 const assetSchema = Joi.object({
   name: Joi.string().required(),
@@ -12,8 +12,8 @@ const assetSchema = Joi.object({
   price: Joi.number().required().min(0),
   startDate: Joi.string().optional().allow(""),
   endDate: Joi.string().optional().allow(""),
-  availability: Joi.string().valid("available", "unavailable").required(),
-  category: Joi.string().valid("car", "apartment", "house", "tool").required(),
+  availability: Joi.string().valid("Available", "Unavailable").required(),
+  category: Joi.string().valid("Car", "Apartment", "House", "Tool", "Electronics").required(),
   capacity: Joi.number().required().min(1),
   images: Joi.array().items(Joi.string()).optional(),
   features: Joi.array().items(Joi.string()).optional(),
@@ -184,7 +184,7 @@ exports.getAssets = async (req, res) => {
       description: asset.description || '',
       price: asset.price || 0,
       status: asset.status || 'Inactive',
-      availability: asset.availability || 'available',
+      availability: asset.availability || 'Available',
       category: asset.category || '',
       capacity: asset.capacity || 0,
       startDate: asset.startDate || null,
@@ -235,7 +235,7 @@ exports.getAllAssets = async (req, res) => {
         description: asset.description || '',
         price: asset.price || 0,
         status: asset.status || 'Inactive',
-        availability: asset.availability || 'available',
+        availability: asset.availability || 'Available',
         category: asset.category || '',
         capacity: asset.capacity || 0,
         startDate: asset.startDate ? (asset.startDate.toISOString ? asset.startDate.toISOString() : asset.startDate) : null,
@@ -255,6 +255,19 @@ exports.getAllAssets = async (req, res) => {
       message: error.message || "Internal server error",
       ...(process.env.NODE_ENV === 'development' && { stack: error.stack })
     });
+  }
+};
+
+exports.getAssetById = async (req, res) => {
+  try {
+    const asset = await Asset.findById(req.params.id)
+      .populate("owner", "firstName lastName email")
+      .lean();
+    if (!asset) return res.status(404).json({ message: "Asset not found" });
+
+    res.json(asset);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
   }
 };
 

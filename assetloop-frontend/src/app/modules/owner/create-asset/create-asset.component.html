@@ -99,9 +99,10 @@
                       name="availability"
                       [(ngModel)]="asset.availability"
                       required
+
                     >
-                      <option value="available">Available</option>
-                      <option value="unavailable">Unavailable</option>
+                      <option value="Available">Available</option>
+                      <option value="Unavailable">Unavailable</option>
                     </select>
                   </div>
                   <div class="col-md-6">
@@ -116,7 +117,7 @@
                       min="0"
                     />
                   </div>
-                  <div class="col-md-6" *ngIf="asset.availability === 'available'">
+                  <div class="col-md-6">
                     <label for="startDate" class="form-label small text-muted">Start Date</label>
                     <input
                       type="date"
@@ -127,7 +128,7 @@
                       required
                     />
                   </div>
-                  <div class="col-md-6" *ngIf="asset.availability === 'available'">
+                  <div class="col-md-6">
                     <label for="endDate" class="form-label small text-muted">End Date</label>
                     <input
                       type="date"

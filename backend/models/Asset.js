@@ -20,12 +20,12 @@ const assetSchema = new mongoose.Schema(
     },
     availability: {
       type: String,
-      enum: ["available", "unavailable"],
-      default: "available",
+      enum: ["Available", "Unavailable"],
+      default: "Available",
     },
     category: {
       type: String,
-      enum: ["car", "apartment", "house", "tool"],
+      enum: ['Car', 'Apartment', 'House', 'Tool', 'Electronics'],
       required: true,
     },
     capacity: { type: Number, required: true },

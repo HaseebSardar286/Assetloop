@@ -7,7 +7,7 @@ export interface AssetForm {
   price: string | number;
   startDate?: string;
   endDate?: string;
-  availability: 'available' | 'unavailable';
+  availability: 'Available' | 'Unavailable';
   status: 'Active' | 'Inactive';
   category: string;
   capacity: string | number;
@@ -26,7 +26,7 @@ export interface AssetResponse {
   price: number;
   startDate?: string;
   endDate?: string;
-  availability: 'available' | 'unavailable';
+  availability: 'Available' | 'Unavailable';
   status: 'Active' | 'Inactive';
   category: string;
   capacity: number;

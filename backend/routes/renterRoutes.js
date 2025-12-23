@@ -17,6 +17,7 @@ const {
 } = require("../controllers/renterController");
 const {
   getAllAssets,
+  getAssetById,
   getAssetReviews,
 } = require("../controllers/assetController");
 const {
@@ -32,6 +33,7 @@ const router = express.Router();
 
 // Public, read-only routes (no auth)
 router.get("/allAssets", getAllAssets);
+router.get("/assets/:id", getAssetById);
 router.get("/assets/:assetId/reviews", getAssetReviews);
 router.get("/renters/:renterId/reviews", getRenterReviews);
 
