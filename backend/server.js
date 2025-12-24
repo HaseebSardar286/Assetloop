@@ -38,7 +38,7 @@ if (!process.env.MONGO_URI || !process.env.JWT_SECRET) {
 }
 
 // Connect to database
-connectDB();
+await connectDB();
 
 const app = express();
 
