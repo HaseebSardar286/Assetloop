@@ -11,7 +11,7 @@ const adminRoutes = require("./routes/adminRoutes");
 const chatRoutes = require("./routes/chatRoutes");
 const paymentsRoutes = require("./routes/paymentsRoutes");
 const errorHandler = require("./middlewares/errorHandler");
-const connectDBMiddleware = require("./middlewares/connectDBMiddleware");
+const connectionMiddleware = require("./middlewares/connectionMiddleware");
 
 // Handle unhandled promise rejections
 process.on("unhandledRejection", (err) => {
@@ -40,7 +40,6 @@ if (!process.env.MONGO_URI || !process.env.JWT_SECRET) {
 
 // Connect to database
 // await connectDB();
-app.use(connectDBMiddleware); // ensures DB connected for all routes
 
 
 const app = express();
@@ -80,6 +79,8 @@ const corsOptions = {
 };
 
 // Apply CORS globally
+app.use(connectionMiddleware); // ensures DB connected for all routes
+
 app.use(cors(corsOptions));
 
 // ⚠️ CRITICAL: Stripe webhook route MUST come before body parsers
