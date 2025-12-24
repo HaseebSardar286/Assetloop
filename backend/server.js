@@ -41,9 +41,11 @@ connectDB(); // <--- This will read MONGO_URI from .env
 const app = express();
 
 // CORS configuration - allow requests from frontend
-const allowedOrigins = process.env.CORS_ORIGINS
-  ? process.env.CORS_ORIGINS.split(",").map(origin => origin.trim())
-  : ["http://localhost:4200", "http://127.0.0.1:4200", "https://assetloop-rental-platform.vercel.app"];
+// const allowedOrigins = process.env.CORS_ORIGINS
+//   ? process.env.CORS_ORIGINS.split(",").map(origin => origin.trim())
+//   : ["http://localhost:4200", "http://127.0.0.1:4200", "https://assetloop-rental-platform.vercel.app"];
+
+const allowedOrigins = "https://assetloop-rental-platform.vercel.app";
 
 app.use(
   cors({
