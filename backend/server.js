@@ -49,39 +49,33 @@ const allowedOrigins = [
   "http://localhost:4200",
   "http://127.0.0.1:4200",
   "https://assetloop-rental-platform.vercel.app",
-  process.env.FRONTEND_URL, // Dynamic frontend URL from env
-].filter(Boolean); // Remove undefined values
+  process.env.FRONTEND_URL,
+].filter(Boolean);
 
 // Also support Vercel preview deployments with regex
-const vercelPreviewRegex = /^https:\/\/assetloop-.*\.vercel\.app$/;
-
 const corsOptions = {
   origin: function (origin, callback) {
-    // Allow requests with no origin (mobile apps, Postman, curl)
+    // allow requests with no origin (curl, mobile apps)
     if (!origin) return callback(null, true);
-    
-    // Check exact matches
-    if (allowedOrigins.includes(origin)) {
-      return callback(null, true);
-    }
-    
-    // Check Vercel preview deployments
-    if (vercelPreviewRegex.test(origin)) {
-      return callback(null, true);
-    }
-    
+
+    if (allowedOrigins.includes(origin)) return callback(null, true);
+
+    // optional: allow Vercel preview deployments
+    if (/^https:\/\/assetloop-.*\.vercel\.app$/.test(origin)) return callback(null, true);
+
     callback(new Error("Not allowed by CORS"));
   },
   credentials: true,
-  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
-  allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
-  optionsSuccessStatus: 200 // Some legacy browsers choke on 204
+  methods: ["GET","POST","PUT","DELETE","OPTIONS","PATCH"],
+  allowedHeaders: ["Content-Type","Authorization","X-Requested-With"],
 };
 
+app.use(cors(corsOptions));
+// Handle preflight OPTIONS requests
+app.options("*", cors(corsOptions));
 // Apply CORS globally
 app.use(connectionMiddleware); // ensures DB connected for all routes
 
-app.use(cors(corsOptions));
 
 // ⚠️ CRITICAL: Stripe webhook route MUST come before body parsers
 // We only apply express.raw() to the webhook route, not all payment routes
