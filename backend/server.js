@@ -45,16 +45,40 @@ const app = express();
 //   ? process.env.CORS_ORIGINS.split(",").map(origin => origin.trim())
 //   : ["http://localhost:4200", "http://127.0.0.1:4200", "https://assetloop-rental-platform.vercel.app"];
 
-const allowedOrigins = "https://assetloop-rental-platform.vercel.app";
+const allowedOrigins = [
+  "http://localhost:4200",
+  "http://127.0.0.1:4200",
+  "https://assetloop-rental-platform.vercel.app",
+];
 
 app.use(
   cors({
-    origin: allowedOrigins,
+    origin: function (origin, callback) {
+      // allow requests with no origin like mobile apps or Postman
+      if (!origin) return callback(null, true);
+      if (allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      } else {
+        return callback(new Error("Not allowed by CORS"));
+      }
+    },
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
+
+// Preflight handling for all routes
+app.options("*", cors());
+
+// app.use(
+//   cors({
+//     origin: allowedOrigins,
+//     credentials: true,
+//     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+//     allowedHeaders: ["Content-Type", "Authorization"],
+//   })
+// );
 
 // Stripe webhook must be defined BEFORE body parsers to retain raw body
 app.post(
