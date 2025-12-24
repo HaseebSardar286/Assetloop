@@ -1,7 +1,6 @@
 const Booking = require("../models/Bookings");
 const User = require("../models/User");
 const Transaction = require("../models/Transaction");
-const express = require("express");
 
 let stripe = null;
 function getStripe() {
@@ -10,8 +9,6 @@ function getStripe() {
   if (!secret) {
     throw new Error("Missing STRIPE_SECRET_KEY in environment");
   }
-  // Lazy require to avoid load if not configured
-  // eslint-disable-next-line global-require
   stripe = require("stripe")(secret);
   return stripe;
 }
@@ -65,10 +62,10 @@ exports.createCheckoutSession = async (req, res) => {
       },
       success_url:
         successUrl ||
-        "http://localhost:4200/payments?status=success&bookingId={CHECKOUT_SESSION:METADATA:bookingId}",
+        `${process.env.FRONTEND_URL || "http://localhost:4200"}/payments?status=success&bookingId={CHECKOUT_SESSION_ID}`,
       cancel_url:
         cancelUrl ||
-        "http://localhost:4200/payments?status=cancelled&bookingId={CHECKOUT_SESSION:METADATA:bookingId}",
+        `${process.env.FRONTEND_URL || "http://localhost:4200"}/payments?status=cancelled&bookingId={CHECKOUT_SESSION_ID}`,
     });
 
     return res.status(200).json({ id: session.id, url: session.url });
@@ -78,96 +75,160 @@ exports.createCheckoutSession = async (req, res) => {
   }
 };
 
-// Webhook must receive the raw body
+// Webhook handler - receives raw body
 exports.stripeWebhookHandler = async (req, res) => {
-  let event = req.body;
+  console.log("🔔 Webhook received!");
+  console.log("Body type:", typeof req.body, "Is Buffer:", Buffer.isBuffer(req.body));
+  
   const stripeClient = getStripe();
   const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET;
 
+  let event;
+
   if (endpointSecret) {
+    // Verify webhook signature
     const sig = req.headers["stripe-signature"];
+    
+    if (!sig) {
+      console.error("❌ No stripe-signature header found");
+      return res.status(400).send("Missing stripe-signature header");
+    }
+    
     try {
-      event = stripeClient.webhooks.constructEvent(req.body, sig, endpointSecret);
+      // req.body is a Buffer when using express.raw()
+      // Stripe's constructEvent can handle both Buffer and string
+      const payload = Buffer.isBuffer(req.body) ? req.body : Buffer.from(req.body);
+      event = stripeClient.webhooks.constructEvent(payload, sig, endpointSecret);
+      console.log("✅ Webhook signature verified");
     } catch (err) {
-      console.error("⚠️  Webhook signature verification failed.", err.message);
+      console.error("⚠️ Webhook signature verification failed:", err.message);
+      console.error("Signature:", sig);
+      console.error("Endpoint Secret:", endpointSecret?.substring(0, 20) + "...");
       return res.status(400).send(`Webhook Error: ${err.message}`);
     }
+  } else {
+    // No signature verification (local development without secret)
+    console.warn("⚠️ No STRIPE_WEBHOOK_SECRET - skipping signature verification");
+    try {
+      // Parse the body if it's a Buffer
+      event = Buffer.isBuffer(req.body) ? JSON.parse(req.body.toString()) : req.body;
+    } catch (err) {
+      console.error("❌ Failed to parse webhook body:", err.message);
+      return res.status(400).send("Invalid webhook payload");
+    }
   }
+
+  console.log("📦 Event type:", event.type);
+  console.log("📦 Event data:", JSON.stringify(event.data.object, null, 2));
 
   try {
     switch (event.type) {
       case "checkout.session.completed": {
+        console.log("💰 Processing checkout.session.completed");
         const session = event.data.object;
         const { bookingId, type, userId } = session.metadata || {};
 
-        if (type === "booking_payment" && bookingId) {
-          const booking = await Booking.findById(bookingId).populate("owner");
-          if (booking) {
-            // Mark as paid/confirmed and update totalPaid
-            const amountTotal = (session.amount_total || 0) / 100;
-            booking.totalPaid = (booking.totalPaid || 0) + amountTotal;
-            if (booking.status === "pending") {
-              booking.status = "confirmed";
-            }
-            await booking.save();
+        console.log("Metadata:", { bookingId, type, userId });
 
-            // 1) Renter transaction: payment
-            await Transaction.create({
-              user: booking.renter,
+        if (type === "booking_payment" && bookingId) {
+          console.log("Processing booking payment for:", bookingId);
+          
+          const booking = await Booking.findById(bookingId).populate("owner");
+          if (!booking) {
+            console.error("❌ Booking not found:", bookingId);
+            return res.json({ received: true, error: "Booking not found" });
+          }
+
+          console.log("Found booking:", booking._id);
+
+          // Mark as paid/confirmed and update totalPaid
+          const amountTotal = (session.amount_total || 0) / 100;
+          booking.totalPaid = (booking.totalPaid || 0) + amountTotal;
+          
+          if (booking.status === "pending") {
+            booking.status = "confirmed";
+          }
+          
+          await booking.save();
+          console.log("✅ Booking updated - status:", booking.status, "totalPaid:", booking.totalPaid);
+
+          // 1) Renter transaction: payment
+          const renterTx = await Transaction.create({
+            user: booking.renter,
+            amount: amountTotal,
+            currency: session.currency || "pkr",
+            type: "payment",
+            status: "completed",
+            description: `Payment for booking ${booking.name}`,
+            booking: booking._id,
+            stripePaymentIntentId: session.payment_intent,
+          });
+          console.log("✅ Renter transaction created:", renterTx._id);
+
+          // 2) Owner wallet & transaction: earning / payout
+          const owner = await User.findById(booking.owner?._id || booking.owner);
+          if (owner) {
+            owner.walletBalance = (owner.walletBalance || 0) + amountTotal;
+            await owner.save();
+            console.log("✅ Owner wallet updated - balance:", owner.walletBalance);
+
+            const ownerTx = await Transaction.create({
+              user: owner._id,
               amount: amountTotal,
-              currency: session.currency,
-              type: "payment",
+              currency: session.currency || "pkr",
+              type: "payout",
               status: "completed",
-              description: `Payment for booking ${booking.name}`,
+              description: `Earnings from booking ${booking.name}`,
               booking: booking._id,
               stripePaymentIntentId: session.payment_intent,
             });
-
-            // 2) Owner wallet & transaction: earning / payout
-            const owner = await User.findById(booking.owner?._id || booking.owner);
-            if (owner) {
-              owner.walletBalance = (owner.walletBalance || 0) + amountTotal;
-              await owner.save();
-
-              await Transaction.create({
-                user: owner._id,
-                amount: amountTotal,
-                currency: session.currency,
-                type: "payout", // earning for owner, withdrawable later
-                status: "completed",
-                description: `Earnings from booking ${booking.name}`,
-                booking: booking._id,
-                stripePaymentIntentId: session.payment_intent,
-              });
-            }
+            console.log("✅ Owner transaction created:", ownerTx._id);
+          } else {
+            console.error("❌ Owner not found");
           }
         } else if (type === "wallet_topup" && userId) {
+          console.log("Processing wallet topup for user:", userId);
+          
           const user = await User.findById(userId);
-          if (user) {
-            const amountTotal = (session.amount_total || 0) / 100;
-            user.walletBalance = (user.walletBalance || 0) + amountTotal;
-            await user.save();
-
-            await Transaction.create({
-              user: user._id,
-              amount: amountTotal,
-              currency: session.currency,
-              type: "deposit",
-              status: "completed",
-              description: "Wallet Top-up",
-              stripePaymentIntentId: session.payment_intent,
-            });
+          if (!user) {
+            console.error("❌ User not found:", userId);
+            return res.json({ received: true, error: "User not found" });
           }
+
+          const amountTotal = (session.amount_total || 0) / 100;
+          user.walletBalance = (user.walletBalance || 0) + amountTotal;
+          await user.save();
+          console.log("✅ Wallet balance updated:", user.walletBalance);
+
+          const tx = await Transaction.create({
+            user: user._id,
+            amount: amountTotal,
+            currency: session.currency || "pkr",
+            type: "deposit",
+            status: "completed",
+            description: "Wallet Top-up",
+            stripePaymentIntentId: session.payment_intent,
+          });
+          console.log("✅ Transaction created:", tx._id);
+        } else {
+          console.warn("⚠️ Unknown metadata type or missing required fields");
         }
         break;
       }
-      default:
+      
+      case "payment_intent.succeeded":
+        console.log("✅ Payment intent succeeded:", event.data.object.id);
         break;
+
+      default:
+        console.log(`ℹ️ Unhandled event type: ${event.type}`);
     }
+
     return res.json({ received: true });
   } catch (error) {
-    console.error("Webhook handling error:", error);
-    return res.status(500).json({ message: "Webhook handling error" });
+    console.error("❌ Webhook handling error:", error);
+    console.error("Stack:", error.stack);
+    return res.status(500).json({ message: "Webhook handling error", error: error.message });
   }
 };
 
@@ -223,14 +284,12 @@ exports.addMoney = async (req, res) => {
         userId,
         type: "wallet_topup",
       },
-      // Redirect back to the main payments page (tabbed wallet UI)
-      // so the route definitely exists in the Angular app.
       success_url:
         successUrl ||
-        "http://localhost:4200/payments?status=success&source=wallet_topup",
+        `${process.env.FRONTEND_URL || "http://localhost:4200"}/payments?status=success&source=wallet_topup`,
       cancel_url:
         cancelUrl ||
-        "http://localhost:4200/payments?status=cancelled&source=wallet_topup",
+        `${process.env.FRONTEND_URL || "http://localhost:4200"}/payments?status=cancelled&source=wallet_topup`,
     });
 
     return res.status(200).json({ id: session.id, url: session.url });
@@ -263,8 +322,6 @@ exports.withdraw = async (req, res) => {
       payoutDescription = `Withdrawal to ${method.details}`;
     }
 
-    // For now, just deduct balance and create a withdrawal transaction
-    // In real app, this would trigger a Stripe Connect payout
     user.walletBalance -= amount;
     await user.save();
 
@@ -273,7 +330,7 @@ exports.withdraw = async (req, res) => {
       amount: -amount,
       currency: "pkr",
       type: "withdrawal",
-      status: "completed", // Assume instant for mock
+      status: "completed",
       description: payoutDescription,
     });
 
@@ -341,7 +398,6 @@ exports.addPaymentMethod = async (req, res) => {
     let method;
 
     if (type === "wallet") {
-      // Handle wallet payment method
       if (!walletProvider || !walletAccount || !walletName) {
         return res
           .status(400)
@@ -360,7 +416,6 @@ exports.addPaymentMethod = async (req, res) => {
         createdAt: new Date(),
       };
     } else {
-      // Handle card payment method
       if (!cardNumber || !cardName || !expiry) {
         return res
           .status(400)
@@ -413,7 +468,6 @@ exports.addPaymentMethod = async (req, res) => {
     let methods = user.paymentMethods || [];
 
     if (!methods.length || isDefault) {
-      // reset defaults
       methods = methods.map((m) => ({ ...m.toObject?.() ?? m, isDefault: false }));
       method.isDefault = true;
     }
@@ -488,8 +542,6 @@ exports.setDefaultPaymentMethod = async (req, res) => {
 exports.getInvoices = async (req, res) => {
   try {
     const userId = req.user.id;
-    // Invoices are essentially completed bookings or specific payment transactions
-    // For this implementation, we'll treat completed bookings as invoices
     const bookings = await Booking.find({
       renter: userId,
       status: { $in: ["confirmed", "completed"] },
@@ -506,7 +558,7 @@ exports.getInvoices = async (req, res) => {
       ).toLocaleDateString()}`,
       amounts: {
         rent: b.price,
-        fees: 0, // Placeholder
+        fees: 0,
       },
       status: "paid",
       createdAt: b.createdAt,
@@ -522,7 +574,6 @@ exports.getInvoices = async (req, res) => {
 exports.getRefunds = async (req, res) => {
   try {
     const userId = req.user.id;
-    // Fetch transactions of type 'refund'
     const refunds = await Transaction.find({
       user: userId,
       type: "refund",
@@ -542,8 +593,6 @@ exports.getRefunds = async (req, res) => {
   }
 };
 
-// Test payment endpoints (simulate successful payments without Stripe)
-// These are useful for development/testing without needing Stripe CLI or webhooks
 exports.testBookingPayment = async (req, res) => {
   try {
     const { bookingId } = req.body;
@@ -567,14 +616,12 @@ exports.testBookingPayment = async (req, res) => {
       return res.status(400).json({ message: "Invalid booking amount" });
     }
 
-    // Simulate successful payment - update booking
     booking.totalPaid = (booking.totalPaid || 0) + amountTotal;
     if (booking.status === "pending") {
       booking.status = "confirmed";
     }
     await booking.save();
 
-    // Create renter transaction
     await Transaction.create({
       user: booking.renter,
       amount: amountTotal,
@@ -586,7 +633,6 @@ exports.testBookingPayment = async (req, res) => {
       stripePaymentIntentId: `test_pi_${Date.now()}`,
     });
 
-    // Credit owner wallet
     const owner = await User.findById(booking.owner?._id || booking.owner);
     if (owner) {
       owner.walletBalance = (owner.walletBalance || 0) + amountTotal;
@@ -630,7 +676,6 @@ exports.testWalletTopup = async (req, res) => {
       return res.status(404).json({ message: "User not found" });
     }
 
-    // Simulate successful top-up
     user.walletBalance = (user.walletBalance || 0) + amount;
     await user.save();
 

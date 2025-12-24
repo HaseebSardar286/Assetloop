@@ -14,24 +14,18 @@ const {
   getRefunds,
   testBookingPayment,
   testWalletTopup,
-  stripeWebhookHandler, // 👈 ADD THIS
 } = require("../controllers/paymentsController");
 
 const router = express.Router();
 
 /**
- * 🔴 STRIPE WEBHOOK (PUBLIC, NO AUTH)
- * MUST be before authMiddleware
- * MUST use express.raw
+ * ⚠️ NOTE: Webhook route is defined in server.js BEFORE body parsers
+ * All routes here will have access to parsed JSON body via express.json()
  */
-router.post(
-  "/stripe/webhook",
-  express.raw({ type: "application/json" }),
-  stripeWebhookHandler
-);
 
 /**
  * 🔐 AUTHENTICATED ROUTES
+ * All routes require authentication
  */
 router.use(authMiddleware);
 
@@ -56,7 +50,7 @@ router.post("/methods/:id/default", setDefaultPaymentMethod);
 router.get("/invoices", getInvoices);
 router.get("/refunds", getRefunds);
 
-// Test payment endpoints
+// Test payment endpoints (for development)
 router.post("/test/booking-payment", testBookingPayment);
 router.post("/test/wallet-topup", testWalletTopup);
 
