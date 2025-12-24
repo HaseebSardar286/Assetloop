@@ -55,7 +55,11 @@ app.use(
 );
 
 // Stripe webhook must be defined BEFORE body parsers to retain raw body
-app.post("/api/payments/webhook", express.raw({ type: "application/json" }), stripeWebhookHandler);
+app.post(
+  "/api/payments/stripe/webhook",
+  express.raw({ type: "application/json" }),
+  stripeWebhookHandler
+);
 
 app.use(express.json({ limit: "50mb" })); // Increase payload limit for base64 images
 app.use(express.urlencoded({ extended: true, limit: "50mb" }));

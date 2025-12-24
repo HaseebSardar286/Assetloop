@@ -102,60 +102,75 @@ exports.getConversations = async (req, res) => {
 
     // Calculate unread counts for each conversation
     const conversationIds = conversations.map(conv => conv._id);
+
     const unreadCounts = await Message.aggregate([
       {
         $match: {
           conversation: { $in: conversationIds.map(id => new ObjectId(id)) },
           sender: { $ne: new ObjectId(userId) },
           isRead: false
-}
+        }
       },
       {
         $group: {
-          _id: '$conversation',
+          _id: "$conversation",
           count: { $sum: 1 }
         }
       }
     ]);
 
-    // Create a map of conversation ID to unread count
+    // Map conversationId -> unreadCount
     const unreadCountMap = {};
     unreadCounts.forEach(item => {
       unreadCountMap[item._id.toString()] = item.count;
     });
 
-    const response = conversations.map(conv => {
-      const otherParticipant = conv.participants.find(p => p.user._id.toString() !== userId);
-      const unreadCount = unreadCountMap[conv._id.toString()] || 0;
+    const response = conversations
+      .map(conv => {
+        // SAFETY CHECK: handle missing / deleted users
+        const otherParticipant = conv.participants.find(
+          p => p?.user && p.user._id.toString() !== userId
+        );
 
-      return {
-        _id: conv._id,
-        otherUser: {
-          _id: otherParticipant.user._id,
-          name: `${otherParticipant.user.firstName} ${otherParticipant.user.lastName}`,
-          role: otherParticipant.user.role,
-          email: otherParticipant.user.email
-        },
-        asset: {
-          _id: conv.asset._id,
-          name: conv.asset.name,
-          address: conv.asset.address,
-          price: conv.asset.price,
-          images: conv.asset.images,
-          category: conv.asset.category
-        },
-        lastMessage: conv.lastMessage ? {
-          _id: conv.lastMessage._id,
-          content: conv.lastMessage.content,
-          sender: conv.lastMessage.sender ? `${conv.lastMessage.sender.firstName} ${conv.lastMessage.sender.lastName}` : 'Unknown',
-          timestamp: conv.lastMessage.createdAt,
-          messageType: conv.lastMessage.messageType
-        } : null,
-        unreadCount,
-        lastMessageAt: conv.lastMessageAt,
-        createdAt: conv.createdAt
-      };
-    });
+        if (!otherParticipant) return null;
+
+        const unreadCount = unreadCountMap[conv._id.toString()] || 0;
+
+        return {
+          _id: conv._id,
+          otherUser: {
+            _id: otherParticipant.user._id,
+            name: `${otherParticipant.user.firstName} ${otherParticipant.user.lastName}`,
+            role: otherParticipant.user.role,
+            email: otherParticipant.user.email
+          },
+          asset: conv.asset
+            ? {
+                _id: conv.asset._id,
+                name: conv.asset.name,
+                address: conv.asset.address,
+                price: conv.asset.price,
+                images: conv.asset.images,
+                category: conv.asset.category
+              }
+            : null,
+          lastMessage: conv.lastMessage
+            ? {
+                _id: conv.lastMessage._id,
+                content: conv.lastMessage.content,
+                sender: conv.lastMessage.sender
+                  ? `${conv.lastMessage.sender.firstName} ${conv.lastMessage.sender.lastName}`
+                  : "Unknown",
+                timestamp: conv.lastMessage.createdAt,
+                messageType: conv.lastMessage.messageType
+              }
+            : null,
+          unreadCount,
+          lastMessageAt: conv.lastMessageAt,
+          createdAt: conv.createdAt
+        };
+      })
+      .filter(Boolean); // remove null (broken) conversations
 
     res.status(200).json({
       conversations: response,

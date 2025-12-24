@@ -1,24 +1,38 @@
 const express = require("express");
 const authMiddleware = require("../middlewares/authMiddleware");
 const {
-    createCheckoutSession,
-    getWallet,
-    addMoney,
-    withdraw,
-    getTransactions,
-    getPaymentMethods,
-    addPaymentMethod,
-    removePaymentMethod,
-    setDefaultPaymentMethod,
-    getInvoices,
-    getRefunds,
-    testBookingPayment,
-    testWalletTopup,
+  createCheckoutSession,
+  getWallet,
+  addMoney,
+  withdraw,
+  getTransactions,
+  getPaymentMethods,
+  addPaymentMethod,
+  removePaymentMethod,
+  setDefaultPaymentMethod,
+  getInvoices,
+  getRefunds,
+  testBookingPayment,
+  testWalletTopup,
+  stripeWebhookHandler, // 👈 ADD THIS
 } = require("../controllers/paymentsController");
 
 const router = express.Router();
 
-// Authenticated routes
+/**
+ * 🔴 STRIPE WEBHOOK (PUBLIC, NO AUTH)
+ * MUST be before authMiddleware
+ * MUST use express.raw
+ */
+router.post(
+  "/stripe/webhook",
+  express.raw({ type: "application/json" }),
+  stripeWebhookHandler
+);
+
+/**
+ * 🔐 AUTHENTICATED ROUTES
+ */
 router.use(authMiddleware);
 
 // Booking Payment
@@ -42,7 +56,7 @@ router.post("/methods/:id/default", setDefaultPaymentMethod);
 router.get("/invoices", getInvoices);
 router.get("/refunds", getRefunds);
 
-// Test payment endpoints (for development/testing without Stripe)
+// Test payment endpoints
 router.post("/test/booking-payment", testBookingPayment);
 router.post("/test/wallet-topup", testWalletTopup);
 
