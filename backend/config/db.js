@@ -13,6 +13,8 @@ async function connectDB() {
     return cached.conn;
   }
 
+  mongoose.set('strictQuery', false); // ✅ correct
+
   if (!cached.promise) {
     const options = {
       // Keep your serverless options
@@ -22,7 +24,6 @@ async function connectDB() {
       socketTimeoutMS: 45000,
       maxIdleTimeMS: 10000,
       bufferCommands: false,
-      strictQuery: false,
       useNewUrlParser: true,
       useUnifiedTopology: true,
     };
