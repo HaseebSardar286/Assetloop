@@ -11,6 +11,7 @@ const adminRoutes = require("./routes/adminRoutes");
 const chatRoutes = require("./routes/chatRoutes");
 const paymentsRoutes = require("./routes/paymentsRoutes");
 const errorHandler = require("./middlewares/errorHandler");
+const connectDBMiddleware = require("./middlewares/connectDBMiddleware");
 
 // Handle unhandled promise rejections
 process.on("unhandledRejection", (err) => {
@@ -38,7 +39,9 @@ if (!process.env.MONGO_URI || !process.env.JWT_SECRET) {
 }
 
 // Connect to database
-await connectDB();
+// await connectDB();
+app.use(connectDBMiddleware); // ensures DB connected for all routes
+
 
 const app = express();
 
