@@ -72,7 +72,7 @@ const corsOptions = {
 
 app.use(cors(corsOptions));
 // Handle preflight OPTIONS requests
-app.options("*", cors(corsOptions));
+// app.options("/*", cors(corsOptions)); // ✅ valid path
 // Apply CORS globally
 app.use(connectionMiddleware); // ensures DB connected for all routes
 
