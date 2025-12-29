@@ -86,7 +86,7 @@ export class FavouritesComponent implements OnInit {
       id: fav.id,
       name: fav.name,
       address: fav.address || '',
-      pricePerNight: String(fav.price || fav.totalPaid || 0),
+      pricePerDay: String(fav.price || fav.totalPaid || 0),
       description: fav.description || '',
       amenities: [],
       imageUrl: fav.imageUrl || '',

@@ -63,6 +63,10 @@ export class SearchListingsComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadAssets();
+    this.searchForm.get('category')?.valueChanges.subscribe(() => this.applyFilters());
+    this.searchForm.get('keywords')?.valueChanges.subscribe(() => this.applyFilters());
+    this.searchForm.get('minPrice')?.valueChanges.subscribe(() => this.applyFilters());
+    this.searchForm.get('maxPrice')?.valueChanges.subscribe(() => this.applyFilters());
   }
 
   loadAssets(): void {
@@ -79,7 +83,7 @@ export class SearchListingsComponent implements OnInit {
   }
 
   applyFilters(): void {
-    const { keywords, category, minPrice, maxPrice } = this.searchForm.value;
+    const { keywords, minPrice, maxPrice, category } = this.searchForm.value;
     let filtered = [...this.allAssets];
 
     if (keywords) {
@@ -91,9 +95,9 @@ export class SearchListingsComponent implements OnInit {
       );
     }
 
-    if (category !== 'All Categories') {
+    if (category && category !== 'All Categories') {
       filtered = filtered.filter(
-        (asset) => asset.category === category.toLowerCase()
+        (asset) => asset.category.toLowerCase() === category.toLowerCase()
       );
     }
 
@@ -176,7 +180,7 @@ export class SearchListingsComponent implements OnInit {
         id: asset._id,
         name: asset.name,
         address: asset.address,
-        pricePerNight: String(asset.price),
+        pricePerDay: String(asset.price),
         description: asset.description,
         amenities: asset.amenities || [],
         imageUrl: asset.images?.[0] || '',

@@ -103,7 +103,6 @@
                         <button
                           class="btn btn-icon btn-outline-warning"
                           *ngIf="listing.status?.toLowerCase() === 'active'"
-                          [routerLink]="['/admin/status-listing', listing._id]"
                           title="Deactivate"
                         >
                           <fa-icon [icon]="faLock"></fa-icon>
@@ -111,7 +110,6 @@
                         <button
                           class="btn btn-icon btn-outline-success"
                           *ngIf="listing.status?.toLowerCase() === 'inactive'"
-                          [routerLink]="['/admin/status-listing', listing._id]"
                           title="Activate"
                         >
                           <fa-icon [icon]="faUnlock"></fa-icon>

@@ -97,20 +97,6 @@
                     <td class="text-end">
                       <div class="d-flex gap-2 justify-content-end">
                         <button
-                          class="btn btn-icon btn-outline-info"
-                          [routerLink]="['/admin/view-review', review._id]"
-                          title="View"
-                        >
-                          <fa-icon [icon]="faEye"></fa-icon>
-                        </button>
-                        <button
-                          class="btn btn-icon btn-outline-warning"
-                          [routerLink]="['/admin/edit-review', review._id]"
-                          title="Edit"
-                        >
-                          <fa-icon [icon]="faEdit"></fa-icon>
-                        </button>
-                        <button
                           class="btn btn-icon btn-outline-danger"
                           (click)="deleteReview(review._id)"
                           title="Delete"

@@ -298,7 +298,7 @@ exports.getCart = async (req, res) => {
         id: ci.asset._id.toString(),
         name: ci.asset.name,
         address: ci.asset.address,
-        pricePerNight: String(ci.asset.price),
+        pricePerDay: String(ci.asset.price),
         description: ci.asset.description,
         amenities: [],
         imageUrl:

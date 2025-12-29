@@ -19,7 +19,7 @@ export interface Favourite {
   id: string;
   name: string;
   address: string;
-  pricePerNight?: string;
+  pricePerDay?: string;
   description?: string;
   amenities?: string[];
   imageUrl?: string;
@@ -29,7 +29,7 @@ export interface CartItem {
   id: string;
   name: string;
   address: string;
-  pricePerNight: string;
+  pricePerDay: string;
   description: string;
   amenities: string[];
   imageUrl?: string;

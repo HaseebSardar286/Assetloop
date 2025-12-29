@@ -18,7 +18,7 @@
             <div class="vr"></div>
             <div>
               <div class="text-muted small">Total</div>
-              <div class="fw-semibold text-dark">${{ total() | number : '1.0-2' }}</div>
+              <div class="fw-semibold text-dark">PKR{{ total() | number : '1.0-2' }}</div>
             </div>
           </div>
         </div>
@@ -31,7 +31,7 @@
               <thead>
                 <tr>
                   <th>Item</th>
-                  <th>Price / night</th>
+                  <th>Price / day</th>
                   <th style="width: 140px">Qty</th>
                   <th>Total</th>
                   <th class="text-end">Actions</th>
@@ -53,7 +53,7 @@
                         </div>
                       </div>
                     </td>
-                    <td>${{ item.pricePerNight }}</td>
+                    <td>PKR{{ item.pricePerDay }}</td>
                     <td>
                       <input
                         type="number"
@@ -63,7 +63,7 @@
                         (change)="updateQuantityInput(item, $event)"
                       />
                     </td>
-                    <td>${{ lineTotal(item) | number : "1.0-2" }}</td>
+                    <td>PKR{{ lineTotal(item) | number : "1.0-2" }}</td>
                     <td class="text-end">
                       <button
                         class="btn btn-icon btn-outline-danger"
@@ -131,7 +131,7 @@
             <button class="btn btn-outline-secondary btn-icon" (click)="clear()" aria-label="Clear cart">
               <fa-icon [icon]="faBroom"></fa-icon>
             </button>
-            <div class="fs-5">Grand Total: ${{ total() | number : "1.0-2" }}</div>
+            <div class="fs-5">Grand Total: PKR{{ total() | number : "1.0-2" }}</div>
             <button class="btn btn-primary d-inline-flex align-items-center gap-2" (click)="checkout()">
               Checkout <fa-icon [icon]="faArrowRight"></fa-icon>
             </button>

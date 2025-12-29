@@ -6,6 +6,7 @@ import {
   faShoppingCart,
   faShare,
   faTrash,
+  faArrowRight,
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { Booking, Bookings } from '../../../interfaces/bookings';
@@ -37,7 +38,7 @@ export class BookingItemComponent {
   faShoppingCart = faShoppingCart;
   faShare = faShare;
   faTrash = faTrash;
-
+  faArrowRight = faArrowRight;
   constructor(
     private chatService: ChatService,
     private router: Router,

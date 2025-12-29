@@ -174,7 +174,7 @@ exports.createAsset = async (req, res) => {
 
 exports.getAssets = async (req, res) => {
   try {
-    const assets = await Asset.find({ owner: req.user.id }).lean();
+    const assets = await Asset.find({}).lean();
     const response = assets.map((asset) => ({
       _id: asset._id.toString(),
       id: asset._id.toString(),
@@ -204,7 +204,14 @@ exports.getAssets = async (req, res) => {
 
 exports.getAllAssets = async (req, res) => {
   try {
-    const assets = await Asset.find()
+    const { category } = req.query;
+    const filter = {};
+
+    if (category) {
+      filter.category = category;
+    }
+
+    const assets = await Asset.find(filter)
       .populate("owner", "firstName lastName email")
       .lean();
     
@@ -363,11 +370,12 @@ exports.updateAsset = async (req, res) => {
 exports.deleteAsset = async (req, res) => {
   try {
     const assetId = req.params.id;
-    const ownerId = req.user.id;
 
-    // Ensure the asset belongs to the requesting owner
-    const asset = await Asset.findOneAndDelete({ _id: assetId, owner: ownerId });
-    if (!asset) return res.status(404).json({ message: "Asset not found" });
+    const asset = await Asset.findByIdAndDelete(assetId);
+
+    if (!asset) {
+      return res.status(404).json({ message: "Asset not found" });
+    }
 
     // Cascade delete related bookings for this asset
     await Booking.deleteMany({ asset: assetId });

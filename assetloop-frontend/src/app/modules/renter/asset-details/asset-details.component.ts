@@ -110,7 +110,7 @@ export class AssetDetailsComponent {
         id: this.asset._id,
         name: this.asset.name,
         address: this.asset.address,
-        pricePerNight: String(this.asset.price),
+        pricePerDay: String(this.asset.price),
         description: this.asset.description,
         amenities: this.asset.amenities || [],
         imageUrl: this.asset.images?.[0] || '/images/download.jpg',

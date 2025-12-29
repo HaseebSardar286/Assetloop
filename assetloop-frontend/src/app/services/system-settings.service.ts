@@ -79,7 +79,7 @@ export class SystemSettingsService {
   formatCurrency(amount: number): string {
     const settings = this.settingsSubject.value;
     const currency = settings?.currency || 'PKR';
-    const symbol = currency === 'PKR' ? 'PKR' : currency === 'USD' ? '$' : '€';
+    const symbol = currency === 'PKR' ? 'PKR' : currency === 'USD' ? 'PKR' : '€';
     return `${symbol} ${amount.toLocaleString()}`;
   }
 

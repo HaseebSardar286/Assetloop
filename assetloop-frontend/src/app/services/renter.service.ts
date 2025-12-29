@@ -50,9 +50,13 @@ export class RenterService {
     });
   }
 
-  getAllAssets(): Observable<{ assets: AssetResponse[] }> {
+  getAllAssets(category?: string): Observable<{ assets: AssetResponse[] }> {
+    let url = `${this.apiUrl}/allAssets`;
+    if (category && category !== 'All Categories') {
+      url += `?category=${category}`;
+    }
     return this.http.get<{ assets: AssetResponse[] }>(
-      `${this.apiUrl}/allAssets`,
+      url,
       {
         headers: this.getHeaders(),
       }
@@ -246,7 +250,7 @@ export class RenterService {
   getCartTotalFrom(items: CartItem[]): number {
     return items.reduce(
       (total, item) =>
-        total + (Number(item.pricePerNight) || 0) * item.quantity,
+        total + (Number(item.pricePerDay) || 0) * item.quantity,
       0
     );
   }

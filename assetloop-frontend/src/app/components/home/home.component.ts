@@ -144,9 +144,9 @@ export class HomeComponent {
       );
     }
 
-    if (category !== 'All Categories') {
+    if (category && category !== 'All Categories') {
       filtered = filtered.filter(
-        (asset) => asset.category === category.toLowerCase()
+        (asset) => asset.category.toLowerCase() === category.toLowerCase()
       );
     }
 

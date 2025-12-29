@@ -92,7 +92,7 @@
                       </h6>
                       <button
                         class="btn btn-icon btn-outline-primary"
-                        [routerLink]="['/admin/users', user._id]"
+                        [routerLink]="['/admin/users/details', user._id]"
                         aria-label="View user"
                       >
                         <fa-icon [icon]="faEye"></fa-icon>
@@ -152,7 +152,7 @@
                       <h6 class="card-title mb-0">{{ asset.name }}</h6>
                       <button
                         class="btn btn-icon btn-outline-success"
-                        [routerLink]="['/admin/assets', asset._id]"
+                        [routerLink]="['/admin/listings/details', asset._id]"
                         aria-label="View asset"
                       >
                         <fa-icon [icon]="faEye"></fa-icon>
@@ -160,7 +160,7 @@
                     </div>
                     <p class="card-text small text-muted mb-2">{{ asset.description }}</p>
                     <p class="card-text small mb-0">
-                      <strong>Price:</strong> PKR {{ asset.price }} / night
+                      <strong>Price:</strong> PKR {{ asset.price }} / day
                     </p>
                   </div>
                 </div>
@@ -206,7 +206,6 @@
                       <h6 class="card-title mb-0">{{ booking.name }}</h6>
                       <button
                         class="btn btn-icon btn-outline-info"
-                        [routerLink]="['/admin/bookings', booking._id]"
                         aria-label="View booking"
                       >
                         <fa-icon [icon]="faEye"></fa-icon>

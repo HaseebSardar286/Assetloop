@@ -13,7 +13,7 @@
             </p>
           </div>
           <div class="stats-card bg-white shadow-sm rounded-4 p-3">
-            <div class="text-muted small">Price per night</div>
+            <div class="text-muted small">Price per day</div>
             <div class="fs-4 fw-bold text-dark">{{ asset?.price | systemCurrency }}</div>
           </div>
         </div>
@@ -53,7 +53,7 @@
                   </div>
                   <p class="card-text text-muted mb-3">{{ asset.description }}</p>
                   <p class="card-text mb-2">
-                    <strong>Price:</strong> {{ asset.price | systemCurrency }}/night
+                    <strong>Price:</strong> {{ asset.price | systemCurrency }}/day
                   </p>
                   <p class="card-text">
                     <strong>Amenities:</strong>

@@ -141,7 +141,7 @@ export class CartComponent implements OnInit, OnDestroy {
   }
 
   lineTotal(item: CartItem): number {
-    const price = Number(item.pricePerNight);
+    const price = Number(item.pricePerDay);
     return (isNaN(price) ? 0 : price) * item.quantity;
   }
 

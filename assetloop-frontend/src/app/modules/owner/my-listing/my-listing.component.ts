@@ -42,11 +42,21 @@ export class MyListingsComponent {
   selectedListing: any = null;
 
   assets: any[] = [];
+  userId: string | null = null;
 
   constructor(private ownerService: OwnerService) {}
 
   ngOnInit(): void {
-    this.loadAssets();
+    this.ownerService.getProfile().subscribe({
+      next: (user) => {
+        this.userId = user._id;
+        this.loadAssets();
+      },
+      error: (err) => {
+        console.error('Failed to get user profile', err);
+        alert('Failed to get user profile. You may not be able to see your assets.');
+      }
+    });
   }
 
   get activeCount(): number {
@@ -124,7 +134,11 @@ export class MyListingsComponent {
   loadAssets() {
     this.ownerService.getAssets().subscribe({
       next: (data) => {
-        this.assets = data;
+        if (this.userId) {
+          this.assets = data.filter(asset => asset.owner === this.userId);
+        } else {
+          this.assets = [];
+        }
         console.log('My assets are: ', this.assets);
       },
       error: (error: String) => {
