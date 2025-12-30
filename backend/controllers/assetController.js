@@ -278,6 +278,22 @@ exports.getAssetById = async (req, res) => {
   }
 };
 
+const updateAssetSchema = Joi.object({
+  name: Joi.string(),
+  address: Joi.string(),
+  description: Joi.string(),
+  price: Joi.number().min(0),
+  startDate: Joi.string().optional().allow(""),
+  endDate: Joi.string().optional().allow(""),
+  availability: Joi.string().valid("Available", "Unavailable"),
+  category: Joi.string().valid("Car", "Apartment", "House", "Tool", "Electronics"),
+  capacity: Joi.number().min(1),
+  images: Joi.array().items(Joi.string()),
+  features: Joi.array().items(Joi.string()),
+  amenities: Joi.array().items(Joi.string()),
+  status: Joi.string().valid("Active", "Inactive"),
+});
+
 exports.updateAsset = async (req, res) => {
   try {
     // Normalize multipart text fields for partial updates
@@ -305,7 +321,7 @@ exports.updateAsset = async (req, res) => {
       if (!Number.isNaN(n)) normalizedBody.capacity = n;
     }
 
-    const { error } = assetSchema.validate(normalizedBody, { presence: "optional" });
+    const { error } = updateAssetSchema.validate(normalizedBody);
     if (error)
       return res.status(400).json({ message: error.details[0].message });
 

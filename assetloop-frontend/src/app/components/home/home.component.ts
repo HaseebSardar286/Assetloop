@@ -172,7 +172,7 @@ export class HomeComponent {
 
     if (availability && availability !== 'all') {
       filtered = filtered.filter(
-        (asset) => asset.availability === availability
+        (asset) => asset.availability.toLowerCase() === availability.toLowerCase()
       );
     }
 

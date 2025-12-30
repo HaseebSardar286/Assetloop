@@ -50,25 +50,15 @@ export class OwnerService {
     id: string,
     data: Partial<AssetForm> | FormData
   ): Observable<AssetResponse> {
-    let body: any = data;
-    const headers = this.getHeaders();
-
-    if (!(data instanceof FormData)) {
-      const formData = new FormData();
-      Object.entries(data || {}).forEach(([key, value]) => {
-        if (value === undefined || value === null) return;
-        if (Array.isArray(value)) {
-          formData.append(key, JSON.stringify(value));
-        } else {
-          formData.append(key, String(value));
-        }
+    if (data instanceof FormData) {
+      return this.http.put<AssetResponse>(`${this.apiUrl}/assets/${id}`, data, {
+        headers: this.getHeaders(),
       });
-      body = formData;
+    } else {
+      return this.http.put<AssetResponse>(`${this.apiUrl}/assets/${id}/details`, data, {
+        headers: this.getHeaders(),
+      });
     }
-
-    return this.http.put<AssetResponse>(`${this.apiUrl}/assets/${id}`, body, {
-      headers,
-    });
   }
 
   deleteAsset(id: string): Observable<{ message: string }> {

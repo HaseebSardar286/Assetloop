@@ -58,6 +58,7 @@ export class SearchListingsComponent implements OnInit {
       category: ['All Categories'],
       minPrice: [''],
       maxPrice: [''],
+      availability: ['all'],
     });
   }
 
@@ -67,6 +68,7 @@ export class SearchListingsComponent implements OnInit {
     this.searchForm.get('keywords')?.valueChanges.subscribe(() => this.applyFilters());
     this.searchForm.get('minPrice')?.valueChanges.subscribe(() => this.applyFilters());
     this.searchForm.get('maxPrice')?.valueChanges.subscribe(() => this.applyFilters());
+    this.searchForm.get('availability')?.valueChanges.subscribe(() => this.applyFilters());
   }
 
   loadAssets(): void {
@@ -83,7 +85,7 @@ export class SearchListingsComponent implements OnInit {
   }
 
   applyFilters(): void {
-    const { keywords, minPrice, maxPrice, category } = this.searchForm.value;
+    const { keywords, minPrice, maxPrice, category, availability } = this.searchForm.value;
     let filtered = [...this.allAssets];
 
     if (keywords) {
@@ -98,6 +100,12 @@ export class SearchListingsComponent implements OnInit {
     if (category && category !== 'All Categories') {
       filtered = filtered.filter(
         (asset) => asset.category.toLowerCase() === category.toLowerCase()
+      );
+    }
+
+    if (availability && availability !== 'all') {
+      filtered = filtered.filter(
+        (asset) => asset.availability.toLowerCase() === availability.toLowerCase()
       );
     }
 
@@ -145,6 +153,7 @@ export class SearchListingsComponent implements OnInit {
       category: 'All Categories',
       minPrice: '',
       maxPrice: '',
+      availability: 'all',
     });
     this.sortBy = 'recommended';
     this.applyFilters();

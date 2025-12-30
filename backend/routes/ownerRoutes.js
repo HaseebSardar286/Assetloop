@@ -39,6 +39,7 @@ router.get("/users", getUsers);
 router.post("/create-asset", upload.array("images", 20), createAsset);
 router.get("/assets", getAssets);
 router.put("/assets/:id", upload.array("images", 20), updateAsset);
+router.put("/assets/:id/details", updateAsset);
 router.delete("/assets/:id", deleteAsset);
 
 router.get("/dashboard-stats", getDashboardStats);
