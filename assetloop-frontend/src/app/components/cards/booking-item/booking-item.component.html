@@ -1,22 +1,24 @@
-<div class="card h-100 shadow-sm position-relative">
-  <img
-    [src]="booking.imageUrl || '/images/download.jpg'"
-    class="card-img-top"
-    [alt]="booking.name"
-  />
-  <div class="card-body">
-    <h5 class="card-title">{{ booking.name }}</h5>
-    <p class="card-text">
-      <strong>Category:</strong> {{ booking.category || "N/A" }}
-    </p>
-    <p class="card-text"><strong>Location:</strong> {{ booking.address }}</p>
-    <p class="card-text">
-      <strong>Price:</strong> PKR{{
-            booking.price || booking.totalPaid || 0
-          }}
-    </p>
+<div class="product-card h-100 shadow-sm position-relative">
+  <div class="img-wrapper">
+    <img
+      [src]="booking.imageUrl || '/images/download.jpg'"
+      class="card-img-top"
+      [alt]="booking.name"
+    />
+    <div class="price-chip">
+      {{ (booking.price || booking.totalPaid || 0) | systemCurrency }}<span class="small text-muted">/day</span>
+    </div>
+    <div class="category-chip text-uppercase">
+      {{ booking.category || 'N/A' }}
+    </div>
     <span
-      class="badge me-1"
+      *ngIf="likedCount"
+      class="badge bg-info likes-chip"
+    >
+      {{ likedCount }} ♥
+    </span>
+    <span
+      class="badge status-badge"
       [ngClass]="{
         'bg-success': booking.status === 'confirmed',
         'bg-warning': booking.status === 'pending',
@@ -24,74 +26,77 @@
         'bg-primary': booking.status === 'completed',
         'bg-info': booking.status === 'active'
       }"
-      >{{ booking.status }}</span
+      style="position: absolute; bottom: 12px; left: 12px;"
     >
-    <span *ngIf="likedCount" class="badge bg-info">{{ likedCount }} Likes</span>
-    <div *ngIf="booking.endDate" class="mt-2">
+      {{ booking.status }}
+    </span>
+  </div>
+
+  <div class="card-body">
+    <div class="d-flex justify-content-between align-items-start mb-2">
+      <h5 class="card-title mb-0">{{ booking.name }}</h5>
+      <button
+        *ngIf="isRenter && showAssetActions"
+        type="button"
+        class="btn btn-icon"
+        [class.btn-primary-soft]="isFavourite"
+        [class.btn-outline-secondary]="!isFavourite"
+        [class.heart-red]="isFavourite"
+        (click)="onRemoveFavourite()"
+        [attr.aria-label]="isFavourite ? 'Remove favourite' : 'Add to favourites'"
+      >
+        <fa-icon [icon]="faHeart"></fa-icon>
+      </button>
+    </div>
+    <p class="card-subtitle text-muted mb-1">
+      {{ booking.address }}
+    </p>
+    <p class="card-text text-truncate-2 mb-2" *ngIf="booking.description">
+      {{ booking.description }}
+    </p>
+    <div *ngIf="booking.endDate" class="mb-2">
       <small class="text-muted">
         <strong>End Date:</strong> {{ booking.endDate | date:'mediumDate' }}
       </small>
     </div>
-    <div *ngIf="!isReviewable() && !booking.review && booking.status !== 'cancelled' && booking.endDate" class="mt-1">
+    <div *ngIf="!isReviewable() && !booking.review && booking.status !== 'cancelled' && booking.endDate" class="mb-2">
       <small class="text-info">
         <em>Review available after end date</em>
       </small>
     </div>
     <input
+      *ngIf="showNotesInput"
       type="text"
       class="form-control mt-2"
       placeholder="Add a note..."
       (input)="onNotesChange($event)"
     />
   </div>
+
   <div class="card-footer d-flex justify-content-between align-items-center">
-    <div>
+    <div class="d-flex gap-2" *ngIf="isRenter">
       <button
-        class="btn btn-outline-danger btn-sm me-2"
-        (click)="onRemoveFavourite()"
-      >
-        <fa-icon [icon]="faTrash" *ngIf="isFavourite"></fa-icon>
-        <fa-icon [icon]="faHeart" *ngIf="!isFavourite"></fa-icon>
-      </button>
-      <button
-        class="btn btn-outline-primary btn-sm me-2"
+        *ngIf="showAssetActions"
+        class="btn btn-outline-primary btn-icon"
         (click)="onAddToCart()"
+        aria-label="Add to cart"
       >
         <fa-icon [icon]="faShoppingCart"></fa-icon>
       </button>
-      <button class="btn btn-outline-secondary btn-sm me-2" (click)="onShare()">
-        <fa-icon [icon]="faShare"></fa-icon>
-      </button>
-      <button class="btn btn-outline-success btn-sm" (click)="startChatWithOwner()">
+      <button
+        class="btn btn-outline-success btn-icon"
+        (click)="startChatWithOwner()"
+        aria-label="Chat with owner"
+      >
         💬
       </button>
     </div>
-    <div class="d-flex align-items-center gap-2">
-      <button class="btn btn-primary btn-sm" (click)="onViewListing()">
-        <fa-icon [icon]="faArrowRight"></fa-icon>
-      </button>
-      <button
-        class="btn btn-danger btn-sm"
-        *ngIf="booking.status !== 'cancelled'"
-        (click)="onCancelBooking()"
-      >
-        Cancel
-      </button>
-      <button
-        class="btn btn-success btn-sm"
-        *ngIf="isReviewable()"
-        (click)="onLeaveReview()"
-        title="Leave a review for this booking"
-      >
-        ⭐ Leave Review
-      </button>
-      <span
-        *ngIf="booking.review"
-        class="badge bg-success ms-2"
-        title="You have already reviewed this booking"
-      >
-        ✓ Reviewed
-      </span>
-    </div>
+    <button
+      class="btn btn-primary btn-icon"
+      (click)="onViewListing()"
+      aria-label="View listing"
+    >
+      <fa-icon [icon]="faArrowRight"></fa-icon>
+    </button>
   </div>
 </div>

@@ -61,7 +61,7 @@
                       <span class="amenity-pill" *ngFor="let a of asset.amenities">{{ a }}</span>
                     </span>
                   </p>
-                  <div class="d-flex flex-wrap gap-2 mt-3">
+                  <div class="d-flex flex-wrap gap-2 mt-3" *ngIf="isRenter">
                     <button
                       class="btn btn-outline-danger btn-icon"
                       (click)="addToFavourites()"

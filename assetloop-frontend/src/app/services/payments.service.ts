@@ -49,10 +49,14 @@ export class PaymentsService {
     }>(`${this.apiUrl}/wallet`, { headers: this.getHeaders() });
   }
 
-  addMoney(amount: number): Observable<{ id: string; url: string }> {
+  addMoney(amount: number, successUrl?: string, cancelUrl?: string): Observable<{ id: string; url: string }> {
     return this.http.post<{ id: string; url: string }>(
       `${this.apiUrl}/wallet/add`,
-      { amount },
+      { 
+        amount,
+        successUrl: successUrl || `${window.location.origin}/payments?status=success&source=wallet_topup`,
+        cancelUrl: cancelUrl || `${window.location.origin}/payments?status=cancelled&source=wallet_topup`
+      },
       { headers: this.getHeaders() }
     );
   }

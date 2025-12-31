@@ -56,14 +56,14 @@
             >Refunds</a
           >
         </li>
-        <li class="nav-item">
+        <!-- <li class="nav-item">
           <a
             class="nav-link"
             [class.active]="activeTab === 'security'"
             (click)="setActiveTab('security')"
             >Security</a
           >
-        </li>
+        </li> -->
       </ul>
       <div class="tab-content">
         <app-wallet-overview
@@ -84,9 +84,9 @@
         <app-refunds-disputes
           *ngIf="activeTab === 'refunds'"
         ></app-refunds-disputes>
-        <app-security-features
+        <!-- <app-security-features
           *ngIf="activeTab === 'security'"
-        ></app-security-features>
+        ></app-security-features> -->
       </div>
     </main>
   </div>

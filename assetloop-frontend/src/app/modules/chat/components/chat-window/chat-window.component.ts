@@ -30,6 +30,7 @@ export class ChatWindowComponent implements OnInit, OnDestroy, OnChanges {
   ) {}
 
   ngOnInit(): void {
+    // Load messages if chatId is already set (e.g., from query params)
     if (this.chatId) {
       this.loadMessages();
       // Refresh messages every 10 seconds

@@ -32,7 +32,7 @@ export interface ChatConversation {
     price: number;
     images: string[];
     category: string;
-  };
+  } | null;
   lastMessage?: {
     _id: string;
     content: string;

@@ -1,8 +1,9 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router, RouterModule } from '@angular/router';
+import { Router } from '@angular/router';
 import { HeaderComponent } from '../../../components/header/header.component';
 import { RenterSideBarComponent } from '../../renter/renter-side-bar/renter-side-bar.component';
+import { AuthService } from '../../../services/auth.service';
 import { WalletOverviewComponent } from '../wallet-overview/wallet-overview.component';
 import { TransactionHistoryComponent } from '../transaction-history/transaction-history.component';
 import { PaymentMethodsComponent } from '../payment-methods/payment-methods.component';
@@ -10,15 +11,12 @@ import { BookingPaymentsComponent } from '../booking-payments/booking-payments.c
 import { InvoicesReceiptsComponent } from '../invoices-receipts/invoices-receipts.component';
 import { RefundsDisputesComponent } from '../refunds-disputes/refunds-disputes.component';
 import { SecurityFeaturesComponent } from '../security-features/security-features.component';
-import { PaymentsService } from '../../../services/payments.service';
-import { Transaction } from '../../../interfaces/payments';
 
 @Component({
   selector: 'app-payments-wallet',
   standalone: true,
   imports: [
     CommonModule,
-    RouterModule,
     HeaderComponent,
     RenterSideBarComponent,
     WalletOverviewComponent,
@@ -27,52 +25,33 @@ import { Transaction } from '../../../interfaces/payments';
     BookingPaymentsComponent,
     InvoicesReceiptsComponent,
     RefundsDisputesComponent,
-    SecurityFeaturesComponent,
+    // SecurityFeaturesComponent,
   ],
   templateUrl: './payments-wallet.component.html',
-  styleUrls: ['./payments-wallet.component.css'],
+  styleUrl: './payments-wallet.component.css'
 })
 export class PaymentsWalletComponent {
   activeTab: string = 'overview';
-  balance = 0;
-  transactions: any[] = [];
-  loading = false;
 
   constructor(
     private router: Router,
-    private paymentsService: PaymentsService
-  ) {
-    this.loadWallet();
+    private authService: AuthService
+  ) { }
+
+  onLogout(): void {
+    this.authService.logout();
   }
 
-  loadWallet() {
-    this.loading = true;
-    this.paymentsService.getWallet().subscribe({
-      next: (data: { balance: number; transactions: Transaction[] }) => {
-        this.balance = data.balance;
-        this.transactions = data.transactions;
-        this.loading = false;
-      },
-      error: (err: any) => {
-        console.error('Failed to load wallet', err);
-        this.loading = false;
-      }
-    });
-  }
-
-  setActiveTab(tab: string) {
-    this.activeTab = tab;
-  }
-
-  onLogout() {
-    this.router.navigate(['/auth/login']);
-  }
-
-  onNavigate(event: Event) {
+  onNavigate(event: Event): void {
     const target = event.target as HTMLAnchorElement;
     if (target && target.getAttribute('href')) {
       const path = target.getAttribute('href')!;
+      console.log('Navigating to:', path);
       this.router.navigate([path]);
     }
+  }
+
+  setActiveTab(tab: string): void {
+    this.activeTab = tab;
   }
 }

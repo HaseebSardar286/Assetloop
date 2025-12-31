@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, ActivatedRoute, RouterModule } from '@angular/router';
 import { HeaderComponent } from '../../../components/header/header.component';
@@ -29,7 +29,7 @@ import { SystemCurrencyPipe } from '../../../pipes/currency.pipe';
   templateUrl: './asset-details.component.html',
   styleUrl: './asset-details.component.css',
 })
-export class AssetDetailsComponent {
+export class AssetDetailsComponent implements OnInit {
   faHeart = faHeart;
   faShoppingCart = faShoppingCart;
   faComments = faComments;
@@ -46,6 +46,7 @@ export class AssetDetailsComponent {
   }> = [];
   averageRating = 0;
   totalReviews = 0;
+  isRenter = false;
 
   // Expose Math to template
   Math = Math;
@@ -56,7 +57,11 @@ export class AssetDetailsComponent {
     private chatService: ChatService,
     private authService: AuthService,
     private router: Router
-  ) {}
+  ) {
+    // Check if current user is a renter
+    const userRole = this.authService.getUserRole();
+    this.isRenter = userRole === 'renter';
+  }
 
   ngOnInit(): void {
     this.assetId = this.route.snapshot.paramMap.get('id');
@@ -136,17 +141,25 @@ export class AssetDetailsComponent {
       return;
     }
 
+    const userRole = this.authService.getUserRole();
+
     // Get or create conversation with the asset owner
     this.chatService.getOrCreateConversation(this.asset._id, this.asset.owner._id).subscribe({
       next: (response) => {
-        // Navigate to chat with the conversation ID
-        this.router.navigate(['/renter/chat'], { 
+        // Navigate to appropriate chat route based on user role
+        const chatRoute = userRole === 'owner' ? '/owner/chat' : '/renter/chat';
+        this.router.navigate([chatRoute], { 
           queryParams: { conversationId: response.conversation._id } 
         });
       },
       error: (err) => {
+        console.error('Chat error:', err);
         alert(err?.error?.message || 'Failed to start chat');
       }
     });
+  }
+
+  onLogout(): void {
+    this.authService.logout();
   }
 }

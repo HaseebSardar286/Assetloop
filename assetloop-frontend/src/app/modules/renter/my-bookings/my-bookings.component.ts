@@ -169,18 +169,6 @@ export class MyBookingsComponent implements OnInit {
     this.router.navigate(['/auth/login']);
   }
 
-  removeFavourite(id: string) {
-    console.log(`Removed from favourites: ${id}`);
-  }
-
-  addToCart(id: string) {
-    console.log(`Added to cart: ${id}`);
-  }
-
-  share(id: string) {
-    console.log(`Sharing item ${id}`);
-  }
-
   updateNotes(event: { id: string; notes: string }) {
     const booking = [
       ...this.bookings.current,

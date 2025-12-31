@@ -90,10 +90,6 @@ export class RequestedAssetsComponent {
     this.router.navigate(['/auth/login']);
   }
 
-  share(id: string) {
-    console.log(`Sharing item ${id}`);
-  }
-
   onNavigate(event: Event) {
     const target = event.target as HTMLAnchorElement;
     if (target && target.getAttribute('href')) {

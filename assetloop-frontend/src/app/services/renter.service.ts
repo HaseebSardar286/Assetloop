@@ -110,6 +110,12 @@ export class RenterService {
     });
   }
 
+  getBookingDetails(bookingId: string): Observable<Booking & { assetName?: string }> {
+    return this.http.get<Booking & { assetName?: string }>(`${this.apiUrl}/bookings/${bookingId}`, {
+      headers: this.getHeaders(),
+    });
+  }
+
   createBooking(bookingData: {
     assetId: string;
     startDate: string;
@@ -139,6 +145,10 @@ export class RenterService {
       { bookingId, rating, comment },
       { headers: this.getHeaders() }
     );
+  }
+
+  submitReview(bookingId: string, reviewData: { rating: number; comment: string }): Observable<any> {
+    return this.addReview(bookingId, reviewData.rating, reviewData.comment);
   }
 
   // Reviews read endpoints

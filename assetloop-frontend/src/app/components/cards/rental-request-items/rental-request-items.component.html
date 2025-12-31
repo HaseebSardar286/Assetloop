@@ -22,12 +22,12 @@
       </div>
       <div class="detail-item">
         <strong>Actions:</strong>
-        <button class="btn btn-primary btn-sm me-2">Details</button>
         <button
           class="btn btn-outline-success btn-sm me-2"
           (click)="onStartChat()"
+          title="Start chat with renter"
         >
-          💬
+          💬 Chat
         </button>
         <button
           *ngIf="booking.status === 'pending'"

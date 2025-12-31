@@ -54,13 +54,7 @@ export class ChatComponent implements OnInit, OnDestroy {
     // Determine user role from route path or auth service
     this.determineUserRole();
     
-    // Listen to route changes to update role if needed
-    this.routerSubscription = this.router.events
-      .pipe(filter(event => event instanceof NavigationEnd))
-      .subscribe(() => {
-        this.determineUserRole();
-      });
-    
+    // Load conversations first
     this.loadConversations();
     this.loadUnreadCount();
     
@@ -68,8 +62,43 @@ export class ChatComponent implements OnInit, OnDestroy {
     this.route.queryParams.subscribe(params => {
       if (params['conversationId']) {
         this.selectedChatId = params['conversationId'];
+        // Mark as read when opening from query params
+        if (this.selectedChatId) {
+          this.chatService.markAsRead(this.selectedChatId).subscribe({
+            next: () => {
+              this.loadUnreadCount();
+            },
+            error: (err) => {
+              console.error('Failed to mark messages as read:', err);
+            }
+          });
+        }
+      } else {
+        this.selectedChatId = null;
       }
     });
+    
+    // Listen to route changes to update role if needed
+    this.routerSubscription = this.router.events
+      .pipe(filter(event => event instanceof NavigationEnd))
+      .subscribe(() => {
+        this.determineUserRole();
+        // Update selected chat from query params on navigation
+        const conversationId = this.route.snapshot.queryParams['conversationId'];
+        if (conversationId) {
+          this.selectedChatId = conversationId;
+          this.chatService.markAsRead(conversationId).subscribe({
+            next: () => {
+              this.loadUnreadCount();
+            },
+            error: (err) => {
+              console.error('Failed to mark messages as read:', err);
+            }
+          });
+        } else {
+          this.selectedChatId = null;
+        }
+      });
     
     // Refresh conversations every 30 seconds
     this.refreshSubscription = interval(30000).subscribe(() => {
@@ -108,6 +137,16 @@ export class ChatComponent implements OnInit, OnDestroy {
       next: (response) => {
         this.conversations = response.conversations;
         this.loading = false;
+        
+        // If we have a selectedChatId from query params, ensure it's valid
+        if (this.selectedChatId) {
+          const conversationExists = this.conversations.some(c => c._id === this.selectedChatId);
+          if (!conversationExists) {
+            // Conversation might not be in the list yet, but that's okay
+            // The chat window will handle loading it
+            console.log('Selected conversation not in list, but will load:', this.selectedChatId);
+          }
+        }
       },
       error: (err) => {
         this.error = err?.error?.message || 'Failed to load conversations';

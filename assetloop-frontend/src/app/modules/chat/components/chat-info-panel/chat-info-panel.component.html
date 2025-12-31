@@ -6,24 +6,24 @@
   <app-user-profile-card
     *ngIf="selectedConversation.otherUser"
     [user]="{
-      name: selectedConversation.otherUser.name,
-      profilePic: undefined,
-      role: selectedConversation.otherUser.role === 'owner' ? 'Owner' : 'Renter'
-    }"
+        name: selectedConversation.otherUser.name || 'Unknown User',
+        profilePic: undefined,
+        role: selectedConversation.otherUser.role === 'owner' ? 'Owner' : 'Renter'
+      }"
     [userRole]="userRole"
   ></app-user-profile-card>
   <div class="actions">
-    <button class="btn btn-primary w-100 mb-2" (click)="onViewListing()">
+    <!-- <button class="btn btn-primary w-100 mb-2" (click)="onViewListing()">
       View Listing
-    </button>
-    <button 
+    </button> -->
+    <!-- <button 
       *ngIf="userRole === 'Renter'" 
       class="btn btn-success w-100 mb-2" 
       (click)="onBookNow()">
       Book Now
-    </button>
-    <button class="btn btn-danger w-100" (click)="onReportUser()">
+    </button> -->
+    <!-- <button class="btn btn-danger w-100" (click)="onReportUser()">
       Report User
-    </button>
+    </button> -->
   </div>
 </div>

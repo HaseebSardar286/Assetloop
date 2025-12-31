@@ -1,68 +1,144 @@
-<nav class="navbar navbar-expand-lg navbar-light bg-light shadow-sm">
-  <div
-    class="container-fluid w-100 d-flex justify-content-start align-items-center gap-2"
-  >
-    <a class="navbar-brand text-black">AssetLoop</a>
-    <form class="d-flex w-50" [formGroup]="searchForm">
-      <input
-        class="form-control me-2 rounded-5"
-        type="search"
-        formControlName="keywords"
-        placeholder="Search listings..."
-      />
-      <button
-        class="btn btn-outline-success rounded-5"
-        type="button"
-        (click)="applySearch()"
-      >
-        <fa-icon [icon]="faSearch"></fa-icon>
-      </button>
-    </form>
+<nav class="navbar navbar-expand-lg navbar-custom shadow-sm">
+  <div class="container-fluid">
+    <!-- Brand -->
+    <a class="navbar-brand" (click)="navigateToDashboard()" style="cursor: pointer;">
+      <strong>AssetLoop</strong>
+    </a>
+
+    <!-- Mobile toggle button -->
     <button
-      class="btn btn-outline-secondary rounded-5"
+      class="navbar-toggler"
       type="button"
-      (click)="filterListings()"
+      data-bs-toggle="collapse"
+      data-bs-target="#navbarNav"
+      aria-controls="navbarNav"
+      aria-expanded="false"
+      aria-label="Toggle navigation"
     >
-      <fa-icon [icon]="faFilter"></fa-icon>
+      <span class="navbar-toggler-icon"></span>
     </button>
-  </div>
-  <div class="d-flex gap-2 px-2">
-    <button type="button" class="btn btn-info rounded-5">
-      <fa-icon [icon]="faShoppingCart"></fa-icon>
-    </button>
-    <button
-      type="button"
-      class="btn btn-danger rounded-5"
-      (click)="favourites()"
-    >
-      <fa-icon [icon]="faHeart"></fa-icon>
-    </button>
-    <button type="button" class="btn btn-warning rounded-5">
-      <fa-icon [icon]="faBell"></fa-icon>
-    </button>
-  </div>
-  <div class="collapse navbar-collapse px-3" id="navbarNav">
-    <ul class="navbar-nav ms-auto">
-      <li class="nav-item dropdown">
-        <a
-          class="nav-link text-black"
-          id="userDropdown"
-          role="button"
-          data-bs-toggle="dropdown"
-          aria-expanded="false"
-        >
-          <button type="button" class="btn btn-dark rounded-5">
-            <fa-icon [icon]="faUser"></fa-icon>
-          </button>
-        </a>
-        <ul
-          class="dropdown-menu dropdown-menu-end"
-          aria-labelledby="userDropdown"
-        >
-          <li><a class="dropdown-item">Help/Support</a></li>
-          <li><a class="dropdown-item" (click)="logout.emit()">Logout</a></li>
-        </ul>
-      </li>
-    </ul>
+
+    <!-- Navbar content -->
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav ms-auto align-items-center gap-3">
+        <!-- Dashboard Link -->
+        <li class="nav-item">
+          <a
+            class="nav-link"
+            (click)="navigateToDashboard()"
+            style="cursor: pointer;"
+          >
+            <fa-icon [icon]="faHome" class="me-1"></fa-icon>
+            Dashboard
+          </a>
+        </li>
+
+        <!-- Role-specific quick links -->
+        <ng-container *ngIf="currentRole === 'renter'">
+          <li class="nav-item">
+            <a class="nav-link" [routerLink]="['/renter/favourites']" style="cursor: pointer;">
+              <fa-icon [icon]="faHeart" class="me-1"></fa-icon>
+              Favourites
+            </a>
+          </li>
+          <!-- <li class="nav-item">
+            <a class="nav-link" [routerLink]="['/renter/my-bookings']" style="cursor: pointer;">
+              <fa-icon [icon]="faShoppingCart" class="me-1"></fa-icon>
+              Bookings
+            </a>
+          </li> -->
+        </ng-container>
+
+        <ng-container *ngIf="currentRole === 'owner'">
+          <li class="nav-item">
+            <a class="nav-link" [routerLink]="['/owner/assets']" style="cursor: pointer;">
+              <fa-icon [icon]="faFilter" class="me-1"></fa-icon>
+              My Listings
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" [routerLink]="['/owner/wallet']" style="cursor: pointer;">
+              <fa-icon [icon]="faShoppingCart" class="me-1"></fa-icon>
+              Wallet
+            </a>
+          </li>
+        </ng-container>
+
+        <ng-container *ngIf="currentRole === 'admin'">
+          <li class="nav-item">
+            <a class="nav-link" [routerLink]="['/admin/manage-users']" style="cursor: pointer;">
+              <fa-icon [icon]="faUser" class="me-1"></fa-icon>
+              Users
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" [routerLink]="['/admin/system-settings']" style="cursor: pointer;">
+              <fa-icon [icon]="faCog" class="me-1"></fa-icon>
+              Settings
+            </a>
+          </li>
+        </ng-container>
+
+        <!-- Messages/Chat (available for renter and owner only) -->
+        <li class="nav-item" *ngIf="currentRole === 'renter' || currentRole === 'owner'">
+          <a
+            class="nav-link"
+            [routerLink]="currentRole === 'owner' ? ['/owner/chat'] : ['/renter/chat']"
+            style="cursor: pointer;"
+          >
+            <fa-icon [icon]="faBell" class="me-1"></fa-icon>
+            Messages
+          </a>
+        </li>
+
+        <!-- User Dropdown -->
+        <li class="nav-item dropdown">
+          <a
+            class="nav-link dropdown-toggle user-dropdown"
+            id="userDropdown"
+            role="button"
+            data-bs-toggle="dropdown"
+            aria-expanded="false"
+          >
+            <div class="user-avatar">
+              <fa-icon [icon]="faUser"></fa-icon>
+            </div>
+            <span class="user-info d-none d-md-inline">
+              <span class="user-name">{{ getUserDisplayName() }}</span>
+              <span class="user-role">{{ getRoleDisplayName() }}</span>
+            </span>
+          </a>
+          <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+            <li>
+              <h6 class="dropdown-header">
+                <strong>{{ getUserDisplayName() }}</strong>
+                <br />
+                <small class="text-muted">{{ getRoleDisplayName() }}</small>
+              </h6>
+            </li>
+            <li><hr class="dropdown-divider" /></li>
+            <li>
+              <a class="dropdown-item" (click)="navigateToProfile()" style="cursor: pointer;">
+                <fa-icon [icon]="faUser" class="me-2"></fa-icon>
+                Profile
+              </a>
+            </li>
+            <li>
+              <a class="dropdown-item" (click)="navigateToDashboard()" style="cursor: pointer;">
+                <fa-icon [icon]="faHome" class="me-2"></fa-icon>
+                Dashboard
+              </a>
+            </li>
+            <li><hr class="dropdown-divider" /></li>
+            <li>
+              <a class="dropdown-item text-danger" (click)="handleLogout()" style="cursor: pointer;">
+                <fa-icon [icon]="faSignOutAlt" class="me-2"></fa-icon>
+                Logout
+              </a>
+            </li>
+          </ul>
+        </li>
+      </ul>
+    </div>
   </div>
 </nav>

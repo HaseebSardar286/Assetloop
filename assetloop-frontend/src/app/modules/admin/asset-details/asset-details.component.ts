@@ -1,8 +1,9 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, ActivatedRoute, RouterModule } from '@angular/router';
 import { HeaderComponent } from '../../../components/header/header.component';
 import { RenterService } from '../../../services/renter.service';
+import { AuthService } from '../../../services/auth.service';
 import { AdminSidebarComponent } from '../admin-sidebar/admin-sidebar.component';
 
 @Component({
@@ -12,7 +13,7 @@ import { AdminSidebarComponent } from '../admin-sidebar/admin-sidebar.component'
   templateUrl: './asset-details.component.html',
   styleUrl: './asset-details.component.css',
 })
-export class AssetDetailsComponent {
+export class AssetDetailsComponent implements OnInit {
   assetId: string | null = null;
   loading = false;
   error: string | null = null;
@@ -27,7 +28,8 @@ export class AssetDetailsComponent {
   constructor(
     private route: ActivatedRoute,
     private renterService: RenterService,
-    private router: Router
+    private router: Router,
+    private authService: AuthService
   ) {}
 
   ngOnInit(): void {
@@ -93,5 +95,9 @@ export class AssetDetailsComponent {
             err?.error?.message || 'Failed to add to cart (login as renter?)'
           ),
       });
+  }
+
+  onLogout(): void {
+    this.authService.logout();
   }
 }

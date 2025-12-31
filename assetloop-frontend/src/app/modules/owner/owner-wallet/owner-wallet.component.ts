@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { PaymentsService } from '../../../services/payments.service';
+import { AuthService } from '../../../services/auth.service';
 import { PaymentMethod, Transaction } from '../../../interfaces/payments';
 import { HeaderComponent } from '../../../components/header/header.component';
 import { OwnerSideBarComponent } from '../owner-side-bar/owner-side-bar.component';
@@ -34,7 +35,10 @@ export class OwnerWalletComponent {
   error: string | null = null;
   amount = 0;
 
-  constructor(private paymentsService: PaymentsService) {
+  constructor(
+    private paymentsService: PaymentsService,
+    private authService: AuthService
+  ) {
     this.loadWallet();
   }
 
@@ -119,6 +123,10 @@ export class OwnerWalletComponent {
         this.loading = false;
       },
     });
+  }
+
+  onLogout(): void {
+    this.authService.logout();
   }
 }
 

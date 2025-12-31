@@ -8,7 +8,8 @@
       <h6 class="mb-0">
         {{ chat.otherUser.role }}: {{ chat.otherUser.name }}
       </h6>
-      <p class="text-muted small mb-0">{{ chat.asset.name }}</p>
+      <p class="text-muted small mb-0" *ngIf="chat.asset">{{ chat.asset.name }}</p>
+      <p class="text-muted small mb-0" *ngIf="!chat.asset">No asset information</p>
       <p class="text-muted small mb-0" *ngIf="chat.lastMessage">
         {{ chat.lastMessage.content }}
       </p>

@@ -65,12 +65,10 @@
               <app-booking-item
                 [booking]="booking"
                 [activeTab]="activeTab"
+                [showAssetActions]="false"
                 (viewListing)="viewListing($event)"
                 (cancelBooking)="cancelBooking($event)"
                 (leaveReview)="leaveReview($event)"
-                (removeFavourite)="removeFavourite($event)"
-                (addToCart)="addToCart($event)"
-                (share)="share($event)"
                 (updateNotes)="updateNotes($event)"
               ></app-booking-item>
             </div>

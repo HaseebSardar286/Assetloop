@@ -26,6 +26,7 @@
               [booking]="item"
               [isFavourite]="true"
               [likedCount]="likedCounts[item.id]"
+              [showAssetActions]="true"
               (removeFavourite)="removeFavourite($event)"
               (addToCart)="addToCart($event)"
               (viewListing)="viewDetails($event)"

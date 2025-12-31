@@ -1,11 +1,13 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faCreditCard, faCalendar, faUser, faLock, faLocationDot } from '@fortawesome/free-solid-svg-icons';
 import { HeaderComponent } from '../../../components/header/header.component';
 import { RenterSideBarComponent } from '../renter-side-bar/renter-side-bar.component';
 import { PaymentsService } from '../../../services/payments.service';
+import { AuthService } from '../../../services/auth.service';
 import { PaymentMethod } from '../../../interfaces/payments';
 
 @Component({
@@ -21,7 +23,7 @@ import { PaymentMethod } from '../../../interfaces/payments';
   templateUrl: './payment-form.component.html',
   styleUrl: './payment-form.component.css',
 })
-export class PaymentFormComponent {
+export class PaymentFormComponent implements OnInit {
   faCreditCard = faCreditCard;
   faCalendar = faCalendar;
   faUser = faUser;
@@ -34,7 +36,12 @@ export class PaymentFormComponent {
   error: string | null = null;
   methods: PaymentMethod[] = [];
 
-  constructor(private fb: FormBuilder, private paymentsService: PaymentsService) {
+  constructor(
+    private fb: FormBuilder,
+    private paymentsService: PaymentsService,
+    private authService: AuthService,
+    private router: Router
+  ) {
     this.paymentForm = this.fb.group({
       cardName: ['', Validators.required],
       cardNumber: ['', [Validators.required, Validators.minLength(16), Validators.maxLength(19)]],
@@ -134,5 +141,9 @@ export class PaymentFormComponent {
         this.error = err?.error?.message || 'Failed to remove method';
       },
     });
+  }
+
+  onLogout(): void {
+    this.authService.logout();
   }
 }

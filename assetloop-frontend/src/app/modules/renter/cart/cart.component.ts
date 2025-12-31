@@ -4,6 +4,7 @@ import { Router, RouterModule } from '@angular/router';
 import { HeaderComponent } from '../../../components/header/header.component';
 import { RenterSideBarComponent } from '../renter-side-bar/renter-side-bar.component';
 import { RenterService } from '../../../services/renter.service';
+import { AuthService } from '../../../services/auth.service';
 import { Subscription, forkJoin } from 'rxjs';
 import { CartItem } from '../../../interfaces/rental';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
@@ -39,7 +40,11 @@ export class CartComponent implements OnInit, OnDestroy {
     [id: string]: { startDate?: string; endDate?: string; notes?: string };
   } = {};
 
-  constructor(private renterService: RenterService, private router: Router) {}
+  constructor(
+    private renterService: RenterService,
+    private router: Router,
+    private authService: AuthService
+  ) {}
 
   ngOnInit(): void {
     this.sub = this.renterService.getCart().subscribe((items) => {
@@ -167,5 +172,9 @@ export class CartComponent implements OnInit, OnDestroy {
       ...(this.datesByItem[itemId] || {}),
       notes: value,
     };
+  }
+
+  onLogout(): void {
+    this.authService.logout();
   }
 }

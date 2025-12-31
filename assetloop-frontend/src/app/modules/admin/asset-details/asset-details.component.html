@@ -35,21 +35,6 @@
                       asset.amenities?.join(", ")
                     }}</small>
                   </p>
-                  <div class="d-flex gap-2">
-                    <button
-                      class="btn btn-outline-danger"
-                      (click)="addToFavourites()"
-                      [disabled]="loading"
-                    >
-                      ❤ {{ loading ? "Adding..." : "Add to Favourites" }}
-                    </button>
-                    <button
-                      class="btn btn-outline-primary"
-                      (click)="addToCart()"
-                    >
-                      🛒 Add to Cart
-                    </button>
-                  </div>
                 </div>
               </div>
             </div>

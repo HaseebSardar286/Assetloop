@@ -87,6 +87,14 @@
   border: 1px solid #dfe3ff;
 }
 
+.heart-red ::ng-deep fa-icon svg {
+  color: #dc3545 !important;
+}
+
+.heart-red.btn-primary-soft ::ng-deep fa-icon svg {
+  color: #dc3545 !important;
+}
+
 @media (max-width: 768px) {
   .product-card {
     margin-bottom: 1rem;

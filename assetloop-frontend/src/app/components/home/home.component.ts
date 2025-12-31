@@ -269,7 +269,7 @@ export class HomeComponent {
   }
 
   viewDetails(assetId: string): void {
-    this.router.navigate([`/asset/${assetId}`]);
+    this.router.navigate(["/auth/login"]);
   }
 
   scrollToSection(sectionId: string): void {

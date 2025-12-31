@@ -35,12 +35,15 @@ export class ProductItemComponent {
   faShare = faShare;
   faTrash = faTrash;
   faArrowRight = faArrowRight;
+  isRenter: boolean = false;
 
   constructor(
     private chatService: ChatService,
     private router: Router,
     private authService: AuthService
-  ) {}
+  ) {
+    this.isRenter = this.authService.getUserRole() === 'renter';
+  }
 
   onViewListing() {
     this.viewListing.emit(this.asset._id);
@@ -64,6 +67,7 @@ export class ProductItemComponent {
       return;
     }
 
+    const userRole = this.authService.getUserRole();
     const assetId = this.asset._id;
     const ownerId = (this.asset.owner as any)?._id;
 
@@ -74,11 +78,14 @@ export class ProductItemComponent {
 
     this.chatService.getOrCreateConversation(String(assetId), String(ownerId)).subscribe({
       next: (response) => {
-        this.router.navigate(['/renter/chat'], {
+        // Navigate to appropriate chat route based on user role
+        const chatRoute = userRole === 'owner' ? '/owner/chat' : '/renter/chat';
+        this.router.navigate([chatRoute], {
           queryParams: { conversationId: response.conversation._id },
         });
       },
       error: (err) => {
+        console.error('Chat error:', err);
         alert(err?.error?.message || 'Failed to start chat');
       },
     });

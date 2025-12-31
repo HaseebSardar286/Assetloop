@@ -20,14 +20,16 @@
     <div class="d-flex justify-content-between align-items-start mb-2">
       <h5 class="card-title mb-0">{{ asset.name }}</h5>
       <button
+        *ngIf="isRenter"
         type="button"
         class="btn btn-icon"
         [class.btn-primary-soft]="isFavourite"
         [class.btn-outline-secondary]="!isFavourite"
+        [class.heart-red]="isFavourite"
         (click)="onRemoveFavourite()"
         [attr.aria-label]="isFavourite ? 'Remove favourite' : 'Add to favourites'"
       >
-        <fa-icon [icon]="isFavourite ? faTrash : faHeart"></fa-icon>
+        <fa-icon [icon]="faHeart"></fa-icon>
       </button>
     </div>
     <p class="card-subtitle text-muted mb-1">
@@ -42,7 +44,7 @@
   </div>
 
   <div class="card-footer d-flex justify-content-between align-items-center">
-    <div class="d-flex gap-2">
+    <div class="d-flex gap-2" *ngIf="isRenter">
       <button
         class="btn btn-outline-primary btn-icon"
         (click)="onAddToCart()"
@@ -50,13 +52,13 @@
       >
         <fa-icon [icon]="faShoppingCart"></fa-icon>
       </button>
-      <button
+      <!-- <button
         class="btn btn-outline-secondary btn-icon"
         (click)="onShare()"
         aria-label="Share listing"
       >
         <fa-icon [icon]="faShare"></fa-icon>
-      </button>
+      </button> -->
       <button
         class="btn btn-outline-success btn-icon"
         (click)="startChatWithOwner()"

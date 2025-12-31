@@ -61,7 +61,7 @@ export class ChatInfoPanelComponent implements OnInit, OnChanges {
   }
 
   getAssetRoute(): string {
-    if (!this.selectedConversation) return '#';
+    if (!this.selectedConversation || !this.selectedConversation.asset) return '#';
     const assetId = this.selectedConversation.asset._id;
     const currentPath = this.router.url;
     
@@ -83,14 +83,14 @@ export class ChatInfoPanelComponent implements OnInit, OnChanges {
   }
 
   onBookNow(): void {
-    if (!this.selectedConversation) return;
+    if (!this.selectedConversation || !this.selectedConversation.asset) return;
     const assetId = this.selectedConversation.asset._id;
     this.router.navigate(['/renter/asset', assetId]);
   }
 
-  onReportUser(): void {
-    // TODO: Implement report user functionality
-    console.log('Report user functionality to be implemented');
-    // Could navigate to a report page or open a modal
-  }
+  // onReportUser(): void {
+  //   // TODO: Implement report user functionality
+  //   console.log('Report user functionality to be implemented');
+  //   // Could navigate to a report page or open a modal
+  // }
 }

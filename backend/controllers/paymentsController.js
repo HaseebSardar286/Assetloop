@@ -13,6 +13,33 @@ function getStripe() {
   return stripe;
 }
 
+/**
+ * Helper function to get the frontend URL based on request origin
+ * This ensures localhost requests redirect back to localhost, and production to production
+ */
+function getFrontendUrl(req) {
+  // Check if successUrl or cancelUrl is provided in request body (highest priority)
+  // Otherwise, try to detect from request headers
+  const origin = req.headers.origin || req.headers.referer;
+  
+  if (origin) {
+    try {
+      const url = new URL(origin);
+      // If it's localhost or 127.0.0.1, use localhost
+      if (url.hostname === 'localhost' || url.hostname === '127.0.0.1') {
+        return `http://${url.hostname}:${url.port || '4200'}`;
+      }
+      // Otherwise, use the origin (production URL)
+      return `${url.protocol}//${url.host}`;
+    } catch (e) {
+      // If URL parsing fails, fall through to environment variable
+    }
+  }
+  
+  // Fall back to environment variable or default
+  return process.env.FRONTEND_URL || "http://localhost:4200";
+}
+
 exports.createCheckoutSession = async (req, res) => {
   try {
     const { bookingId, successUrl, cancelUrl, currency = "pkr" } = req.body;
@@ -44,7 +71,7 @@ exports.createCheckoutSession = async (req, res) => {
       line_items: [
         {
           price_data: {
-            currency,
+            currency: currency.toLowerCase(),
             product_data: {
               name: booking.name || "Asset Booking",
               description: `Payment for booking ${booking._id}`,
@@ -54,6 +81,7 @@ exports.createCheckoutSession = async (req, res) => {
           quantity: 1,
         },
       ],
+      locale: "en", // Set to English to avoid locale loading issues
       metadata: {
         bookingId: booking._id.toString(),
         renterId: booking.renter.toString(),
@@ -62,10 +90,10 @@ exports.createCheckoutSession = async (req, res) => {
       },
       success_url:
         successUrl ||
-        `${process.env.FRONTEND_URL || "http://localhost:4200"}/payments?status=success&bookingId={CHECKOUT_SESSION_ID}`,
+        `${getFrontendUrl(req)}/payments?status=success&bookingId={CHECKOUT_SESSION_ID}`,
       cancel_url:
         cancelUrl ||
-        `${process.env.FRONTEND_URL || "http://localhost:4200"}/payments?status=cancelled&bookingId={CHECKOUT_SESSION_ID}`,
+        `${getFrontendUrl(req)}/payments?status=cancelled&bookingId={CHECKOUT_SESSION_ID}`,
     });
 
     return res.status(200).json({ id: session.id, url: session.url });
@@ -270,7 +298,7 @@ exports.addMoney = async (req, res) => {
       line_items: [
         {
           price_data: {
-            currency,
+            currency: currency.toLowerCase(),
             product_data: {
               name: "Wallet Top-up",
               description: "Add funds to your AssetLoop wallet",
@@ -280,16 +308,17 @@ exports.addMoney = async (req, res) => {
           quantity: 1,
         },
       ],
+      locale: "en", // Set to English to avoid locale loading issues
       metadata: {
         userId,
         type: "wallet_topup",
       },
       success_url:
         successUrl ||
-        `${process.env.FRONTEND_URL || "http://localhost:4200"}/payments?status=success&source=wallet_topup`,
+        `${getFrontendUrl(req)}/payments?status=success&source=wallet_topup`,
       cancel_url:
         cancelUrl ||
-        `${process.env.FRONTEND_URL || "http://localhost:4200"}/payments?status=cancelled&source=wallet_topup`,
+        `${getFrontendUrl(req)}/payments?status=cancelled&source=wallet_topup`,
     });
 
     return res.status(200).json({ id: session.id, url: session.url });

@@ -22,7 +22,7 @@ export class ConversationListComponent {
         c.otherUser.name
           .toLowerCase()
           .includes(this.searchQuery.toLowerCase()) ||
-        c.asset.name.toLowerCase().includes(this.searchQuery.toLowerCase())
+        (c.asset && c.asset.name.toLowerCase().includes(this.searchQuery.toLowerCase()))
     );
   }
 }

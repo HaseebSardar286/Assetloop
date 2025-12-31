@@ -1,3 +1,33 @@
 .transaction-card {
+  border: 1px solid #e8ebf3;
+  border-radius: 16px;
+  overflow: hidden;
+  background: #fff;
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
   margin-bottom: 1rem;
+}
+
+.transaction-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.08);
+}
+
+.transaction-card .card-body {
+  padding: 1rem;
+}
+
+.transaction-card .card-title {
+  font-weight: 600;
+  color: #1f2a44;
+  margin-bottom: 0.75rem;
+}
+
+.transaction-card .card-text {
+  font-size: 0.9rem;
+  margin-bottom: 0.5rem;
+  color: #5f6472;
+}
+
+.transaction-card .card-text:last-child {
+  margin-bottom: 0;
 }

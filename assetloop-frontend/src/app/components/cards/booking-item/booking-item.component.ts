@@ -13,11 +13,12 @@ import { Booking, Bookings } from '../../../interfaces/bookings';
 import { ChatService } from '../../../services/chat.service';
 import { Router } from '@angular/router';
 import { AuthService } from '../../../services/auth.service';
+import { SystemCurrencyPipe } from '../../../pipes/currency.pipe';
 
 @Component({
   selector: 'app-booking-item',
   standalone: true,
-  imports: [CommonModule, FormsModule, FontAwesomeModule],
+  imports: [CommonModule, FormsModule, FontAwesomeModule, SystemCurrencyPipe],
   templateUrl: './booking-item.component.html',
   styleUrls: ['./booking-item.component.css'],
 })
@@ -26,6 +27,8 @@ export class BookingItemComponent {
   @Input() activeTab!: keyof Bookings;
   @Input() isFavourite: boolean = false;
   @Input() likedCount?: number;
+  @Input() showAssetActions: boolean = false; // Show addToCart, removeFavourite, share (for favourite assets, not bookings)
+  @Input() showNotesInput: boolean = false; // Show notes input field
   @Output() viewListing = new EventEmitter<string>();
   @Output() removeFavourite = new EventEmitter<string>();
   @Output() addToCart = new EventEmitter<string>();
@@ -39,11 +42,15 @@ export class BookingItemComponent {
   faShare = faShare;
   faTrash = faTrash;
   faArrowRight = faArrowRight;
+  isRenter: boolean = false;
+
   constructor(
     private chatService: ChatService,
     private router: Router,
     private authService: AuthService
-  ) {}
+  ) {
+    this.isRenter = this.authService.getUserRole() === 'renter';
+  }
 
   onViewListing() {
     this.viewListing.emit(this.booking.id || this.booking._id);
@@ -81,22 +88,37 @@ export class BookingItemComponent {
       return;
     }
 
-    // Determine assetId and ownerId
-    const assetId = (this.booking.asset && (this.booking.asset as any)._id) || this.booking._id || this.booking.id;
-    const ownerId = (this.booking.owner && (this.booking.owner as any)._id) || (this.booking as any).owner?._id;
+    const userRole = this.authService.getUserRole();
+    
+    // Determine assetId and otherUserId based on user role
+    let assetId: string | null = null;
+    let otherUserId: string | null = null;
 
-    if (!assetId || !ownerId) {
-      alert('Missing asset or owner information for chat');
+    if (userRole === 'renter') {
+      // Renter chatting with owner
+      assetId = (this.booking.asset && (this.booking.asset as any)._id) || this.booking._id || this.booking.id;
+      otherUserId = (this.booking.owner && (this.booking.owner as any)._id) || (this.booking as any).owner?._id;
+    } else if (userRole === 'owner') {
+      // Owner chatting with renter
+      assetId = (this.booking.asset && (this.booking.asset as any)._id) || this.booking._id || this.booking.id;
+      otherUserId = (this.booking.renter && (this.booking.renter as any)._id) || (this.booking as any).renter?._id;
+    }
+
+    if (!assetId || !otherUserId) {
+      alert('Missing asset or user information for chat');
       return;
     }
 
-    this.chatService.getOrCreateConversation(String(assetId), String(ownerId)).subscribe({
+    this.chatService.getOrCreateConversation(String(assetId), String(otherUserId)).subscribe({
       next: (response) => {
-        this.router.navigate(['/renter/chat'], {
+        // Navigate to appropriate chat route based on user role
+        const chatRoute = userRole === 'owner' ? '/owner/chat' : '/renter/chat';
+        this.router.navigate([chatRoute], {
           queryParams: { conversationId: response.conversation._id },
         });
       },
       error: (err) => {
+        console.error('Chat error:', err);
         alert(err?.error?.message || 'Failed to start chat');
       },
     });

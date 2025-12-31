@@ -100,20 +100,20 @@
                         >
                           <fa-icon [icon]="faEye"></fa-icon>
                         </button>
-                        <button
+                        <!-- <button
                           class="btn btn-icon btn-outline-warning"
                           *ngIf="listing.status?.toLowerCase() === 'active'"
                           title="Deactivate"
                         >
                           <fa-icon [icon]="faLock"></fa-icon>
-                        </button>
-                        <button
+                        </button> -->
+                        <!-- <button
                           class="btn btn-icon btn-outline-success"
                           *ngIf="listing.status?.toLowerCase() === 'inactive'"
                           title="Activate"
                         >
                           <fa-icon [icon]="faUnlock"></fa-icon>
-                        </button>
+                        </button> -->
                         <button
                           class="btn btn-icon btn-outline-danger"
                           (click)="deleteListing(listing._id)"
