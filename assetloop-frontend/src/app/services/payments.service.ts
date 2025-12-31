@@ -21,6 +21,12 @@ export class PaymentsService {
     const token = localStorage.getItem('authToken');
     return new HttpHeaders().set('Authorization', `Bearer ${token || ''}`);
   }
+  private getNoCacheHeaders(): HttpHeaders {
+    return this.getHeaders().set('Cache-Control', 'no-store').set('Pragma', 'no-cache');
+  }
+  private cacheBust(): string {
+    return Date.now().toString();
+  }
 
   createCheckoutSession(
     bookingId: string,
@@ -46,7 +52,7 @@ export class PaymentsService {
     return this.http.get<{
       balance: number;
       transactions: Transaction[];
-    }>(`${this.apiUrl}/wallet`, { headers: this.getHeaders() });
+    }>(`${this.apiUrl}/wallet?ts=${this.cacheBust()}`, { headers: this.getNoCacheHeaders() });
   }
 
   addMoney(amount: number, successUrl?: string, cancelUrl?: string): Observable<{ id: string; url: string }> {
@@ -112,10 +118,11 @@ export class PaymentsService {
     if (params?.date) query.set('date', params.date);
     if (params?.type) query.set('type', params.type);
     if (params?.bookingId) query.set('bookingId', params.bookingId);
+    query.set('ts', this.cacheBust());
     const qs = query.toString();
     return this.http.get<Transaction[]>(
       `${this.apiUrl}/transactions${qs ? `?${qs}` : ''}`,
-      { headers: this.getHeaders() }
+      { headers: this.getNoCacheHeaders() }
     );
   }
 
