@@ -18,11 +18,8 @@ export class PaymentsService {
   constructor(private http: HttpClient) { }
 
   private getHeaders(): HttpHeaders {
-    const token = localStorage.getItem('authToken');
+    const token = localStorage.getItem('authToken') || localStorage.getItem('token');
     return new HttpHeaders().set('Authorization', `Bearer ${token || ''}`);
-  }
-  private getNoCacheHeaders(): HttpHeaders {
-    return this.getHeaders().set('Cache-Control', 'no-store').set('Pragma', 'no-cache');
   }
   private cacheBust(): string {
     return Date.now().toString();
@@ -52,7 +49,7 @@ export class PaymentsService {
     return this.http.get<{
       balance: number;
       transactions: Transaction[];
-    }>(`${this.apiUrl}/wallet?ts=${this.cacheBust()}`, { headers: this.getNoCacheHeaders() });
+    }>(`${this.apiUrl}/wallet?ts=${this.cacheBust()}`, { headers: this.getHeaders() });
   }
 
   addMoney(amount: number, successUrl?: string, cancelUrl?: string): Observable<{ id: string; url: string }> {
@@ -122,7 +119,7 @@ export class PaymentsService {
     const qs = query.toString();
     return this.http.get<Transaction[]>(
       `${this.apiUrl}/transactions${qs ? `?${qs}` : ''}`,
-      { headers: this.getNoCacheHeaders() }
+      { headers: this.getHeaders() }
     );
   }
 
