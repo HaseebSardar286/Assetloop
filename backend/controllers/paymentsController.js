@@ -750,23 +750,42 @@ exports.verifyPayment = async (req, res) => {
     const { sessionId } = req.query;
     const userId = req.user.id;
 
+    console.log("🔍 Starting payment verification. SessionId:", sessionId, "UserId:", userId);
+
     if (!sessionId) {
       return res.status(400).json({ message: "Session ID is required" });
+    }
+
+    if (!userId) {
+      return res.status(401).json({ message: "User not authenticated" });
     }
 
     const stripeClient = getStripe();
     
     // Retrieve the checkout session from Stripe
-    const session = await stripeClient.checkout.sessions.retrieve(sessionId, {
-      expand: ['payment_intent']
-    });
+    let session;
+    try {
+      session = await stripeClient.checkout.sessions.retrieve(sessionId, {
+        expand: ['payment_intent']
+      });
+      console.log("✅ Stripe session retrieved successfully");
+    } catch (stripeError) {
+      console.error("❌ Stripe API error:", stripeError);
+      return res.status(400).json({ 
+        message: "Failed to retrieve payment session from Stripe",
+        error: stripeError.message,
+        type: stripeError.type
+      });
+    }
 
     console.log("🔍 Verifying payment session:", sessionId);
     console.log("Session status:", session.payment_status);
-    console.log("Session metadata:", session.metadata);
+    console.log("Session metadata:", JSON.stringify(session.metadata, null, 2));
+    console.log("Payment intent:", session.payment_intent ? (typeof session.payment_intent === 'string' ? session.payment_intent : session.payment_intent.id) : 'null');
 
     // Check if payment was successful
     if (session.payment_status !== 'paid') {
+      console.log("⚠️ Payment not completed. Status:", session.payment_status);
       return res.status(200).json({
         success: false,
         message: "Payment not completed",
@@ -776,18 +795,31 @@ exports.verifyPayment = async (req, res) => {
 
     const { type, userId: metadataUserId } = session.metadata || {};
 
+    console.log("📦 Metadata extracted - Type:", type, "MetadataUserId:", metadataUserId);
+
     // Verify the session belongs to the current user
     if (metadataUserId && metadataUserId !== userId) {
+      console.warn("⚠️ User ID mismatch. Metadata:", metadataUserId, "Authenticated:", userId);
       return res.status(403).json({ message: "Unauthorized: Session does not belong to user" });
+    }
+
+    // Get payment intent ID (handle both string and object)
+    const paymentIntentId = typeof session.payment_intent === 'string' 
+      ? session.payment_intent 
+      : (session.payment_intent?.id || null);
+
+    if (!paymentIntentId) {
+      console.error("❌ No payment intent ID found in session");
+      return res.status(400).json({ message: "Payment intent not found in session" });
     }
 
     // Check if we've already processed this payment
     const existingTx = await Transaction.findOne({
-      stripePaymentIntentId: session.payment_intent,
+      stripePaymentIntentId: paymentIntentId,
     });
 
     if (existingTx) {
-      console.log("✅ Payment already processed");
+      console.log("✅ Payment already processed. Transaction ID:", existingTx._id);
       const user = await User.findById(userId);
       return res.status(200).json({
         success: true,
@@ -803,6 +835,8 @@ exports.verifyPayment = async (req, res) => {
       
       // Use metadata userId if available, otherwise use authenticated userId
       const targetUserId = metadataUserId || userId;
+      console.log("💰 Processing wallet topup. TargetUserId:", targetUserId, "Amount:", amountTotal);
+      
       const user = await User.findById(targetUserId);
       
       if (!user) {
@@ -815,20 +849,35 @@ exports.verifyPayment = async (req, res) => {
       // Update wallet balance
       const oldBalance = user.walletBalance || 0;
       user.walletBalance = oldBalance + amountTotal;
-      await user.save();
-      console.log(`✅ Wallet balance updated via verification: ${oldBalance} → ${user.walletBalance} (+${amountTotal})`);
+      
+      try {
+        await user.save();
+        console.log(`✅ Wallet balance updated via verification: ${oldBalance} → ${user.walletBalance} (+${amountTotal})`);
+      } catch (saveError) {
+        console.error("❌ Error saving user:", saveError);
+        return res.status(500).json({ 
+          message: "Failed to update wallet balance",
+          error: saveError.message 
+        });
+      }
 
       // Create transaction record
-      const tx = await Transaction.create({
-        user: user._id,
-        amount: amountTotal,
-        currency: session.currency || "pkr",
-        type: "deposit",
-        status: "completed",
-        description: "Wallet Top-up",
-        stripePaymentIntentId: session.payment_intent,
-      });
-      console.log("✅ Transaction created via verification:", tx._id);
+      try {
+        const tx = await Transaction.create({
+          user: user._id,
+          amount: amountTotal,
+          currency: session.currency || "pkr",
+          type: "deposit",
+          status: "completed",
+          description: "Wallet Top-up",
+          stripePaymentIntentId: paymentIntentId,
+        });
+        console.log("✅ Transaction created via verification:", tx._id);
+      } catch (txError) {
+        console.error("❌ Error creating transaction:", txError);
+        // Don't fail the request if transaction creation fails, but log it
+        // The wallet was already updated
+      }
 
       return res.status(200).json({
         success: true,
@@ -848,13 +897,23 @@ exports.verifyPayment = async (req, res) => {
       });
     }
 
+    // Unknown type or no type
+    console.warn("⚠️ Unknown payment type or no type in metadata:", type);
     return res.status(200).json({
       success: true,
       message: "Payment verified",
       paymentStatus: session.payment_status,
+      type: type || "unknown",
     });
   } catch (error) {
     console.error("❌ Error verifying payment:", error);
-    return res.status(500).json({ message: error.message });
+    console.error("Error stack:", error.stack);
+    console.error("Error name:", error.name);
+    console.error("Error code:", error.code);
+    return res.status(500).json({ 
+      message: error.message || "Internal server error",
+      error: error.name,
+      ...(process.env.NODE_ENV === 'development' && { stack: error.stack })
+    });
   }
 };
