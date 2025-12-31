@@ -2,6 +2,7 @@ import { Routes } from '@angular/router';
 import { ErrorPageComponent } from './modules/error-page/error-page.component';
 import { UnauthorizedComponent } from './modules/unauthorized/unauthorized.component';
 import { roleGuard } from './modules/gaurds/single-role.gaurd';
+import { authGuard } from './modules/gaurds/auth.gaurd';
 import { LoginComponent } from './modules/auth/login/login.component';
 import { HomeComponent } from './components/home/home.component';
 
@@ -38,6 +39,7 @@ export const routes: Routes = [
   },
   {
     path: 'payments',
+    canActivate: [authGuard],
     loadChildren: () =>
       import('./modules/payments/payments.route').then((m) => m.PAYMENTS_ROUTES),
   },
