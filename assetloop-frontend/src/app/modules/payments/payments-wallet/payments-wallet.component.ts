@@ -45,48 +45,70 @@ export class PaymentsWalletComponent implements OnInit {
   ngOnInit(): void {
     // Check for payment status in URL params
     this.route.queryParams.subscribe(params => {
+      console.log('🔍 Payment redirect params:', params);
       const status = params['status'];
       const sessionId = params['session_id'];
       const source = params['source'];
 
       if (status === 'success' && sessionId) {
+        console.log('✅ Payment success detected, verifying session:', sessionId);
         // Verify payment and refresh wallet
         this.verifyAndRefreshPayment(sessionId);
       } else if (status === 'success' && source === 'wallet_topup') {
+        console.log('⚠️ Success status but no session_id, refreshing wallet after delay...');
         // If no session_id but success status, try to refresh wallet anyway
         // The webhook might have already processed it
         setTimeout(() => {
           if (this.walletOverview) {
+            console.log('🔄 Refreshing wallet...');
             this.walletOverview.loadWallet();
           }
         }, 2000); // Wait 2 seconds for webhook to process
+      } else if (status === 'success') {
+        console.log('⚠️ Success status but no session_id or source, refreshing wallet...');
+        // Just refresh wallet if we see success
+        setTimeout(() => {
+          if (this.walletOverview) {
+            this.walletOverview.loadWallet();
+          }
+        }, 2000);
       }
     });
   }
 
   verifyAndRefreshPayment(sessionId: string): void {
+    console.log('🔍 Verifying payment with session ID:', sessionId);
     this.paymentsService.verifyPayment(sessionId).subscribe({
       next: (result) => {
+        console.log('📦 Verification response:', result);
         if (result.success) {
           console.log('✅ Payment verified:', result.message);
           if (result.balance !== undefined) {
             console.log('💰 New balance:', result.balance);
           }
           // Refresh wallet to show updated balance
-          if (this.walletOverview) {
-            this.walletOverview.loadWallet();
-          }
-          // Remove query params from URL
-          this.router.navigate(['/payments'], { replaceUrl: true });
+          this.refreshWallet();
+          // Remove query params from URL after a short delay
+          setTimeout(() => {
+            this.router.navigate(['/payments'], { replaceUrl: true });
+          }, 1000);
         } else {
           console.warn('⚠️ Payment verification failed:', result.message);
+          // Still refresh wallet in case webhook processed it
+          if (this.walletOverview) {
+            setTimeout(() => {
+              this.walletOverview?.loadWallet();
+            }, 2000);
+          }
         }
       },
       error: (err) => {
         console.error('❌ Error verifying payment:', err);
+        console.error('Error details:', err.error);
         // Still try to refresh wallet in case webhook processed it
         if (this.walletOverview) {
           setTimeout(() => {
+            console.log('🔄 Refreshing wallet after error...');
             this.walletOverview?.loadWallet();
           }, 2000);
         }
@@ -109,5 +131,37 @@ export class PaymentsWalletComponent implements OnInit {
 
   setActiveTab(tab: string): void {
     this.activeTab = tab;
+  }
+
+  private refreshWallet(): void {
+    // Try multiple methods to refresh wallet
+    if (this.walletOverview) {
+      this.walletOverview.loadWallet();
+    } else {
+      console.warn('⚠️ WalletOverview component not available, retrying...');
+      // Retry after a short delay
+      setTimeout(() => {
+        if (this.walletOverview) {
+          this.walletOverview.loadWallet();
+        } else {
+          // If ViewChild still not available, directly call the service
+          console.log('🔄 Refreshing wallet via service...');
+          this.paymentsService.getWallet().subscribe({
+            next: (res) => {
+              console.log('💰 Wallet refreshed via service, balance:', res.balance);
+              // Force component update by switching tabs
+              const currentTab = this.activeTab;
+              this.activeTab = 'transactions';
+              setTimeout(() => {
+                this.activeTab = currentTab;
+              }, 100);
+            },
+            error: (err) => {
+              console.error('❌ Error refreshing wallet:', err);
+            }
+          });
+        }
+      }, 500);
+    }
   }
 }

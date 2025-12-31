@@ -54,12 +54,14 @@ export class PaymentsService {
   }
 
   addMoney(amount: number, successUrl?: string, cancelUrl?: string): Observable<{ id: string; url: string }> {
+    const baseUrl = window.location.origin;
     return this.http.post<{ id: string; url: string }>(
       `${this.apiUrl}/wallet/add`,
       { 
         amount,
-        successUrl: successUrl || `${window.location.origin}/payments?status=success&source=wallet_topup`,
-        cancelUrl: cancelUrl || `${window.location.origin}/payments?status=cancelled&source=wallet_topup`
+        // Include {CHECKOUT_SESSION_ID} placeholder - Stripe will replace it
+        successUrl: successUrl || `${baseUrl}/payments?status=success&source=wallet_topup&session_id={CHECKOUT_SESSION_ID}`,
+        cancelUrl: cancelUrl || `${baseUrl}/payments?status=cancelled&source=wallet_topup&session_id={CHECKOUT_SESSION_ID}`
       },
       { headers: this.getHeaders() }
     );

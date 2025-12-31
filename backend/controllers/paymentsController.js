@@ -328,10 +328,10 @@ exports.addMoney = async (req, res) => {
       },
       success_url:
         successUrl ||
-        `${getFrontendUrl(req)}/payments?status=success&source=wallet_topup`,
+        `${getFrontendUrl(req)}/payments?status=success&source=wallet_topup&session_id={CHECKOUT_SESSION_ID}`,
       cancel_url:
         cancelUrl ||
-        `${getFrontendUrl(req)}/payments?status=cancelled&source=wallet_topup`,
+        `${getFrontendUrl(req)}/payments?status=cancelled&source=wallet_topup&session_id={CHECKOUT_SESSION_ID}`,
     });
 
     return res.status(200).json({ id: session.id, url: session.url });
@@ -800,16 +800,23 @@ exports.verifyPayment = async (req, res) => {
     // Process wallet topup if type matches
     if (type === "wallet_topup") {
       const amountTotal = (session.amount_total || 0) / 100;
-      const user = await User.findById(userId);
+      
+      // Use metadata userId if available, otherwise use authenticated userId
+      const targetUserId = metadataUserId || userId;
+      const user = await User.findById(targetUserId);
       
       if (!user) {
+        console.error("❌ User not found. Looking for:", targetUserId, "Metadata:", session.metadata);
         return res.status(404).json({ message: "User not found" });
       }
 
+      console.log(`💰 Processing wallet topup: User ${user._id}, Amount: ${amountTotal}, Current Balance: ${user.walletBalance || 0}`);
+
       // Update wallet balance
-      user.walletBalance = (user.walletBalance || 0) + amountTotal;
+      const oldBalance = user.walletBalance || 0;
+      user.walletBalance = oldBalance + amountTotal;
       await user.save();
-      console.log("✅ Wallet balance updated via verification:", user.walletBalance);
+      console.log(`✅ Wallet balance updated via verification: ${oldBalance} → ${user.walletBalance} (+${amountTotal})`);
 
       // Create transaction record
       const tx = await Transaction.create({
