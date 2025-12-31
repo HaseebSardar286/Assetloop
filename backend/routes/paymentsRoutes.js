@@ -14,6 +14,7 @@ const {
   getRefunds,
   testBookingPayment,
   testWalletTopup,
+  verifyPayment,
 } = require("../controllers/paymentsController");
 
 const router = express.Router();
@@ -36,6 +37,7 @@ router.post("/create-checkout-session", createCheckoutSession);
 router.get("/wallet", getWallet);
 router.post("/wallet/add", addMoney);
 router.post("/wallet/withdraw", withdraw);
+router.get("/verify-payment", verifyPayment);
 
 // Transactions
 router.get("/transactions", getTransactions);

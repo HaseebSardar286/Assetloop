@@ -147,6 +147,7 @@ exports.stripeWebhookHandler = async (req, res) => {
   }
 
   console.log("📦 Event type:", event.type);
+  console.log("📦 Event ID:", event.id);
   console.log("📦 Event data:", JSON.stringify(event.data.object, null, 2));
 
   try {
@@ -223,10 +224,21 @@ exports.stripeWebhookHandler = async (req, res) => {
             return res.json({ received: true, error: "User not found" });
           }
 
+          // Check if transaction already exists to prevent duplicates
+          const existingTx = await Transaction.findOne({
+            stripePaymentIntentId: session.payment_intent,
+          });
+
+          if (existingTx) {
+            console.log("⚠️ Transaction already processed, skipping duplicate");
+            return res.json({ received: true, message: "Already processed" });
+          }
+
           const amountTotal = (session.amount_total || 0) / 100;
-          user.walletBalance = (user.walletBalance || 0) + amountTotal;
+          const oldBalance = user.walletBalance || 0;
+          user.walletBalance = oldBalance + amountTotal;
           await user.save();
-          console.log("✅ Wallet balance updated:", user.walletBalance);
+          console.log(`✅ Wallet balance updated: ${oldBalance} → ${user.walletBalance} (+${amountTotal})`);
 
           const tx = await Transaction.create({
             user: user._id,
@@ -240,6 +252,7 @@ exports.stripeWebhookHandler = async (req, res) => {
           console.log("✅ Transaction created:", tx._id);
         } else {
           console.warn("⚠️ Unknown metadata type or missing required fields");
+          console.warn("Metadata received:", { type, userId, bookingId });
         }
         break;
       }
@@ -726,6 +739,115 @@ exports.testWalletTopup = async (req, res) => {
     });
   } catch (error) {
     console.error("Error in test wallet topup:", error);
+    return res.status(500).json({ message: error.message });
+  }
+};
+
+// Verify payment status from Stripe and update wallet if needed
+// This is a fallback in case webhook fails or is delayed
+exports.verifyPayment = async (req, res) => {
+  try {
+    const { sessionId } = req.query;
+    const userId = req.user.id;
+
+    if (!sessionId) {
+      return res.status(400).json({ message: "Session ID is required" });
+    }
+
+    const stripeClient = getStripe();
+    
+    // Retrieve the checkout session from Stripe
+    const session = await stripeClient.checkout.sessions.retrieve(sessionId, {
+      expand: ['payment_intent']
+    });
+
+    console.log("🔍 Verifying payment session:", sessionId);
+    console.log("Session status:", session.payment_status);
+    console.log("Session metadata:", session.metadata);
+
+    // Check if payment was successful
+    if (session.payment_status !== 'paid') {
+      return res.status(200).json({
+        success: false,
+        message: "Payment not completed",
+        paymentStatus: session.payment_status,
+      });
+    }
+
+    const { type, userId: metadataUserId } = session.metadata || {};
+
+    // Verify the session belongs to the current user
+    if (metadataUserId && metadataUserId !== userId) {
+      return res.status(403).json({ message: "Unauthorized: Session does not belong to user" });
+    }
+
+    // Check if we've already processed this payment
+    const existingTx = await Transaction.findOne({
+      stripePaymentIntentId: session.payment_intent,
+    });
+
+    if (existingTx) {
+      console.log("✅ Payment already processed");
+      const user = await User.findById(userId);
+      return res.status(200).json({
+        success: true,
+        message: "Payment already processed",
+        balance: user?.walletBalance || 0,
+        alreadyProcessed: true,
+      });
+    }
+
+    // Process wallet topup if type matches
+    if (type === "wallet_topup") {
+      const amountTotal = (session.amount_total || 0) / 100;
+      const user = await User.findById(userId);
+      
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      // Update wallet balance
+      user.walletBalance = (user.walletBalance || 0) + amountTotal;
+      await user.save();
+      console.log("✅ Wallet balance updated via verification:", user.walletBalance);
+
+      // Create transaction record
+      const tx = await Transaction.create({
+        user: user._id,
+        amount: amountTotal,
+        currency: session.currency || "pkr",
+        type: "deposit",
+        status: "completed",
+        description: "Wallet Top-up",
+        stripePaymentIntentId: session.payment_intent,
+      });
+      console.log("✅ Transaction created via verification:", tx._id);
+
+      return res.status(200).json({
+        success: true,
+        message: "Payment verified and wallet updated",
+        balance: user.walletBalance,
+        amount: amountTotal,
+        alreadyProcessed: false,
+      });
+    }
+
+    // For booking payments, just verify status
+    if (type === "booking_payment") {
+      return res.status(200).json({
+        success: true,
+        message: "Booking payment verified",
+        paymentStatus: session.payment_status,
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: "Payment verified",
+      paymentStatus: session.payment_status,
+    });
+  } catch (error) {
+    console.error("❌ Error verifying payment:", error);
     return res.status(500).json({ message: error.message });
   }
 };

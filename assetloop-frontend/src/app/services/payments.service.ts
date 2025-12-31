@@ -19,7 +19,8 @@ export class PaymentsService {
 
   private getHeaders(): HttpHeaders {
     const token = localStorage.getItem('authToken') || localStorage.getItem('token');
-    return new HttpHeaders().set('Authorization', `Bearer ${token || ''}`);
+    const headers = new HttpHeaders();
+    return token ? headers.set('Authorization', `Bearer ${token}`) : headers;
   }
   private cacheBust(): string {
     return Date.now().toString();
@@ -151,5 +152,25 @@ export class PaymentsService {
       { amount },
       { headers: this.getHeaders() }
     );
+  }
+
+  verifyPayment(sessionId: string): Observable<{
+    success: boolean;
+    message: string;
+    balance?: number;
+    amount?: number;
+    alreadyProcessed?: boolean;
+    paymentStatus?: string;
+  }> {
+    return this.http.get<{
+      success: boolean;
+      message: string;
+      balance?: number;
+      amount?: number;
+      alreadyProcessed?: boolean;
+      paymentStatus?: string;
+    }>(`${this.apiUrl}/verify-payment?sessionId=${sessionId}`, {
+      headers: this.getHeaders(),
+    });
   }
 }

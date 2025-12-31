@@ -1,9 +1,10 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { HeaderComponent } from '../../../components/header/header.component';
 import { RenterSideBarComponent } from '../../renter/renter-side-bar/renter-side-bar.component';
 import { AuthService } from '../../../services/auth.service';
+import { PaymentsService } from '../../../services/payments.service';
 import { WalletOverviewComponent } from '../wallet-overview/wallet-overview.component';
 import { TransactionHistoryComponent } from '../transaction-history/transaction-history.component';
 import { PaymentMethodsComponent } from '../payment-methods/payment-methods.component';
@@ -30,13 +31,68 @@ import { SecurityFeaturesComponent } from '../security-features/security-feature
   templateUrl: './payments-wallet.component.html',
   styleUrl: './payments-wallet.component.css'
 })
-export class PaymentsWalletComponent {
+export class PaymentsWalletComponent implements OnInit {
   activeTab: string = 'overview';
+  @ViewChild(WalletOverviewComponent) walletOverview?: WalletOverviewComponent;
 
   constructor(
     private router: Router,
-    private authService: AuthService
+    private route: ActivatedRoute,
+    private authService: AuthService,
+    private paymentsService: PaymentsService
   ) { }
+
+  ngOnInit(): void {
+    // Check for payment status in URL params
+    this.route.queryParams.subscribe(params => {
+      const status = params['status'];
+      const sessionId = params['session_id'];
+      const source = params['source'];
+
+      if (status === 'success' && sessionId) {
+        // Verify payment and refresh wallet
+        this.verifyAndRefreshPayment(sessionId);
+      } else if (status === 'success' && source === 'wallet_topup') {
+        // If no session_id but success status, try to refresh wallet anyway
+        // The webhook might have already processed it
+        setTimeout(() => {
+          if (this.walletOverview) {
+            this.walletOverview.loadWallet();
+          }
+        }, 2000); // Wait 2 seconds for webhook to process
+      }
+    });
+  }
+
+  verifyAndRefreshPayment(sessionId: string): void {
+    this.paymentsService.verifyPayment(sessionId).subscribe({
+      next: (result) => {
+        if (result.success) {
+          console.log('✅ Payment verified:', result.message);
+          if (result.balance !== undefined) {
+            console.log('💰 New balance:', result.balance);
+          }
+          // Refresh wallet to show updated balance
+          if (this.walletOverview) {
+            this.walletOverview.loadWallet();
+          }
+          // Remove query params from URL
+          this.router.navigate(['/payments'], { replaceUrl: true });
+        } else {
+          console.warn('⚠️ Payment verification failed:', result.message);
+        }
+      },
+      error: (err) => {
+        console.error('❌ Error verifying payment:', err);
+        // Still try to refresh wallet in case webhook processed it
+        if (this.walletOverview) {
+          setTimeout(() => {
+            this.walletOverview?.loadWallet();
+          }, 2000);
+        }
+      }
+    });
+  }
 
   onLogout(): void {
     this.authService.logout();
