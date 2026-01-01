@@ -1,10 +1,69 @@
-/* verification.component.css */
-.progress-bar {
-  background-color: #007bff; /* Customize color */
+.auth-page {
+  min-height: 100vh;
+  padding: 24px 12px;
+  background: radial-gradient(circle at 10% 20%, #5aa6ff 0, #4a7bff 25%, #29316d 80%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
+
+.auth-card {
+  max-width: 980px;
+  width: 100%;
+  border-radius: 22px;
+  overflow: hidden;
+}
+
+.auth-side {
+  background: linear-gradient(135deg, rgba(28, 34, 67, 0.854), rgba(62, 97, 178, 0.552));
+  backdrop-filter: blur(10px);
+  border-right: 1px solid rgba(255, 255, 255, 0.25);
+}
+
+.auth-side h3 {
+  font-size: 1.4rem;
+}
+
+.auth-submit-btn {
+  height: 46px;
+  font-weight: 600;
+}
+
+.progress-bar {
+  background-color: #007bff;
+}
+
 .img-preview {
   max-width: 200px;
   max-height: 200px;
   object-fit: cover;
   margin-top: 10px;
+  border-radius: 8px;
+  border: 1px solid #dee2e6;
+}
+
+button.btn-link {
+  text-decoration: none;
+}
+
+button.btn-link:hover {
+  text-decoration: underline;
+}
+
+.step-content {
+  min-height: 400px;
+}
+
+@media (max-width: 991.98px) {
+  .auth-page {
+    padding: 16px;
+  }
+
+  .auth-card {
+    border-radius: 18px;
+  }
+
+  .step-content {
+    min-height: auto;
+  }
 }

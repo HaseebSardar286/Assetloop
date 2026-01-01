@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { FormsModule, NgForm } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
@@ -14,12 +14,13 @@ import { AuthService } from '../../../services/auth.service';
   templateUrl: './user-verification.component.html',
   styleUrls: ['./user-verification.component.css'],
 })
-export class UserVerificationComponent implements OnInit {
+export class UserVerificationComponent implements OnInit, OnDestroy {
   currentStep = 1;
   progress = 25;
   role: string = 'user';
   error: string | null = null;
   user: User | null = null;
+  loading: boolean = false;
 
   verificationData = {
     fullName: '',
@@ -214,9 +215,11 @@ export class UserVerificationComponent implements OnInit {
       console.log(`${key}: ${value instanceof File ? value.name : value}`);
     });
 
+    this.loading = true;
     this.verificationService.submitVerification(formData).subscribe({
       next: (response) => {
         console.log('Submission Response:', response);
+        this.loading = false;
         alert(
           response.message ||
             'Verification submitted successfully. Please wait for admin approval.'
@@ -225,6 +228,7 @@ export class UserVerificationComponent implements OnInit {
       },
       error: (err) => {
         console.error('Submission Error:', err);
+        this.loading = false;
         this.error =
           err.error?.message || 'Submission failed! Please try again.';
       },
