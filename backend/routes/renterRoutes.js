@@ -3,6 +3,7 @@ const authMiddleware = require("../middlewares/authMiddleware");
 const roleMiddleware = require("../middlewares/roleMiddleware");
 const {
   getBookings,
+  getBookingById,
   createBooking,
   cancelBooking,
   addReview,
@@ -48,9 +49,15 @@ router.get("/profile", getProfile);
 router.put("/profile", updateProfile);
 router.put("/update-profile", updateProfile);
 router.get("/dashboard-stats", getDashboardStats);
+// Bookings routes - order matters: specific routes before parameterized
 router.get("/bookings", getBookings);
 router.post("/bookings", createBooking);
 router.put("/bookings/:id/cancel", cancelBooking);
+// GET booking by ID route
+router.get("/bookings/:id", (req, res, next) => {
+  console.log("📍 Route /bookings/:id matched! ID:", req.params.id);
+  next();
+}, getBookingById);
 router.post("/reviews", addReview);
 
 router.put("/change-password", changePassword);

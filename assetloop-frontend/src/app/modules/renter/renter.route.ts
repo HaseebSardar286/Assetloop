@@ -11,6 +11,7 @@ import { PaymentsWalletComponent } from '../payments/payments-wallet/payments-wa
 import { ReviewComponent } from './review/review.component';
 import { CartComponent } from './cart/cart.component';
 import { RequestedAssetsComponent } from './requested-assets/requested-assets.component';
+import { BookingDetailsComponent } from './booking-details/booking-details.component';
 
 export const RENTER_ROUTES: Routes = [
   {
@@ -36,6 +37,11 @@ export const RENTER_ROUTES: Routes = [
     path: 'booking-history',
     component: MyBookingsComponent,
     data: { title: 'Booking History' },
+  },
+  {
+    path: 'booking-details/:id',
+    component: BookingDetailsComponent,
+    data: { title: 'Booking Details' },
   },
 
   {

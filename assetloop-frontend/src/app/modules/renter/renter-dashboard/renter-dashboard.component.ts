@@ -124,7 +124,7 @@ export class RenterDashboardComponent implements OnInit {
   }
   viewRentalDetails(id: string): void {
     console.log(`Viewing details for booking ${id}`);
-    this.router.navigate([`/renter/rental-details/${id}`]);
+    this.router.navigate([`/renter/booking-details/${id}`]);
   }
 
   cancelBooking(id: string): void {

@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { FormsModule, NgForm } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
@@ -14,7 +14,7 @@ import { AuthService } from '../../../services/auth.service';
   templateUrl: './user-verification.component.html',
   styleUrls: ['./user-verification.component.css'],
 })
-export class UserVerificationComponent implements OnInit, OnDestroy {
+export class UserVerificationComponent implements OnInit {
   currentStep = 1;
   progress = 25;
   role: string = 'user';

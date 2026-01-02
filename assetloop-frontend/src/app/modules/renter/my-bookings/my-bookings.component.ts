@@ -158,7 +158,7 @@ export class MyBookingsComponent implements OnInit {
   }
 
   viewListing(bookingId: string) {
-    this.router.navigate([`/asset/${bookingId}`]);
+    this.router.navigate([`/renter/booking-details/${bookingId}`]);
   }
 
   leaveReview(bookingId: string) {

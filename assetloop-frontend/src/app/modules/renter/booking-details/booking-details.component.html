@@ -1,0 +1,253 @@
+<div class="d-flex flex-column vh-100">
+  <app-header></app-header>
+  <div class="d-flex flex-grow-1">
+    <app-renter-side-bar></app-renter-side-bar>
+    <main class="flex-grow-1 bg-light">
+      <section class="details-hero gradient-bg px-4 py-4 py-md-5">
+        <div class="container-fluid d-flex flex-wrap justify-content-between align-items-start gap-3">
+          <div>
+            <button
+              class="btn btn-link text-white p-0 mb-2"
+              (click)="goBack()"
+            >
+              <fa-icon [icon]="faArrowLeft" class="me-2"></fa-icon>
+            </button>
+            <div class="badge text-bg-light fw-semibold mb-2">Booking Details</div>
+            <h2 class="text-white fw-bold mb-1">Booking Information</h2>
+            <p class="text-white-50 mb-0">
+              View all details about your booking, including dates, payment, and status.
+            </p>
+          </div>
+          <div class="stats-card bg-white shadow-sm rounded-4 p-3">
+            <div class="text-muted small">Status</div>
+            <div class="d-flex align-items-center gap-2 mt-1">
+              <span
+                class="badge"
+                [ngClass]="getStatusClass()"
+                style="font-size: 0.9rem; padding: 6px 12px;"
+              >
+                {{ booking?.status | titlecase }}
+              </span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="container-fluid py-4">
+        <div *ngIf="error" class="alert alert-danger mb-3">{{ error }}</div>
+        
+        <ng-container *ngIf="booking; else loadingOrEmpty">
+          <!-- Booking Overview Card -->
+          <div class="card shadow-sm rounded-4 overflow-hidden mb-4">
+            <div class="row g-0">
+              <div class="col-lg-5">
+                <div class="image-pane">
+                  <img
+                    [src]="booking.imageUrl || booking.asset?.images?.[0] || '/images/default.jpg'"
+                    class="img-fluid w-100 h-100 object-fit-cover"
+                    [alt]="booking.name"
+                  />
+                  <div class="category-chip text-uppercase">
+                    {{ booking.category || booking.asset?.category || 'N/A' }}
+                  </div>
+                </div>
+              </div>
+              <div class="col-lg-7">
+                <div class="card-body p-4">
+                  <div class="d-flex justify-content-between align-items-start mb-3">
+                    <div>
+                      <h4 class="card-title mb-1">{{ booking.name }}</h4>
+                      <p class="text-muted mb-2">
+                        <fa-icon [icon]="faMapMarkerAlt" class="me-1"></fa-icon>
+                        {{ booking.address || booking.asset?.address || 'Address not available' }}
+                      </p>
+                    </div>
+                    <span
+                      class="badge"
+                      [ngClass]="getStatusClass()"
+                      style="font-size: 0.9rem; padding: 8px 16px;"
+                    >
+                      <fa-icon [icon]="getStatusIcon()" class="me-1"></fa-icon>
+                      {{ booking.status | titlecase }}
+                    </span>
+                  </div>
+                  
+                  <p class="card-text text-muted mb-4" *ngIf="booking.description || booking.asset?.description">
+                    {{ booking.description || booking.asset?.description }}
+                  </p>
+
+                  <!-- Booking Details Grid -->
+                  <div class="row g-3 mb-4">
+                    <div class="col-md-6">
+                      <div class="detail-item">
+                        <div class="text-muted small mb-1">
+                          <fa-icon [icon]="faCalendar" class="me-1"></fa-icon>
+                          Start Date
+                        </div>
+                        <div class="fw-semibold">
+                          {{ booking.startDate | date: 'mediumDate' }}
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-md-6">
+                      <div class="detail-item">
+                        <div class="text-muted small mb-1">
+                          <fa-icon [icon]="faCalendar" class="me-1"></fa-icon>
+                          End Date
+                        </div>
+                        <div class="fw-semibold">
+                          {{ booking.endDate | date: 'mediumDate' }}
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-md-6">
+                      <div class="detail-item">
+                        <div class="text-muted small mb-1">Duration</div>
+                        <div class="fw-semibold">
+                          {{ calculateDays() }} day{{ calculateDays() !== 1 ? 's' : '' }}
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-md-6">
+                      <div class="detail-item">
+                        <div class="text-muted small mb-1">Price per Day</div>
+                        <div class="fw-semibold">
+                          {{ booking.price | systemCurrency }}/day
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Owner Information -->
+                  <div class="owner-info mb-4 p-3 bg-light rounded-3">
+                    <div class="text-muted small mb-2">
+                      <fa-icon [icon]="faUser" class="me-1"></fa-icon>
+                      Owner
+                    </div>
+                    <div class="fw-semibold">
+                      {{ getOwnerName() }}
+                    </div>
+                    <div class="text-muted small" *ngIf="getOwnerEmail()">
+                      {{ getOwnerEmail() }}
+                    </div>
+                  </div>
+
+                  <!-- Payment Summary -->
+                  <div class="payment-summary p-3 bg-primary bg-opacity-10 rounded-3 mb-3">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                      <span class="text-muted">Total Amount</span>
+                      <span class="fs-5 fw-bold text-primary">
+                        {{ calculateTotal() | systemCurrency }}
+                      </span>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center small text-muted" *ngIf="booking.totalPaid">
+                      <span>Amount Paid</span>
+                      <span>{{ booking.totalPaid | systemCurrency }}</span>
+                    </div>
+                  </div>
+
+                  <!-- Action Buttons -->
+                  <div class="d-flex flex-wrap gap-2">
+                    <button
+                      class="btn btn-outline-success"
+                      (click)="startChat()"
+                      [disabled]="loading"
+                    >
+                      <fa-icon [icon]="faComments" class="me-2"></fa-icon>
+                      Message Owner
+                    </button>
+                    <button
+                      class="btn btn-outline-primary"
+                      (click)="viewAssetDetails()"
+                      *ngIf="booking.asset"
+                    >
+                      View Asset Details
+                    </button>
+                    <button
+                      class="btn btn-outline-warning"
+                      (click)="leaveReview()"
+                      *ngIf="isReviewable()"
+                    >
+                      Leave Review
+                    </button>
+                    <button
+                      class="btn btn-outline-danger"
+                      (click)="cancelBooking()"
+                      *ngIf="booking.status === 'pending'"
+                      [disabled]="loading"
+                    >
+                      <fa-icon [icon]="faBan" class="me-2"></fa-icon>
+                      Cancel Booking
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Additional Information Card -->
+          <div class="card shadow-sm rounded-4 mb-4">
+            <div class="card-body">
+              <h5 class="card-title mb-4">Additional Information</h5>
+              
+              <div class="row g-4">
+                <div class="col-md-6">
+                  <div class="info-item">
+                    <div class="text-muted small mb-1">Booking ID</div>
+                    <div class="fw-semibold font-monospace small">{{ booking._id || booking.id }}</div>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="info-item">
+                    <div class="text-muted small mb-1">Request Date</div>
+                    <div class="fw-semibold">
+                      {{ booking.requestDate || booking.createdAt | date: 'medium' }}
+                    </div>
+                  </div>
+                </div>
+                <div class="col-12" *ngIf="booking.notes">
+                  <div class="info-item">
+                    <div class="text-muted small mb-1">Notes</div>
+                    <div class="fw-normal">{{ booking.notes }}</div>
+                  </div>
+                </div>
+                <div class="col-12" *ngIf="booking.review">
+                  <div class="info-item">
+                    <div class="text-muted small mb-1">Review</div>
+                    <div class="fw-normal">
+                      <span class="badge bg-success">Reviewed</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Asset Amenities (if available) -->
+          <div class="card shadow-sm rounded-4" *ngIf="hasAssetAmenities()">
+            <div class="card-body">
+              <h5 class="card-title mb-3">Asset Amenities</h5>
+              <div class="amenities">
+                <span class="amenity-pill" *ngFor="let amenity of getAssetAmenities()">
+                  {{ amenity }}
+                </span>
+              </div>
+            </div>
+          </div>
+        </ng-container>
+
+        <ng-template #loadingOrEmpty>
+          <div class="text-center py-5">
+            <div *ngIf="loading" class="spinner-border text-primary" role="status">
+              <span class="visually-hidden">Loading...</span>
+            </div>
+            <div *ngIf="!loading" class="text-muted">
+              <p class="mb-0">No booking found.</p>
+            </div>
+          </div>
+        </ng-template>
+      </section>
+    </main>
+  </div>
+</div>
+

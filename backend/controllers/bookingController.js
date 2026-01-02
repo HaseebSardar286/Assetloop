@@ -229,6 +229,137 @@ exports.getBookings = async (req, res) => {
   }
 };
 
+exports.getBookingById = async (req, res) => {
+  try {
+    const bookingId = req.params.id;
+    console.log("🔍 getBookingById called with bookingId:", bookingId);
+    
+    if (!req.user) {
+      return res.status(401).json({ message: "Authentication required" });
+    }
+    
+    const userId = req.user.id;
+    const userRole = req.user.role;
+    console.log("👤 User:", userId, "Role:", userRole);
+
+    if (!bookingId) {
+      return res.status(400).json({ message: "Booking ID is required" });
+    }
+
+    const booking = await Booking.findById(bookingId)
+      .populate("asset owner renter review")
+      .lean();
+
+    console.log("📦 Booking found:", booking ? "Yes" : "No");
+
+    if (!booking) {
+      console.log("❌ Booking not found for ID:", bookingId);
+      return res.status(404).json({ message: "Booking not found" });
+    }
+
+    // Check if user has permission to view this booking
+    const renterId = booking.renter?._id?.toString() || booking.renter?.toString() || null;
+    const ownerId = booking.owner?._id?.toString() || booking.owner?.toString() || null;
+    
+    console.log("🔐 Permission check - User:", userId, "Renter:", renterId, "Owner:", ownerId, "UserRole:", userRole);
+    
+    const isRenter = userRole === 'renter' && renterId && renterId === userId;
+    const isOwner = userRole === 'owner' && ownerId && ownerId === userId;
+    const isAdmin = userRole === 'admin';
+
+    console.log("✅ Permission result - isRenter:", isRenter, "isOwner:", isOwner, "isAdmin:", isAdmin);
+
+    if (!isRenter && !isOwner && !isAdmin) {
+      console.log("❌ Unauthorized access attempt");
+      return res.status(403).json({ message: "Unauthorized to view this booking" });
+    }
+
+    // Handle owner data
+    let ownerData = {
+      name: "Unknown Owner",
+      contact: "N/A",
+    };
+    if (booking.owner) {
+      if (typeof booking.owner === 'object') {
+        ownerData = {
+          _id: booking.owner._id,
+          name: `${booking.owner.firstName || ''} ${booking.owner.lastName || ''}`.trim() || "Unknown Owner",
+          contact: booking.owner.email || "N/A",
+          firstName: booking.owner.firstName || '',
+          lastName: booking.owner.lastName || '',
+          email: booking.owner.email || '',
+        };
+      }
+    }
+
+    // Handle renter data
+    let renterData = null;
+    if (booking.renter) {
+      if (typeof booking.renter === 'object') {
+        renterData = {
+          _id: booking.renter._id,
+          firstName: booking.renter.firstName || '',
+          lastName: booking.renter.lastName || '',
+          email: booking.renter.email || '',
+          name: `${booking.renter.firstName || ''} ${booking.renter.lastName || ''}`.trim() || "Unknown Renter",
+        };
+      }
+    }
+
+    // Handle asset data
+    let assetData = null;
+    if (booking.asset) {
+      if (typeof booking.asset === 'object' && booking.asset._id) {
+        assetData = {
+          _id: booking.asset._id,
+          name: booking.asset.name || '',
+          address: booking.asset.address || '',
+          price: booking.asset.price || 0,
+          images: booking.asset.images || [],
+          category: booking.asset.category || '',
+          description: booking.asset.description || '',
+          amenities: booking.asset.amenities || [],
+        };
+      } else if (typeof booking.asset === 'string') {
+        assetData = {
+          _id: booking.asset,
+        };
+      }
+    }
+
+    res.status(200).json({
+      id: booking._id,
+      _id: booking._id,
+      name: booking.name,
+      description: booking.description,
+      price: booking.price,
+      owner: ownerData,
+      renter: renterData,
+      asset: assetData,
+      startDate: booking.startDate,
+      endDate: booking.endDate,
+      status: booking.status,
+      totalPaid: booking.totalPaid || 0,
+      review: booking.review && typeof booking.review === 'object'
+        ? {
+            rating: booking.review.rating,
+            comment: booking.review.comment,
+          }
+        : undefined,
+      requestDate: booking.requestDate || booking.createdAt,
+      address: booking.address,
+      imageUrl: booking.imageUrl || '',
+      category: booking.category,
+      notes: booking.notes,
+      createdAt: booking.createdAt,
+      updatedAt: booking.updatedAt,
+    });
+  } catch (error) {
+    console.error("Error in getBookingById:", error);
+    res.status(500).json({ message: error.message });
+  }
+};
+
 exports.getOwnerBookings = async (req, res) => {
   try {
     const bookings = await Booking.find({ owner: req.user.id })
