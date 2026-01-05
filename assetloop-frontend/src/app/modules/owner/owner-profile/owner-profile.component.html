@@ -1,24 +1,19 @@
 <div class="d-flex flex-column vh-100">
-  <app-header (logout)="onLogout()"></app-header>
-  <div class="d-flex flex-grow-1">
-    <app-owner-side-bar></app-owner-side-bar>
-    <main class="flex-grow-1 bg-light">
-      <section class="dashboard-hero gradient-bg px-4 py-4 py-md-5">
-        <div class="container-fluid d-flex flex-wrap justify-content-between align-items-start gap-3">
-          <div>
-            <div class="badge text-bg-light fw-semibold mb-2">Profile & settings</div>
-            <h2 class="text-white fw-bold mb-1">Owner account</h2>
-            <p class="text-white-50 mb-0">Manage your details, password, and notifications.</p>
-          </div>
-          <div class="stat-pill bg-white shadow-sm rounded-4 p-3 d-flex align-items-center gap-3">
+  <app-header (logout)="onLogout()" class="flex-shrink-0"></app-header>
+
+  <div class="d-flex flex-grow-1 overflow-hidden">
+
+    <app-owner-side-bar class="flex-shrink-0 border-end"></app-owner-side-bar>
+
+    <main class="flex-grow-1 bg-light overflow-auto">
+
+      <section class="dashboard-hero gradient-bg px-4 py-5">
+        <div class="container-fluid">
+          <div class="d-flex justify-content-between align-items-start">
             <div>
-              <div class="text-muted small">Bookings</div>
-              <div class="fs-5 fw-bold text-dark">{{ accountStatus.bookings }}</div>
-            </div>
-            <div class="vr"></div>
-            <div>
-              <div class="text-muted small">Reviews</div>
-              <div class="fw-semibold text-dark">{{ accountStatus.reviews }}</div>
+              <div class="badge text-bg-light fw-semibold mb-2">Profile & settings</div>
+              <h2 class="text-white fw-bold mb-1">Owner account</h2>
+              <p class="text-white-50 mb-0">Manage your details, password, and notifications.</p>
             </div>
           </div>
         </div>
@@ -26,233 +21,211 @@
 
       <section class="container-fluid py-4">
         <div class="row g-4">
-          <div class="col-lg-4">
-            <div class="card glass-card p-3 mb-3 text-center">
-              <div class="avatar-circle">
-                <fa-icon [icon]="faUser"></fa-icon>
-              </div>
-              <h5 class="mt-3 mb-1">
-                {{ user.firstName }} {{ user.middleName }} {{ user.lastName }}
-              </h5>
-              <p class="text-muted mb-2">{{ user.email }}</p>
-              <button class="btn btn-outline-danger w-100 d-inline-flex align-items-center gap-2" (click)="onLogout()">
-                <fa-icon [icon]="faRightFromBracket"></fa-icon> Logout
-              </button>
-            </div>
-            <div class="card glass-card p-3">
-              <h6 class="fw-semibold mb-2">Account status</h6>
-              <p class="mb-1"><strong>Member since:</strong> {{ accountStatus.memberSince }}</p>
-              <p class="mb-1"><strong>Bookings:</strong> {{ accountStatus.bookings }}</p>
-              <p class="mb-0"><strong>Reviews:</strong> {{ accountStatus.reviews }}</p>
-            </div>
-          </div>
 
-          <div class="col-lg-8">
-            <div class="card glass-card p-3">
-              <div class="tab-actions mb-3 d-flex flex-wrap gap-2">
-                <button
-                  class="tab-chip"
-                  [class.active]="activeTab === 'profile'"
-                  aria-label="Profile info"
-                  (click)="setTab('profile')"
-                >
+          <div class="col-lg-4 col-xl-3">
+            <div class="card glass-card border-0 shadow-sm mb-4">
+              <div class="card-body text-center p-4">
+                <div
+                  class="avatar-circle mx-auto mb-3 bg-primary bg-opacity-10 text-primary d-flex align-items-center justify-content-center rounded-circle"
+                  style="width: 80px; height: 80px; font-size: 2rem;">
                   <fa-icon [icon]="faUser"></fa-icon>
-                </button>
+                </div>
+                <h5 class="card-title fw-bold mb-1">
+                  {{ user.firstName }} {{ user.middleName }} {{ user.lastName }}
+                </h5>
+                <p class="text-muted small mb-3">{{ user.email }}</p>
                 <button
-                  class="tab-chip"
-                  [class.active]="activeTab === 'password'"
-                  aria-label="Password"
-                  (click)="setTab('password')"
-                >
-                  <fa-icon [icon]="faLock"></fa-icon>
-                </button>
-                <button
-                  class="tab-chip"
-                  [class.active]="activeTab === 'notifications'"
-                  aria-label="Notifications"
-                  (click)="setTab('notifications')"
-                >
-                  <fa-icon [icon]="faBell"></fa-icon>
+                  class="btn btn-outline-danger btn-sm w-100 d-inline-flex align-items-center justify-content-center gap-2"
+                  (click)="onLogout()">
+                  <fa-icon [icon]="faRightFromBracket"></fa-icon> Logout
                 </button>
               </div>
+            </div>
 
-              <div>
-                <div *ngIf="activeTab === 'profile'">
-                  <form class="d-flex flex-column gap-3">
-                    <div class="row g-3">
-                      <div class="col-md-6">
-                        <label class="form-label small text-muted">First name</label>
-                        <input
-                          type="text"
-                          class="form-control"
-                          [(ngModel)]="user.firstName"
-                          name="firstName"
-                        />
-                      </div>
-                      <div class="col-md-6">
-                        <label class="form-label small text-muted">Last name</label>
-                        <input
-                          type="text"
-                          class="form-control"
-                          [(ngModel)]="user.lastName"
-                          name="lastName"
-                        />
-                      </div>
-                      <div class="col-md-6">
-                        <label class="form-label small text-muted">Email</label>
-                        <input
-                          type="email"
-                          class="form-control"
-                          [(ngModel)]="user.email"
-                          name="email"
-                          readonly
-                        />
-                      </div>
-                      <div class="col-md-6">
-                        <label class="form-label small text-muted">Phone</label>
-                        <input
-                          type="tel"
-                          class="form-control"
-                          [(ngModel)]="user.phoneNumber"
-                          name="phoneNumber"
-                        />
-                      </div>
-                    </div>
-                    <button
-                      type="button"
-                      class="btn btn-primary"
-                      (click)="onSaveChanges()"
-                    >
-                      Save changes
-                    </button>
-                  </form>
-                </div>
-
-                <div *ngIf="activeTab === 'password'">
-                  <div class="mb-4">
-                    <h5 class="mb-3">Change password</h5>
-                    <div class="row g-3">
-                      <div class="col-md-6">
-                        <label for="previousPassword" class="form-label small text-muted">Previous Password</label>
-                        <input
-                          type="password"
-                          class="form-control"
-                          id="previousPassword"
-                          [(ngModel)]="passwordData.previousPassword"
-                          placeholder="Enter previous password"
-                        />
-                      </div>
-                      <div class="col-md-6">
-                        <label for="newPassword" class="form-label small text-muted">New Password</label>
-                        <input
-                          type="password"
-                          class="form-control"
-                          id="newPassword"
-                          [(ngModel)]="passwordData.newPassword"
-                          placeholder="Enter new password"
-                        />
-                      </div>
-                      <div class="col-md-6">
-                        <label for="confirmPassword" class="form-label small text-muted">Confirm Password</label>
-                        <input
-                          type="password"
-                          class="form-control"
-                          id="confirmPassword"
-                          [(ngModel)]="passwordData.confirmPassword"
-                          placeholder="Confirm new password"
-                        />
-                      </div>
-                    </div>
-                    <button class="btn btn-primary mt-3" (click)="changePassword()">
-                      Change password
-                    </button>
-                    <div *ngIf="error" class="alert alert-danger mt-2" role="alert">
-                      {{ error }}
-                      <button type="button" class="btn-close" (click)="error = null"></button>
-                    </div>
-                  </div>
-                </div>
-
-                <div *ngIf="activeTab === 'notifications'">
-                  <div class="settings-container card p-4 shadow-sm border-0">
-                    <h5 class="card-title mb-4">Notification settings</h5>
-
-                    <div class="mb-4">
-                      <h6 class="mb-2">Channels</h6>
-                      <div class="d-flex flex-wrap gap-3">
-                        <div class="form-check">
-                          <input type="checkbox" class="form-check-input" id="emailEnabled" [(ngModel)]="settings.emailEnabled" />
-                          <label class="form-check-label" for="emailEnabled">Email</label>
-                        </div>
-                        <div class="form-check">
-                          <input type="checkbox" class="form-check-input" id="smsEnabled" [(ngModel)]="settings.smsEnabled" />
-                          <label class="form-check-label" for="smsEnabled">SMS</label>
-                        </div>
-                        <div class="form-check">
-                          <input type="checkbox" class="form-check-input" id="inAppEnabled" [(ngModel)]="settings.inAppEnabled" />
-                          <label class="form-check-label" for="inAppEnabled">In-App</label>
-                        </div>
-                        <div class="form-check">
-                          <input type="checkbox" class="form-check-input" id="pushEnabled" [(ngModel)]="settings.pushEnabled" />
-                          <label class="form-check-label" for="pushEnabled">Push</label>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div class="mb-4">
-                      <h6 class="mb-2">Notification types</h6>
-                      <div class="d-flex flex-wrap gap-3">
-                        <div class="form-check">
-                          <input type="checkbox" class="form-check-input" id="newBookings" [(ngModel)]="settings.newBookings" />
-                          <label class="form-check-label" for="newBookings">New Booking Requests</label>
-                        </div>
-                        <div class="form-check">
-                          <input
-                            type="checkbox"
-                            class="form-check-input"
-                            id="bookingConfirmations"
-                            [(ngModel)]="settings.bookingConfirmations"
-                          />
-                          <label class="form-check-label" for="bookingConfirmations">Booking Confirmations</label>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div class="mb-4">
-                      <h6 class="mb-2">Frequency</h6>
-                      <select
-                        class="form-select"
-                        [(ngModel)]="settings.frequency"
-                        aria-label="Frequency"
-                      >
-                        <option value="immediate">Immediate</option>
-                        <option value="daily">Daily Digest</option>
-                        <option value="weekly">Weekly Digest</option>
-                      </select>
-                    </div>
-
-                    <div class="mb-4">
-                      <h6 class="mb-2">Reminder threshold (days)</h6>
-                      <input
-                        type="number"
-                        class="form-control"
-                        [(ngModel)]="settings.reminderThreshold"
-                        min="1"
-                        aria-label="Reminder Threshold"
-                      />
-                    </div>
-
-                    <button class="btn btn-primary" (click)="saveSettings()">
-                      Save settings
-                    </button>
-                  </div>
-                </div>
+            <div class="card glass-card border-0 shadow-sm">
+              <div class="card-body p-4">
+                <h6 class="fw-bold text-uppercase small text-muted mb-3">Account Overview</h6>
+                <ul class="list-unstyled mb-0">
+                  <li class="d-flex justify-content-between mb-2">
+                    <span>Member since</span>
+                    <span class="fw-semibold">{{ accountStatus.memberSince }}</span>
+                  </li>
+                  <li class="d-flex justify-content-between">
+                    <span>Total Bookings</span>
+                    <span class="fw-semibold">{{ accountStatus.bookings }}</span>
+                  </li>
+                </ul>
               </div>
             </div>
           </div>
+
+          <div class="col-lg-8 col-xl-9">
+            <div class="card glass-card border-0 shadow-sm">
+
+              <div class="card-header bg-transparent border-bottom p-3">
+                <div class="tab-actions mb-3 d-flex flex-wrap gap-2">
+                  <button class="tab-chip" [class.active]="activeTab === 'profile'" aria-label="Profile info"
+                    (click)="setTab('profile')">
+                    <fa-icon [icon]="faUser"></fa-icon>
+                  </button>
+                  <button class="tab-chip" [class.active]="activeTab === 'password'" aria-label="Password"
+                    (click)="setTab('password')">
+                    <fa-icon [icon]="faLock"></fa-icon>
+                  </button>
+                  <button class="tab-chip" [class.active]="activeTab === 'notifications'" aria-label="Notifications"
+                    (click)="setTab('notifications')">
+                    <fa-icon [icon]="faBell"></fa-icon>
+                  </button>
+                </div>
+              </div>
+
+              <div class="card-body p-4">
+                <ng-container [ngSwitch]="activeTab">
+
+                  <div *ngSwitchCase="'profile'">
+                    <h5 class="card-title mb-4">Personal Information</h5>
+                    <form>
+                      <div class="row g-3">
+                        <div class="col-md-6">
+                          <label class="form-label small fw-bold text-muted">First Name</label>
+                          <input type="text" class="form-control" [(ngModel)]="user.firstName" name="firstName" />
+                        </div>
+                        <div class="col-md-6">
+                          <label class="form-label small fw-bold text-muted">Last Name</label>
+                          <input type="text" class="form-control" [(ngModel)]="user.lastName" name="lastName" />
+                        </div>
+                        <div class="col-md-6">
+                          <label class="form-label small fw-bold text-muted">Email Address</label>
+                          <input type="email" class="form-control bg-light" [(ngModel)]="user.email" name="email"
+                            readonly />
+                        </div>
+                        <div class="col-md-6">
+                          <label class="form-label small fw-bold text-muted">Phone Number</label>
+                          <input type="tel" class="form-control" [(ngModel)]="user.phoneNumber" name="phoneNumber" />
+                        </div>
+                        <div class="col-12 mt-4 text-end">
+                          <button type="button" class="btn btn-primary px-4" (click)="onSaveChanges()">Save
+                            Changes</button>
+                        </div>
+                      </div>
+                    </form>
+                  </div>
+
+                  <div *ngSwitchCase="'password'">
+                    <h5 class="card-title mb-4">Change Password</h5>
+                    <div class="row g-3" style="max-width: 800px;">
+                      <div class="col-12">
+                        <label for="previousPassword" class="form-label small fw-bold text-muted">Current
+                          Password</label>
+                        <input type="password" class="form-control" id="previousPassword"
+                          [(ngModel)]="passwordData.previousPassword" />
+                      </div>
+                      <div class="col-md-6">
+                        <label for="newPassword" class="form-label small fw-bold text-muted">New Password</label>
+                        <input type="password" class="form-control" id="newPassword"
+                          [(ngModel)]="passwordData.newPassword" />
+                      </div>
+                      <div class="col-md-6">
+                        <label for="confirmPassword" class="form-label small fw-bold text-muted">Confirm New
+                          Password</label>
+                        <input type="password" class="form-control" id="confirmPassword"
+                          [(ngModel)]="passwordData.confirmPassword" />
+                      </div>
+
+                      <div class="col-12 mt-4">
+                        <div *ngIf="error" class="alert alert-danger d-flex align-items-center" role="alert">
+                          <div>{{ error }}</div>
+                          <button type="button" class="btn-close ms-auto" (click)="error = null"></button>
+                        </div>
+                        <div class="text-end">
+                          <button class="btn btn-primary px-4" (click)="changePassword()">Update Password</button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div *ngSwitchCase="'notifications'">
+                    <h5 class="card-title mb-4">Notification Preferences</h5>
+
+                    <div class="row g-4">
+                      <div class="col-md-6">
+                        <div class="p-3 bg-light rounded-3 h-100">
+                          <h6 class="fw-bold mb-3 small text-uppercase text-muted">Channels</h6>
+                          <div class="d-flex flex-column gap-2">
+                            <div class="form-check form-switch">
+                              <input class="form-check-input" type="checkbox" id="emailEnabled"
+                                [(ngModel)]="settings.emailEnabled">
+                              <label class="form-check-label" for="emailEnabled">Email</label>
+                            </div>
+                            <div class="form-check form-switch">
+                              <input class="form-check-input" type="checkbox" id="smsEnabled"
+                                [(ngModel)]="settings.smsEnabled">
+                              <label class="form-check-label" for="smsEnabled">SMS</label>
+                            </div>
+                            <div class="form-check form-switch">
+                              <input class="form-check-input" type="checkbox" id="inAppEnabled"
+                                [(ngModel)]="settings.inAppEnabled">
+                              <label class="form-check-label" for="inAppEnabled">In-App</label>
+                            </div>
+                            <div class="form-check form-switch">
+                              <input class="form-check-input" type="checkbox" id="pushEnabled"
+                                [(ngModel)]="settings.pushEnabled">
+                              <label class="form-check-label" for="pushEnabled">Push Notifications</label>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="col-md-6">
+                        <div class="p-3 bg-light rounded-3 h-100">
+                          <h6 class="fw-bold mb-3 small text-uppercase text-muted">Alert Types</h6>
+                          <div class="d-flex flex-column gap-2">
+                            <div class="form-check">
+                              <input class="form-check-input" type="checkbox" id="newBookings"
+                                [(ngModel)]="settings.newBookings">
+                              <label class="form-check-label" for="newBookings">New Booking Requests</label>
+                            </div>
+                            <div class="form-check">
+                              <input class="form-check-input" type="checkbox" id="bookingConfirmations"
+                                [(ngModel)]="settings.bookingConfirmations">
+                              <label class="form-check-label" for="bookingConfirmations">Booking Confirmations</label>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="col-12">
+                        <hr class="text-muted opacity-25">
+                        <div class="row g-3 align-items-end">
+                          <div class="col-md-6">
+                            <label class="form-label small fw-bold text-muted">Digest Frequency</label>
+                            <select class="form-select" [(ngModel)]="settings.frequency">
+                              <option value="immediate">Immediate</option>
+                              <option value="daily">Daily Digest</option>
+                              <option value="weekly">Weekly Digest</option>
+                            </select>
+                          </div>
+                          <div class="col-md-6">
+                            <label class="form-label small fw-bold text-muted">Reminder Threshold (Days)</label>
+                            <input type="number" class="form-control" [(ngModel)]="settings.reminderThreshold"
+                              min="1" />
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="col-12 text-end mt-2">
+                        <button class="btn btn-primary px-4" (click)="saveSettings()">Save Preferences</button>
+                      </div>
+                    </div>
+                  </div>
+
+                </ng-container>
+              </div>
+            </div>
+          </div>
+
         </div>
       </section>
     </main>
   </div>
 </div>
-

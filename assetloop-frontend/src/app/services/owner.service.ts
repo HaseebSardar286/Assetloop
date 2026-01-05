@@ -15,7 +15,7 @@ import { environment } from '../../environments/environment';
 export class OwnerService {
   private apiUrl = `${environment.apiBaseUrl}/owner`;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   private getHeaders(): HttpHeaders {
     const items = { ...localStorage };
@@ -68,7 +68,14 @@ export class OwnerService {
     );
   }
 
+  getBookingDetails(id: string): Observable<Booking> {
+    return this.http.get<Booking>(`${this.apiUrl}/bookings/${id}`, {
+      headers: this.getHeaders(),
+    });
+  }
+
   getBookings(): Observable<Booking[]> {
+
     return this.http.get<Booking[]>(`${this.apiUrl}/rental-requests`, {
       headers: this.getHeaders(),
     });

@@ -10,18 +10,20 @@
             <h2 class="text-white fw-bold mb-1">Your account</h2>
             <p class="text-white-50 mb-0">Manage details, password, and notifications.</p>
           </div>
-          <div class="stat-pill bg-white shadow-sm rounded-4 p-3 d-flex align-items-center gap-3">
+          <!-- <div class="stat-pill bg-white shadow-sm rounded-4 p-3 d-flex align-items-center gap-3">
             <div>
               <div class="text-muted small">Bookings</div>
+
               <div class="fs-5 fw-bold text-dark">{{ accountStatus.bookings }}</div>
             </div>
             <div class="vr"></div>
             <div>
               <div class="text-muted small">Reviews</div>
               <div class="fw-semibold text-dark">{{ accountStatus.reviews }}</div>
-            </div>
-          </div>
+            </div> -->
+
         </div>
+
       </section>
 
       <section class="container-fluid py-4">
@@ -43,35 +45,24 @@
               <h6 class="fw-semibold mb-2">Account status</h6>
               <p class="mb-1"><strong>Member since:</strong> {{ accountStatus.memberSince }}</p>
               <p class="mb-1"><strong>Bookings:</strong> {{ accountStatus.bookings }}</p>
-              <p class="mb-0"><strong>Reviews:</strong> {{ accountStatus.reviews }}</p>
+              <!-- <p class="mb-0"><strong>Reviews:</strong> {{ accountStatus.reviews }}</p> -->
             </div>
+
           </div>
 
           <div class="col-lg-8">
             <div class="card glass-card p-3">
               <div class="tab-actions mb-3 d-flex flex-wrap gap-2">
-                <button
-                  class="tab-chip"
-                  [class.active]="activeTab === 'profile'"
-                  aria-label="Profile info"
-                  (click)="setTab('profile')"
-                >
+                <button class="tab-chip" [class.active]="activeTab === 'profile'" aria-label="Profile info"
+                  (click)="setTab('profile')">
                   <fa-icon [icon]="faUser"></fa-icon>
                 </button>
-                <button
-                  class="tab-chip"
-                  [class.active]="activeTab === 'password'"
-                  aria-label="Password"
-                  (click)="setTab('password')"
-                >
+                <button class="tab-chip" [class.active]="activeTab === 'password'" aria-label="Password"
+                  (click)="setTab('password')">
                   <fa-icon [icon]="faLock"></fa-icon>
                 </button>
-                <button
-                  class="tab-chip"
-                  [class.active]="activeTab === 'notifications'"
-                  aria-label="Notifications"
-                  (click)="setTab('notifications')"
-                >
+                <button class="tab-chip" [class.active]="activeTab === 'notifications'" aria-label="Notifications"
+                  (click)="setTab('notifications')">
                   <fa-icon [icon]="faBell"></fa-icon>
                 </button>
                 <!-- <button class="tab-chip" aria-label="Preferences">
@@ -85,47 +76,22 @@
                     <div class="row g-3">
                       <div class="col-md-6">
                         <label class="form-label small text-muted">First name</label>
-                        <input
-                          type="text"
-                          class="form-control"
-                          [(ngModel)]="user.firstName"
-                          name="firstName"
-                        />
+                        <input type="text" class="form-control" [(ngModel)]="user.firstName" name="firstName" />
                       </div>
                       <div class="col-md-6">
                         <label class="form-label small text-muted">Last name</label>
-                        <input
-                          type="text"
-                          class="form-control"
-                          [(ngModel)]="user.lastName"
-                          name="lastName"
-                        />
+                        <input type="text" class="form-control" [(ngModel)]="user.lastName" name="lastName" />
                       </div>
                       <div class="col-md-6">
                         <label class="form-label small text-muted">Email</label>
-                        <input
-                          type="email"
-                          class="form-control"
-                          [(ngModel)]="user.email"
-                          name="email"
-                          readonly
-                        />
+                        <input type="email" class="form-control" [(ngModel)]="user.email" name="email" readonly />
                       </div>
                       <div class="col-md-6">
                         <label class="form-label small text-muted">Phone</label>
-                        <input
-                          type="tel"
-                          class="form-control"
-                          [(ngModel)]="user.phoneNumber"
-                          name="phoneNumber"
-                        />
+                        <input type="tel" class="form-control" [(ngModel)]="user.phoneNumber" name="phoneNumber" />
                       </div>
                     </div>
-                    <button
-                      type="button"
-                      class="btn btn-primary"
-                      (click)="onSaveChanges()"
-                    >
+                    <button type="button" class="btn btn-primary" (click)="onSaveChanges()">
                       Save changes
                     </button>
                   </form>
@@ -137,33 +103,18 @@
                     <div class="row g-3">
                       <div class="col-md-6">
                         <label for="previousPassword" class="form-label small text-muted">Previous Password</label>
-                        <input
-                          type="password"
-                          class="form-control"
-                          id="previousPassword"
-                          [(ngModel)]="passwordData.previousPassword"
-                          placeholder="Enter previous password"
-                        />
+                        <input type="password" class="form-control" id="previousPassword"
+                          [(ngModel)]="passwordData.previousPassword" placeholder="Enter previous password" />
                       </div>
                       <div class="col-md-6">
                         <label for="newPassword" class="form-label small text-muted">New Password</label>
-                        <input
-                          type="password"
-                          class="form-control"
-                          id="newPassword"
-                          [(ngModel)]="passwordData.newPassword"
-                          placeholder="Enter new password"
-                        />
+                        <input type="password" class="form-control" id="newPassword"
+                          [(ngModel)]="passwordData.newPassword" placeholder="Enter new password" />
                       </div>
                       <div class="col-md-6">
                         <label for="confirmPassword" class="form-label small text-muted">Confirm Password</label>
-                        <input
-                          type="password"
-                          class="form-control"
-                          id="confirmPassword"
-                          [(ngModel)]="passwordData.confirmPassword"
-                          placeholder="Confirm new password"
-                        />
+                        <input type="password" class="form-control" id="confirmPassword"
+                          [(ngModel)]="passwordData.confirmPassword" placeholder="Confirm new password" />
                       </div>
                     </div>
                     <button class="btn btn-primary mt-3" (click)="changePassword()">
@@ -184,19 +135,23 @@
                       <h6 class="mb-2">Channels</h6>
                       <div class="d-flex flex-wrap gap-3">
                         <div class="form-check">
-                          <input type="checkbox" class="form-check-input" id="emailEnabled" [(ngModel)]="settings.emailEnabled" />
+                          <input type="checkbox" class="form-check-input" id="emailEnabled"
+                            [(ngModel)]="settings.emailEnabled" />
                           <label class="form-check-label" for="emailEnabled">Email</label>
                         </div>
                         <div class="form-check">
-                          <input type="checkbox" class="form-check-input" id="smsEnabled" [(ngModel)]="settings.smsEnabled" />
+                          <input type="checkbox" class="form-check-input" id="smsEnabled"
+                            [(ngModel)]="settings.smsEnabled" />
                           <label class="form-check-label" for="smsEnabled">SMS</label>
                         </div>
                         <div class="form-check">
-                          <input type="checkbox" class="form-check-input" id="inAppEnabled" [(ngModel)]="settings.inAppEnabled" />
+                          <input type="checkbox" class="form-check-input" id="inAppEnabled"
+                            [(ngModel)]="settings.inAppEnabled" />
                           <label class="form-check-label" for="inAppEnabled">In-App</label>
                         </div>
                         <div class="form-check">
-                          <input type="checkbox" class="form-check-input" id="pushEnabled" [(ngModel)]="settings.pushEnabled" />
+                          <input type="checkbox" class="form-check-input" id="pushEnabled"
+                            [(ngModel)]="settings.pushEnabled" />
                           <label class="form-check-label" for="pushEnabled">Push</label>
                         </div>
                       </div>
@@ -206,16 +161,13 @@
                       <h6 class="mb-2">Notification types</h6>
                       <div class="d-flex flex-wrap gap-3">
                         <div class="form-check">
-                          <input type="checkbox" class="form-check-input" id="newBookings" [(ngModel)]="settings.newBookings" />
+                          <input type="checkbox" class="form-check-input" id="newBookings"
+                            [(ngModel)]="settings.newBookings" />
                           <label class="form-check-label" for="newBookings">New Booking Requests</label>
                         </div>
                         <div class="form-check">
-                          <input
-                            type="checkbox"
-                            class="form-check-input"
-                            id="bookingConfirmations"
-                            [(ngModel)]="settings.bookingConfirmations"
-                          />
+                          <input type="checkbox" class="form-check-input" id="bookingConfirmations"
+                            [(ngModel)]="settings.bookingConfirmations" />
                           <label class="form-check-label" for="bookingConfirmations">Booking Confirmations</label>
                         </div>
                       </div>
@@ -223,11 +175,7 @@
 
                     <div class="mb-4">
                       <h6 class="mb-2">Frequency</h6>
-                      <select
-                        class="form-select"
-                        [(ngModel)]="settings.frequency"
-                        aria-label="Frequency"
-                      >
+                      <select class="form-select" [(ngModel)]="settings.frequency" aria-label="Frequency">
                         <option value="immediate">Immediate</option>
                         <option value="daily">Daily Digest</option>
                         <option value="weekly">Weekly Digest</option>
@@ -236,13 +184,8 @@
 
                     <div class="mb-4">
                       <h6 class="mb-2">Reminder threshold (days)</h6>
-                      <input
-                        type="number"
-                        class="form-control"
-                        [(ngModel)]="settings.reminderThreshold"
-                        min="1"
-                        aria-label="Reminder Threshold"
-                      />
+                      <input type="number" class="form-control" [(ngModel)]="settings.reminderThreshold" min="1"
+                        aria-label="Reminder Threshold" />
                     </div>
 
                     <button class="btn btn-primary" (click)="saveSettings()">

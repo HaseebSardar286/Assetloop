@@ -1,10 +1,7 @@
 <div class="d-flex flex-column vh-100">
   <app-header (logout)="onLogout()"></app-header>
   <div class="d-flex flex-grow-1">
-    <app-owner-side-bar
-      (logout)="onLogout()"
-      (navigate)="onNavigate($event)"
-    ></app-owner-side-bar>
+    <app-owner-side-bar (logout)="onLogout()" (navigate)="onNavigate($event)"></app-owner-side-bar>
     <main class="flex-grow-1 bg-light">
       <section class="dashboard-hero gradient-bg px-4 py-4 py-md-5">
         <div class="container-fluid d-flex flex-wrap justify-content-between align-items-start gap-3">
@@ -21,7 +18,8 @@
             <div class="vr"></div>
             <div>
               <div class="text-muted small">Total</div>
-              <div class="fw-semibold text-dark">{{ bookings.current.length + bookings.pending.length + bookings.cancelled.length + bookings.past.length }}</div>
+              <div class="fw-semibold text-dark">{{ bookings.current.length + bookings.pending.length +
+                bookings.cancelled.length + bookings.past.length }}</div>
             </div>
           </div>
         </div>
@@ -54,15 +52,54 @@
 
           <div class="row g-4" *ngIf="!loading && bookings.pending.length > 0; else noBookings">
             <div class="col-md-4" *ngFor="let booking of bookings.pending">
-              <app-rental-request-items
-                [booking]="booking"
-                (statusUpdate)="onStatusUpdate($event)"
-                (startChat)="startChatWithRenter($event)"
-              ></app-rental-request-items>
+              <app-rental-request-items [booking]="booking" (statusUpdate)="onStatusUpdate($event)"
+                (startChat)="startChatWithRenter($event)"></app-rental-request-items>
             </div>
           </div>
         </div>
       </section>
+
+      <!-- Active Rentals Section -->
+      <section class="container-fluid py-4" *ngIf="!loading && bookings.current.length > 0">
+        <div class="glass-card card p-3">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <div class="d-flex align-items-center gap-2">
+              <div class="icon-circle text-success bg-success-subtle">
+                <fa-icon [icon]="faCheck"></fa-icon>
+                <!-- faCheck is imported in TS? Yes -->
+              </div>
+              <div>
+                <h5 class="mb-0">Active Rentals</h5>
+                <small class="text-muted">Manage ongoing rentals</small>
+              </div>
+            </div>
+          </div>
+          <div class="row g-4">
+            <div class="col-md-6 col-lg-4" *ngFor="let booking of bookings.current">
+              <div class="card shadow-sm border-0 h-100">
+                <div class="card-body">
+                  <div class="mb-2">
+                    <span class="badge bg-success mb-2">{{ booking.status | titlecase }}</span>
+                    <h6 class="card-title mb-1">{{ booking.asset?.name || booking.name }}</h6>
+                  </div>
+
+                  <div class="small text-muted mb-3">
+                    <p class="mb-1"><strong>Renter:</strong> {{ booking.renter?.firstName || 'N/A' }}</p>
+                    <p class="mb-1"><strong>Dates:</strong> {{ booking.startDate | date:'shortDate' }} - {{
+                      booking.endDate | date:'shortDate' }}</p>
+                  </div>
+
+                  <button class="btn btn-outline-primary w-100 btn-sm"
+                    [routerLink]="['/owner/booking', booking.id || booking._id, 'condition']">
+                    Verify Asset Condition
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
 
       <ng-template #noBookings>
         <div class="container-fluid py-4">

@@ -7,6 +7,8 @@ const PendingUser = require("../models/PendingUser");
 const Wishlist = require("../models/Wishlist");
 const Cart = require("../models/Cart");
 const Transaction = require("../models/Transaction");
+const Dispute = require("../models/Dispute");
+
 
 // Dashboard statistics
 exports.getDashboardStats = async (req, res) => {
@@ -551,17 +553,17 @@ exports.getAllTransactions = async (req, res) => {
       _id: t._id.toString(),
       user: t.user
         ? {
-            id: t.user._id?.toString() || "",
-            name: `${t.user.firstName || ""} ${t.user.lastName || ""}`.trim() || "Unknown User",
-            email: t.user.email || "",
-          }
+          id: t.user._id?.toString() || "",
+          name: `${t.user.firstName || ""} ${t.user.lastName || ""}`.trim() || "Unknown User",
+          email: t.user.email || "",
+        }
         : { id: "", name: "Unknown User", email: "" },
       booking: t.booking
         ? {
-            id: t.booking._id?.toString() || "",
-            name: t.booking.name || "Unknown Booking",
-            asset: t.booking.asset || "",
-          }
+          id: t.booking._id?.toString() || "",
+          name: t.booking.name || "Unknown Booking",
+          asset: t.booking.asset || "",
+        }
         : null,
       amount: t.amount,
       currency: t.currency || "usd",
@@ -612,17 +614,17 @@ exports.updateTransactionStatus = async (req, res) => {
       _id: transaction._id.toString(),
       user: transaction.user
         ? {
-            id: transaction.user._id?.toString() || "",
-            name: `${transaction.user.firstName || ""} ${transaction.user.lastName || ""}`.trim() || "Unknown User",
-            email: transaction.user.email || "",
-          }
+          id: transaction.user._id?.toString() || "",
+          name: `${transaction.user.firstName || ""} ${transaction.user.lastName || ""}`.trim() || "Unknown User",
+          email: transaction.user.email || "",
+        }
         : { id: "", name: "Unknown User", email: "" },
       booking: transaction.booking
         ? {
-            id: transaction.booking._id?.toString() || "",
-            name: transaction.booking.name || "Unknown Booking",
-            asset: transaction.booking.asset || "",
-          }
+          id: transaction.booking._id?.toString() || "",
+          name: transaction.booking.name || "Unknown Booking",
+          asset: transaction.booking.asset || "",
+        }
         : null,
       amount: transaction.amount,
       currency: transaction.currency || "usd",
@@ -642,3 +644,41 @@ exports.updateTransactionStatus = async (req, res) => {
     res.status(500).json({ message: `Failed to update transaction: ${error.message}` });
   }
 };
+
+// Dispute Management
+exports.getAllDisputes = async (req, res) => {
+  try {
+    const disputes = await Dispute.find()
+      .populate('raisedBy', 'firstName lastName email')
+      .populate({
+        path: 'booking',
+        populate: { path: 'asset owner renter' }
+      })
+      .sort({ createdAt: -1 });
+    res.json(disputes);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+exports.resolveDispute = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { status, adminComments } = req.body;
+
+    const dispute = await Dispute.findByIdAndUpdate(
+      id,
+      { status, adminComments },
+      { new: true }
+    );
+
+    if (!dispute) {
+      return res.status(404).json({ message: "Dispute not found" });
+    }
+
+    res.json(dispute);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+

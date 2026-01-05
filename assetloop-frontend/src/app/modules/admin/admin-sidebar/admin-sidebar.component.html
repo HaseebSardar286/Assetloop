@@ -1,69 +1,53 @@
-<div
-  class="d-flex flex-column flex-shrink-0 p-3 bg-light text-black vh-100 sidebar"
->
+<div class="d-flex flex-column flex-shrink-0 p-3 bg-light text-black vh-100 sidebar">
   <ul class="nav nav-pills flex-column mb-auto">
     <li class="nav-item">
-      <a
-        class="nav-link border-bottom border-top"
-        (click)="navigateTo('/admin/dashboard')"
-        [class.active]="isActive('/admin/dashboard')"
-      >
+      <a class="nav-link border-bottom border-top" (click)="navigateTo('/admin/dashboard')"
+        [class.active]="isActive('/admin/dashboard')">
         <fa-icon [icon]="faTachometerAlt" class="btn-primary"></fa-icon>
         Dashboard
       </a>
     </li>
     <li class="nav-item">
-      <a
-        class="nav-link border-bottom border-top"
-        (click)="navigateTo('/admin/account-verification')"
-        [class.active]="isActive('/admin/account-verification')"
-      >
+      <a class="nav-link border-bottom border-top" (click)="navigateTo('/admin/account-verification')"
+        [class.active]="isActive('/admin/account-verification')">
         <fa-icon [icon]="faGear"></fa-icon> Account Verification
       </a>
     </li>
     <li class="nav-item">
-      <a
-        class="nav-link border-bottom border-top"
-        (click)="navigateTo('/admin/manage-listings')"
-        [class.active]="isActive('/admin/manage-listings')"
-      >
+      <a class="nav-link border-bottom border-top" (click)="navigateTo('/admin/manage-listings')"
+        [class.active]="isActive('/admin/manage-listings')">
         <fa-icon [icon]="faCalendarCheck"></fa-icon> Manage Listings
       </a>
     </li>
     <li class="nav-item">
-      <a
-        class="nav-link border-bottom border-top"
-        (click)="navigateTo('/admin/manage-users')"
-        [class.active]="isActive('/admin/manage-users')"
-      >
+      <a class="nav-link border-bottom border-top" (click)="navigateTo('/admin/manage-users')"
+        [class.active]="isActive('/admin/manage-users')">
         <fa-icon [icon]="faUser"></fa-icon> Manage Users
       </a>
     </li>
     <li class="nav-item">
-      <a
-        class="nav-link border-bottom border-top"
-        (click)="navigateTo('/admin/manage-reviews')"
-        [class.active]="isActive('/admin/manage-reviews')"
-      >
+      <a class="nav-link border-bottom border-top" (click)="navigateTo('/admin/manage-reviews')"
+        [class.active]="isActive('/admin/manage-reviews')">
         <fa-icon [icon]="faComment"></fa-icon> Reviews
       </a>
     </li>
     <li class="nav-item">
-      <a
-        class="nav-link border-bottom border-top"
-        (click)="navigateTo('/admin/manage-transactions')"
-        [class.active]="isActive('/admin/manage-transactions')"
-      >
+      <a class="nav-link border-bottom border-top" (click)="navigateTo('/admin/manage-transactions')"
+        [class.active]="isActive('/admin/manage-transactions')">
         <fa-icon [icon]="faCreditCard"></fa-icon> Transactions
+      </a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link border-bottom border-top" (click)="navigateTo('/admin/manage-disputes')"
+        [class.active]="isActive('/admin/manage-disputes')">
+        <fa-icon [icon]="faExclamationCircle"></fa-icon> Disputes
       </a>
     </li>
 
     <li class="nav-item">
-      <a
-        class="nav-link border-bottom border-top"
-        (click)="navigateTo('/admin/system-settings')"
-        [class.active]="isActive('/admin/system-settings')"
-      >
+
+      <a class="nav-link border-bottom border-top" (click)="navigateTo('/admin/system-settings')"
+        [class.active]="isActive('/admin/system-settings')">
         <fa-icon [icon]="faGear"></fa-icon> System Settings
       </a>
     </li>

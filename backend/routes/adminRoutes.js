@@ -22,7 +22,10 @@ const {
   getUserSummary,
   getAllTransactions,
   updateTransactionStatus,
+  getAllDisputes,
+  resolveDispute,
 } = require("../controllers/adminController");
+
 
 const router = express.Router();
 
@@ -66,4 +69,13 @@ router.put("/settings", updateSystemSettings);
 router.get("/transactions", getAllTransactions);
 router.put("/transactions/:id/status", updateTransactionStatus);
 
+// Dispute management
+router.get("/disputes", getAllDisputes);
+router.put("/disputes/:id", resolveDispute);
+
+// Allow admin to view asset conditions
+const { getAssetCondition } = require("../controllers/assetConditionController");
+router.get("/bookings/:bookingId/condition", getAssetCondition);
+
 module.exports = router;
+

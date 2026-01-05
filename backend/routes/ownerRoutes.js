@@ -9,8 +9,11 @@ const {
 const {
   getBookings,
   updateBookingStatus,
+
   getOwnerBookings,
+  getBookingById,
 } = require("../controllers/bookingController");
+
 const {
   updateProfile,
   getProfile,
@@ -47,7 +50,9 @@ router.get("/active-bookings", getActiveBookings);
 
 router.get("/bookings", getBookings);
 router.put("/bookings/:id/status", updateBookingStatus);
+router.get("/bookings/:id", getBookingById);
 router.get("/rental-requests", getOwnerBookings);
+
 
 router.get("/profile", getProfile);
 router.put("/update-profile", updateProfile);

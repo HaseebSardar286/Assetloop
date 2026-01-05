@@ -18,6 +18,8 @@ import {
   faTimesCircle,
   faBan,
 } from '@fortawesome/free-solid-svg-icons';
+import { AssetConditionComponent } from '../../../components/asset-condition/asset-condition.component';
+
 import { SystemCurrencyPipe } from '../../../pipes/currency.pipe';
 import { Booking } from '../../../interfaces/bookings';
 
@@ -31,6 +33,7 @@ import { Booking } from '../../../interfaces/bookings';
     RenterSideBarComponent,
     FontAwesomeModule,
     SystemCurrencyPipe,
+    AssetConditionComponent
   ],
   templateUrl: './booking-details.component.html',
   styleUrl: './booking-details.component.css',
@@ -57,7 +60,7 @@ export class BookingDetailsComponent implements OnInit {
     private chatService: ChatService,
     private authService: AuthService,
     private router: Router
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.bookingId = this.route.snapshot.paramMap.get('id');
@@ -70,10 +73,10 @@ export class BookingDetailsComponent implements OnInit {
 
   loadBooking(): void {
     if (!this.bookingId) return;
-    
+
     this.loading = true;
     this.error = null;
-    
+
     this.renterService.getBookingDetails(this.bookingId).subscribe({
       next: (booking: any) => {
         this.booking = booking;
@@ -88,7 +91,7 @@ export class BookingDetailsComponent implements OnInit {
 
   getStatusClass(): string {
     if (!this.booking) return '';
-    
+
     switch (this.booking.status) {
       case 'confirmed':
       case 'active':
@@ -106,7 +109,7 @@ export class BookingDetailsComponent implements OnInit {
 
   getStatusIcon(): any {
     if (!this.booking) return faClock;
-    
+
     switch (this.booking.status) {
       case 'confirmed':
       case 'active':
@@ -175,7 +178,7 @@ export class BookingDetailsComponent implements OnInit {
       alert('Asset information not available');
       return;
     }
-    
+
     const assetId = (this.booking.asset as any)._id || this.booking.asset;
     if (assetId) {
       this.router.navigate([`/renter/asset/${assetId}`]);
@@ -184,21 +187,21 @@ export class BookingDetailsComponent implements OnInit {
 
   cancelBooking(): void {
     if (!this.booking || !this.bookingId) return;
-    
+
     if (this.booking.status === 'cancelled') {
       alert('This booking is already cancelled');
       return;
     }
-    
+
     if (this.booking.status !== 'pending') {
       alert('Only pending bookings can be cancelled');
       return;
     }
-    
+
     if (!confirm('Are you sure you want to cancel this booking?')) {
       return;
     }
-    
+
     this.loading = true;
     this.renterService.cancelBooking(this.bookingId).subscribe({
       next: () => {
@@ -220,13 +223,13 @@ export class BookingDetailsComponent implements OnInit {
 
   isReviewable(): boolean {
     if (!this.booking) return false;
-    
+
     // Can't review if already reviewed
     if (this.booking.review) return false;
-    
+
     // Can review if status is completed
     if (this.booking.status === 'completed') return true;
-    
+
     // Can review if end date has passed
     if (this.booking.endDate) {
       const endDate = new Date(this.booking.endDate);
@@ -235,7 +238,7 @@ export class BookingDetailsComponent implements OnInit {
       now.setHours(0, 0, 0, 0);
       return endDate <= now;
     }
-    
+
     return false;
   }
 

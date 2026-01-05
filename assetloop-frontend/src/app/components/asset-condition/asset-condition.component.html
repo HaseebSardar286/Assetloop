@@ -1,0 +1,105 @@
+<div class="condition-container">
+    <!-- Before Handover -->
+    <div class="glass-panel">
+        <h3>Before Handover Condition</h3>
+
+        <div *ngIf="loading" class="text-center py-4">
+            Loading...
+        </div>
+
+        <ng-container *ngIf="!loading">
+            <div class="images-grid" *ngIf="condition?.beforeImages?.length">
+                <div class="image-card" *ngFor="let img of condition?.beforeImages">
+                    <img [src]="img.url" alt="Condition" loading="lazy">
+                    <span class="timestamp">{{ img.uploadedAt | date:'medium' }}</span>
+                </div>
+            </div>
+
+            <div *ngIf="!condition?.beforeImages?.length" class="empty-state">
+                <p>No handover images uploaded yet.</p>
+            </div>
+
+            <!-- Upload UI for Owner -->
+            <div class="upload-area" *ngIf="showBeforeUpload">
+                <h4>Upload Handover Proof</h4>
+                <input type="file" multiple (change)="onFileSelected($event)" id="fileInputBefore" accept="image/*">
+                <button class="btn-primary" [disabled]="uploading || !selectedFiles.length"
+                    (click)="uploadImages('before')">
+                    <fa-icon [icon]="faCloudUploadAlt"></fa-icon>
+                    {{ uploading ? 'Uploading...' : 'Upload Images' }}
+                </button>
+            </div>
+        </ng-container>
+    </div>
+
+    <!-- After Return -->
+    <div class="glass-panel">
+        <h3>After Return Condition</h3>
+
+        <ng-container *ngIf="!loading">
+            <div class="images-grid" *ngIf="condition?.afterImages?.length">
+                <div class="image-card" *ngFor="let img of condition?.afterImages">
+                    <img [src]="img.url" alt="Condition" loading="lazy">
+                    <span class="timestamp">{{ img.uploadedAt | date:'medium' }}</span>
+                </div>
+            </div>
+
+            <div *ngIf="!condition?.afterImages?.length" class="empty-state">
+                <p>No return images uploaded yet.</p>
+            </div>
+
+            <!-- message if disabled for renter -->
+            <div *ngIf="userType === 'renter' && !showAfterUpload" class="info-message">
+                <fa-icon [icon]="faExclamationTriangle"></fa-icon>
+                Upload will be available after booking completion.
+            </div>
+
+            <!-- Upload UI for Renter -->
+            <div class="upload-area" *ngIf="showAfterUpload">
+                <h4>Upload Return Proof</h4>
+                <input type="file" multiple (change)="onFileSelected($event)" id="fileInputAfter" accept="image/*">
+                <button class="btn-primary" [disabled]="uploading || !selectedFiles.length"
+                    (click)="uploadImages('after')">
+                    <fa-icon [icon]="faCloudUploadAlt"></fa-icon>
+                    {{ uploading ? 'Uploading...' : 'Upload Images' }}
+                </button>
+            </div>
+        </ng-container>
+    </div>
+
+    <div *ngIf="error" class="alert error">{{ error }}</div>
+    <div *ngIf="success" class="alert success">{{ success }}</div>
+
+    <!-- Dispute Section -->
+    <div class="glass-panel mt-3" *ngIf="condition?.beforeImages?.length || condition?.afterImages?.length">
+        <div class="d-flex justify-content-between align-items-center">
+            <h4 class="m-0 text-white">Something wrong?</h4>
+            <button class="btn btn-danger" (click)="reportIssue()">
+                Report Issue
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Dispute Modal -->
+<div class="modal-backdrop fade show" *ngIf="showDisputeModal"></div>
+<div class="modal fade show d-block" *ngIf="showDisputeModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title text-dark">Report Issue</h5>
+                <button type="button" class="btn-close" (click)="closeDisputeModal()"></button>
+            </div>
+            <div class="modal-body">
+                <p class="text-secondary">Please describe the issue with the asset condition:</p>
+                <textarea class="form-control" rows="4" [(ngModel)]="disputeReason"
+                    placeholder="Enter reason..."></textarea>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" (click)="closeDisputeModal()">Cancel</button>
+                <button type="button" class="btn btn-danger" (click)="submitDispute()"
+                    [disabled]="!disputeReason.trim()">Submit Dispute</button>
+            </div>
+        </div>
+    </div>
+</div>

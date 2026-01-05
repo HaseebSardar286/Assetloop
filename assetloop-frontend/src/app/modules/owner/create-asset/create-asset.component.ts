@@ -44,8 +44,8 @@ export class CreateAssetComponent implements OnInit {
     address: '',
     description: '',
     price: '',
-    startDate: '',
-    endDate: '',
+    startDate: new Date().toISOString().split('T')[0],
+    endDate: new Date().toISOString().split('T')[0],
     availability: 'Available',
     status: 'Active',
     category: '',
@@ -150,7 +150,7 @@ export class CreateAssetComponent implements OnInit {
     private ownerService: OwnerService,
     private router: Router,
     private systemSettingsService: SystemSettingsService
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     // Load system settings and current listings count
@@ -179,7 +179,7 @@ export class CreateAssetComponent implements OnInit {
     if (input.files) {
       this.fileTypeError = null;
       const files = Array.from(input.files);
-      
+
       // Validate file types
       const invalidFiles = files.filter(file => {
         const ext = file.name.split('.').pop()?.toLowerCase();
@@ -225,10 +225,11 @@ export class CreateAssetComponent implements OnInit {
 
   onSubmit() {
     // Check listing limit before submission
-    if (this.currentListingsCount >= this.maxListingsAllowed) {
-      alert(`You have reached the maximum limit of ${this.maxListingsAllowed} listings per user.`);
-      return;
-    }
+    // if (this.currentListingsCount >= this.maxListingsAllowed) {
+    //   alert(`You have reached the maximum limit of ${this.maxListingsAllowed} listings per user.`);
+    //   return;
+    // }
+
 
     // Validate file types
     if (this.imageFiles.length === 0) {
@@ -271,8 +272,8 @@ export class CreateAssetComponent implements OnInit {
       address: '',
       description: '',
       price: '',
-      startDate: '',
-      endDate: '',
+      startDate: new Date().toISOString().split('T')[0],
+      endDate: new Date().toISOString().split('T')[0],
       availability: 'Available',
       status: 'Active',
       category: '',

@@ -6,10 +6,7 @@
       <section class="details-hero gradient-bg px-4 py-4 py-md-5">
         <div class="container-fluid d-flex flex-wrap justify-content-between align-items-start gap-3">
           <div>
-            <button
-              class="btn btn-link text-white p-0 mb-2"
-              (click)="goBack()"
-            >
+            <button class="btn btn-link text-white p-0 mb-2" (click)="goBack()">
               <fa-icon [icon]="faArrowLeft" class="me-2"></fa-icon>
             </button>
             <div class="badge text-bg-light fw-semibold mb-2">Booking Details</div>
@@ -21,11 +18,7 @@
           <div class="stats-card bg-white shadow-sm rounded-4 p-3">
             <div class="text-muted small">Status</div>
             <div class="d-flex align-items-center gap-2 mt-1">
-              <span
-                class="badge"
-                [ngClass]="getStatusClass()"
-                style="font-size: 0.9rem; padding: 6px 12px;"
-              >
+              <span class="badge" [ngClass]="getStatusClass()" style="font-size: 0.9rem; padding: 6px 12px;">
                 {{ booking?.status | titlecase }}
               </span>
             </div>
@@ -35,18 +28,15 @@
 
       <section class="container-fluid py-4">
         <div *ngIf="error" class="alert alert-danger mb-3">{{ error }}</div>
-        
+
         <ng-container *ngIf="booking; else loadingOrEmpty">
           <!-- Booking Overview Card -->
           <div class="card shadow-sm rounded-4 overflow-hidden mb-4">
             <div class="row g-0">
               <div class="col-lg-5">
                 <div class="image-pane">
-                  <img
-                    [src]="booking.imageUrl || booking.asset?.images?.[0] || '/images/default.jpg'"
-                    class="img-fluid w-100 h-100 object-fit-cover"
-                    [alt]="booking.name"
-                  />
+                  <img [src]="booking.imageUrl || booking.asset?.images?.[0] || '/images/default.jpg'"
+                    class="img-fluid w-100 h-100 object-fit-cover" [alt]="booking.name" />
                   <div class="category-chip text-uppercase">
                     {{ booking.category || booking.asset?.category || 'N/A' }}
                   </div>
@@ -62,16 +52,12 @@
                         {{ booking.address || booking.asset?.address || 'Address not available' }}
                       </p>
                     </div>
-                    <span
-                      class="badge"
-                      [ngClass]="getStatusClass()"
-                      style="font-size: 0.9rem; padding: 8px 16px;"
-                    >
+                    <span class="badge" [ngClass]="getStatusClass()" style="font-size: 0.9rem; padding: 8px 16px;">
                       <fa-icon [icon]="getStatusIcon()" class="me-1"></fa-icon>
                       {{ booking.status | titlecase }}
                     </span>
                   </div>
-                  
+
                   <p class="card-text text-muted mb-4" *ngIf="booking.description || booking.asset?.description">
                     {{ booking.description || booking.asset?.description }}
                   </p>
@@ -140,7 +126,8 @@
                         {{ calculateTotal() | systemCurrency }}
                       </span>
                     </div>
-                    <div class="d-flex justify-content-between align-items-center small text-muted" *ngIf="booking.totalPaid">
+                    <div class="d-flex justify-content-between align-items-center small text-muted"
+                      *ngIf="booking.totalPaid">
                       <span>Amount Paid</span>
                       <span>{{ booking.totalPaid | systemCurrency }}</span>
                     </div>
@@ -148,34 +135,18 @@
 
                   <!-- Action Buttons -->
                   <div class="d-flex flex-wrap gap-2">
-                    <button
-                      class="btn btn-outline-success"
-                      (click)="startChat()"
-                      [disabled]="loading"
-                    >
+                    <button class="btn btn-outline-success" (click)="startChat()" [disabled]="loading">
                       <fa-icon [icon]="faComments" class="me-2"></fa-icon>
                       Message Owner
                     </button>
-                    <button
-                      class="btn btn-outline-primary"
-                      (click)="viewAssetDetails()"
-                      *ngIf="booking.asset"
-                    >
+                    <button class="btn btn-outline-primary" (click)="viewAssetDetails()" *ngIf="booking.asset">
                       View Asset Details
                     </button>
-                    <button
-                      class="btn btn-outline-warning"
-                      (click)="leaveReview()"
-                      *ngIf="isReviewable()"
-                    >
+                    <button class="btn btn-outline-warning" (click)="leaveReview()" *ngIf="isReviewable()">
                       Leave Review
                     </button>
-                    <button
-                      class="btn btn-outline-danger"
-                      (click)="cancelBooking()"
-                      *ngIf="booking.status === 'pending'"
-                      [disabled]="loading"
-                    >
+                    <button class="btn btn-outline-danger" (click)="cancelBooking()"
+                      *ngIf="booking.status === 'pending'" [disabled]="loading">
                       <fa-icon [icon]="faBan" class="me-2"></fa-icon>
                       Cancel Booking
                     </button>
@@ -189,7 +160,7 @@
           <div class="card shadow-sm rounded-4 mb-4">
             <div class="card-body">
               <h5 class="card-title mb-4">Additional Information</h5>
-              
+
               <div class="row g-4">
                 <div class="col-md-6">
                   <div class="info-item">
@@ -223,8 +194,18 @@
             </div>
           </div>
 
+          <!-- Asset Condition -->
+          <div class="card shadow-sm rounded-4 mb-4">
+            <div class="card-body">
+              <h5 class="card-title mb-4">Asset Condition Verification</h5>
+              <app-asset-condition [bookingId]="bookingId!" [userType]="'renter'"
+                [bookingStatus]="booking.status"></app-asset-condition>
+            </div>
+          </div>
+
           <!-- Asset Amenities (if available) -->
           <div class="card shadow-sm rounded-4" *ngIf="hasAssetAmenities()">
+
             <div class="card-body">
               <h5 class="card-title mb-3">Asset Amenities</h5>
               <div class="amenities">
@@ -250,4 +231,3 @@
     </main>
   </div>
 </div>
-

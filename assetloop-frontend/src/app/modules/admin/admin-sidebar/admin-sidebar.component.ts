@@ -9,7 +9,9 @@ import {
   faGear,
   faUser,
   faComment,
+  faExclamationCircle,
 } from '@fortawesome/free-solid-svg-icons';
+
 @Component({
   selector: 'app-admin-sidebar',
   imports: [FontAwesomeModule],
@@ -24,8 +26,10 @@ export class AdminSidebarComponent {
   faGear = faGear;
   faUser = faUser;
   faComment = faComment;
+  faExclamationCircle = faExclamationCircle;
 
-  constructor(private router: Router) {}
+
+  constructor(private router: Router) { }
 
   navigateTo(route: string) {
     this.router.navigate([route]);

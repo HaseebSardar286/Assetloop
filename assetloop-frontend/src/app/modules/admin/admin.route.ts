@@ -4,7 +4,9 @@ import { AdminDashboardComponent } from './admin-dashboard/admin-dashboard.compo
 import { UserManagementComponent } from './user-management/user-management.component';
 import { ListingManagementComponent } from './listing-management/listing-management.component';
 import { ReviewsManagementComponent } from './reviews-management/reviews-management.component';
+import { DisputeResolutionComponent } from './dispute-resolution/dispute-resolution.component';
 import { TransactionManagementComponent } from './transaction-management/transaction-management.component';
+
 import { SystemSettingsComponent } from './system-settings/system-settings.component';
 import { AdminVerificationComponent } from './admin-verification/admin-verification.component';
 import { VerificationDetailsComponent } from './verification-details/verification-details.component';
@@ -41,7 +43,13 @@ export const ADMIN_ROUTES: Routes = [
     data: { title: 'Manage Reviews' },
   },
   {
+    path: 'manage-disputes',
+    component: DisputeResolutionComponent,
+    data: { title: 'Dispute Resolution' },
+  },
+  {
     path: 'manage-transactions',
+
     component: TransactionManagementComponent,
     data: { title: 'Manage Transactions' },
   },

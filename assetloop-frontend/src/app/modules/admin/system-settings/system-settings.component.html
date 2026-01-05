@@ -18,21 +18,13 @@
           <!-- Success Message -->
           <div *ngIf="success" class="alert alert-success alert-dismissible fade show" role="alert">
             {{ success }}
-            <button
-              type="button"
-              class="btn-close"
-              (click)="success = null"
-            ></button>
+            <button type="button" class="btn-close" (click)="success = null"></button>
           </div>
 
           <!-- Error Message -->
           <div *ngIf="error" class="alert alert-danger alert-dismissible fade show" role="alert">
             {{ error }}
-            <button
-              type="button"
-              class="btn-close"
-              (click)="error = null"
-            ></button>
+            <button type="button" class="btn-close" (click)="error = null"></button>
           </div>
 
           <!-- General Settings -->
@@ -40,45 +32,29 @@
             <div class="card-header bg-primary text-white">
               <h5 class="mb-0">General Settings</h5>
             </div>
-          <div class="card-body">
-            <div class="mb-3">
-              <label for="platformName" class="form-label">Platform Name</label>
-              <input
-                type="text"
-                class="form-control"
-                id="platformName"
-                [(ngModel)]="settings.platformName"
-                name="platformName"
-                required
-              />
-            </div>
-            <div class="mb-3">
-              <label for="currency" class="form-label">Currency</label>
-              <select
-                class="form-select"
-                id="currency"
-                [(ngModel)]="settings.currency"
-                name="currency"
-              >
-                <option value="PKR">PKR (Pakistani Rupee)</option>
-                <option value="USD">USD (US Dollar)</option>
-                <option value="EUR">EUR (Euro)</option>
-              </select>
-            </div>
-            <div class="mb-3">
-              <label for="timezone" class="form-label">Timezone</label>
-              <select
-                class="form-select"
-                id="timezone"
-                [(ngModel)]="settings.timezone"
-                name="timezone"
-              >
-                <option value="Asia/Karachi">Asia/Karachi (PKT)</option>
-                <option value="UTC">UTC</option>
-                <option value="America/New_York">America/New_York (EST)</option>
-              </select>
-            </div>
-            <!-- <div class="mb-3">
+            <div class="card-body">
+              <div class="mb-3">
+                <label for="platformName" class="form-label">Platform Name</label>
+                <input type="text" class="form-control" id="platformName" [(ngModel)]="settings.platformName"
+                  name="platformName" required />
+              </div>
+              <div class="mb-3">
+                <label for="currency" class="form-label">Currency</label>
+                <select class="form-select" id="currency" [(ngModel)]="settings.currency" name="currency">
+                  <option value="PKR">PKR (Pakistani Rupee)</option>
+                  <option value="USD">USD (US Dollar)</option>
+                  <option value="EUR">EUR (Euro)</option>
+                </select>
+              </div>
+              <div class="mb-3">
+                <label for="timezone" class="form-label">Timezone</label>
+                <select class="form-select" id="timezone" [(ngModel)]="settings.timezone" name="timezone">
+                  <option value="Asia/Karachi">Asia/Karachi (PKT)</option>
+                  <option value="UTC">UTC</option>
+                  <option value="America/New_York">America/New_York (EST)</option>
+                </select>
+              </div>
+              <!-- <div class="mb-3">
               <label class="form-label">Default Language</label>
               <div class="form-check">
                 <input
@@ -104,7 +80,7 @@
                 <label class="form-check-label" for="langUr">Urdu</label>
               </div>
             </div> -->
-            <!-- <div class="mb-3">
+              <!-- <div class="mb-3">
               <label class="form-label">Theme</label>
               <div class="form-check">
                 <input
@@ -130,8 +106,8 @@
                 <label class="form-check-label" for="themeDark">Dark</label>
               </div>
             </div> -->
+            </div>
           </div>
-        </div>
 
           <!-- Notification Settings -->
           <!-- <div class="card glass-card mb-4">
@@ -224,7 +200,8 @@
         </div> -->
 
           <!-- Limits Settings -->
-          <div class="card glass-card mb-4">
+          <!-- Limits Settings -->
+          <!-- <div class="card glass-card mb-4">
             <div class="card-header bg-success text-white">
               <h5 class="mb-0">Limits Settings</h5>
             </div>
@@ -258,46 +235,31 @@
               />
             </div>
           </div>
-        </div>
+        </div> -->
+
 
           <!-- File Settings -->
           <div class="card glass-card mb-4">
             <div class="card-header bg-warning text-white">
               <h5 class="mb-0">File Settings</h5>
             </div>
-          <div class="card-body">
-            <div class="mb-3">
-              <label for="allowedFileTypes" class="form-label"
-                >Allowed File Types</label
-              >
-              <input
-                type="text"
-                class="form-control"
-                id="allowedFileTypes"
-                [(ngModel)]="settings.allowedFileTypes"
-                name="allowedFileTypes"
-                placeholder="e.g., jpg,png,pdf"
-              />
+            <div class="card-body">
+              <div class="mb-3">
+                <label for="allowedFileTypes" class="form-label">Allowed File Types</label>
+                <input type="text" class="form-control" id="allowedFileTypes" [(ngModel)]="settings.allowedFileTypes"
+                  name="allowedFileTypes" placeholder="e.g., jpg,png,pdf" />
+              </div>
             </div>
           </div>
-        </div>
 
           <div class="d-flex justify-content-end gap-3 mt-4">
             <!-- Reset to Default Button -->
-            <button
-              type="button"
-              class="btn btn-outline-secondary"
-              (click)="resetToDefault()"
-            >
+            <button type="button" class="btn btn-outline-secondary" (click)="resetToDefault()">
               Reset to Default
             </button>
 
             <!-- Save Button -->
-            <button
-              type="submit"
-              class="btn btn-primary"
-              [disabled]="settingsForm.invalid"
-            >
+            <button type="submit" class="btn btn-primary" [disabled]="settingsForm.invalid">
               Save Settings
             </button>
           </div>

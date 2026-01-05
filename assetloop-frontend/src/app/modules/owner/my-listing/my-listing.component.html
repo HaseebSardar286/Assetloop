@@ -1,10 +1,7 @@
 <div class="d-flex flex-column vh-100">
   <app-header (logout)="onLogout()"></app-header>
   <div class="d-flex flex-grow-1">
-    <app-owner-side-bar
-      (logout)="onLogout()"
-      (navigate)="onNavigate($event)"
-    ></app-owner-side-bar>
+    <app-owner-side-bar (logout)="onLogout()" (navigate)="onNavigate($event)"></app-owner-side-bar>
     <main class="flex-grow-1 bg-light">
       <section class="dashboard-hero gradient-bg px-4 py-4 py-md-5">
         <div class="container-fluid d-flex flex-wrap justify-content-between align-items-start gap-3">
@@ -34,10 +31,12 @@
               <h5 class="mb-1">Your assets</h5>
               <small class="text-muted">Track status, pricing, and availability</small>
             </div>
-            <button class="btn btn-primary d-inline-flex align-items-center gap-2">
+            <button class="btn btn-primary d-inline-flex align-items-center gap-2"
+              [routerLink]="['/owner/create-asset']">
               <fa-icon [icon]="faPlus"></fa-icon>
               Add new
             </button>
+
           </div>
 
           <div class="table-responsive">
@@ -58,13 +57,10 @@
                   <td class="fw-semibold">{{ asset.name }}</td>
                   <td class="text-muted small">{{ asset.address }}</td>
                   <td>
-                    <span
-                      class="badge"
-                      [ngClass]="{
+                    <span class="badge" [ngClass]="{
                         'bg-success-subtle text-success': (asset.status || '').toLowerCase() === 'active',
                         'bg-secondary-subtle text-secondary': (asset.status || '').toLowerCase() !== 'active'
-                      }"
-                    >
+                      }">
                       {{ asset.status }}
                     </span>
                   </td>
@@ -72,41 +68,22 @@
                   <td class="text-muted small">{{ asset.endDate | date : 'MM/dd/yyyy' }}</td>
                   <td class="fw-semibold">PKR {{ asset.price }}</td>
                   <td class="text-end d-flex justify-content-end gap-2">
-                    <button
-                      class="btn btn-icon btn-outline-primary"
-                      [routerLink]="['/owner/assets', asset.id || asset._id]"
-                      aria-label="View"
-                    >
+                    <button class="btn btn-icon btn-outline-primary"
+                      [routerLink]="['/owner/assets', asset.id || asset._id]" aria-label="View">
                       <fa-icon [icon]="faEye"></fa-icon>
                     </button>
-                    <button
-                      class="btn btn-icon btn-outline-warning"
-                      (click)="openModal(asset)"
-                      aria-label="Edit"
-                    >
+                    <button class="btn btn-icon btn-outline-warning" (click)="openModal(asset)" aria-label="Edit">
                       <fa-icon [icon]="faPen"></fa-icon>
                     </button>
-                    <button
-                      *ngIf="(asset.status || '').toLowerCase() === 'active'"
-                      class="btn btn-icon btn-outline-danger"
-                      aria-label="Deactivate"
-                      (click)="toggleStatus(asset)"
-                    >
+                    <button *ngIf="(asset.status || '').toLowerCase() === 'active'"
+                      class="btn btn-icon btn-outline-danger" aria-label="Deactivate" (click)="toggleStatus(asset)">
                       <fa-icon [icon]="faToggleOn"></fa-icon>
                     </button>
-                    <button
-                      *ngIf="(asset.status || '').toLowerCase() !== 'active'"
-                      class="btn btn-icon btn-outline-success"
-                      aria-label="Activate"
-                      (click)="toggleStatus(asset)"
-                    >
+                    <button *ngIf="(asset.status || '').toLowerCase() !== 'active'"
+                      class="btn btn-icon btn-outline-success" aria-label="Activate" (click)="toggleStatus(asset)">
                       <fa-icon [icon]="faToggleOff"></fa-icon>
                     </button>
-                    <button
-                      class="btn btn-icon btn-outline-danger"
-                      aria-label="Delete"
-                      (click)="deleteAsset(asset)"
-                    >
+                    <button class="btn btn-icon btn-outline-danger" aria-label="Delete" (click)="deleteAsset(asset)">
                       <fa-icon [icon]="faTrash"></fa-icon>
                     </button>
                   </td>
@@ -123,23 +100,13 @@
       </section>
 
       <!-- Update Modal -->
-      <div
-        class="modal"
-        tabindex="-1"
-        [class.show]="selectedListing !== null"
-        [style.display]="selectedListing !== null ? 'block' : 'none'"
-        (click)="closeModal()"
-      >
+      <div class="modal" tabindex="-1" [class.show]="selectedListing !== null"
+        [style.display]="selectedListing !== null ? 'block' : 'none'" (click)="closeModal()">
         <div class="modal-dialog modal-dialog-centered" (click)="$event.stopPropagation()">
           <div class="modal-content">
             <div class="modal-header">
               <h5 class="modal-title">Edit Listing</h5>
-              <button
-                type="button"
-                class="btn-close"
-                (click)="closeModal()"
-                aria-label="Close"
-              ></button>
+              <button type="button" class="btn-close" (click)="closeModal()" aria-label="Close"></button>
             </div>
             <div class="modal-body" *ngIf="selectedListing">
               <div class="mb-3 d-flex flex-column gap-1">
@@ -149,45 +116,22 @@
               <form #editForm="ngForm">
                 <div class="mb-3">
                   <label for="editName" class="form-label">Title</label>
-                  <input
-                    type="text"
-                    class="form-control"
-                    id="editName"
-                    [(ngModel)]="selectedListing.name"
-                    name="name"
-                  />
+                  <input type="text" class="form-control" id="editName" [(ngModel)]="selectedListing.name"
+                    name="name" />
                 </div>
                 <div class="mb-3">
                   <label for="editAddress" class="form-label">Address</label>
-                  <input
-                    type="text"
-                    class="form-control"
-                    id="editAddress"
-                    [(ngModel)]="selectedListing.address"
-                    name="address"
-                  />
+                  <input type="text" class="form-control" id="editAddress" [(ngModel)]="selectedListing.address"
+                    name="address" />
                 </div>
                 <div class="mb-3">
-                  <label for="editPrice" class="form-label"
-                    >Price (PKR/day)</label
-                  >
-                  <input
-                    type="number"
-                    class="form-control"
-                    id="editPrice"
-                    [(ngModel)]="selectedListing.price"
-                    name="price"
-                    min="0"
-                  />
+                  <label for="editPrice" class="form-label">Price (PKR/day)</label>
+                  <input type="number" class="form-control" id="editPrice" [(ngModel)]="selectedListing.price"
+                    name="price" min="0" />
                 </div>
                 <div class="mb-3">
                   <label for="editStatus" class="form-label">Status</label>
-                  <select
-                    class="form-select"
-                    id="editStatus"
-                    [(ngModel)]="selectedListing.status"
-                    name="status"
-                  >
+                  <select class="form-select" id="editStatus" [(ngModel)]="selectedListing.status" name="status">
                     <option value="Active">Active</option>
                     <option value="Inactive">Inactive</option>
                   </select>
@@ -195,29 +139,17 @@
               </form>
             </div>
             <div class="modal-footer">
-              <button
-                type="button"
-                class="btn btn-outline-secondary"
-                (click)="closeModal()"
-              >
+              <button type="button" class="btn btn-outline-secondary" (click)="closeModal()">
                 Close
               </button>
-              <button
-                type="button"
-                class="btn btn-primary"
-                (click)="saveChanges()"
-              >
+              <button type="button" class="btn btn-primary" (click)="saveChanges()">
                 Save changes
               </button>
             </div>
           </div>
         </div>
       </div>
-      <div
-        class="modal-backdrop"
-        *ngIf="selectedListing !== null"
-        (click)="closeModal()"
-      ></div>
+      <div class="modal-backdrop" *ngIf="selectedListing !== null" (click)="closeModal()"></div>
     </main>
   </div>
 </div>

@@ -68,14 +68,15 @@ export class OwnerProfileComponent {
   error: string | null = null;
 
   accountStatus = {
-    memberSince: 'January 2025',
-    bookings: 2,
-    reviews: 1,
+    memberSince: '',
+    bookings: 0,
+    reviews: 0,
   };
+
 
   activeTab: 'profile' | 'password' | 'notifications' = 'profile';
 
-  constructor(private router: Router, private ownerService: OwnerService) {}
+  constructor(private router: Router, private ownerService: OwnerService) { }
   ngOnInit(): void {
     this.getProfile();
     this.loadSettings();
@@ -85,26 +86,39 @@ export class OwnerProfileComponent {
     this.ownerService.getProfile().subscribe({
       next: (data: User) => {
         this.user = data;
+        if (data.createdAt) {
+          const date = new Date(data.createdAt);
+          this.accountStatus.memberSince = date.toLocaleString('default', { month: 'long', year: 'numeric' });
+        }
         console.log('Profile updated successfully', this.user);
       },
       error: (error: String) => {
         console.log('Error getting user profile data: ', error);
       },
     });
+
+    this.ownerService.getBookings().subscribe({
+      next: (bookings) => {
+        this.accountStatus.bookings = bookings.length;
+      },
+      error: (err) => console.error('Error fetching bookings count', err)
+    });
   }
 
   loadSettings(): void {
     this.ownerService.getNotificationSettings().subscribe({
       next: (data) => {
-        this.settings = data;
+        // Map settings to checkbox models if structure matches or needs mapping
+        this.settings = { ...this.settings, ...data };
         console.log('Notification settings:', data);
       },
       error: (err) => {
         console.error('Error loading settings:', err);
-        alert(err.error?.message || 'Failed to load settings');
+        // alert(err.error?.message || 'Failed to load settings');
       },
     });
   }
+
 
   saveSettings(): void {
     this.ownerService.updateNotificationSettings(this.settings).subscribe({

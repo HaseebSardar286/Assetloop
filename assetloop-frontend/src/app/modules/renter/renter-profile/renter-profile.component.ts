@@ -69,12 +69,13 @@ export class RenterProfileComponent {
   error: string | null = null;
 
   accountStatus = {
-    memberSince: 'January 2025',
-    bookings: 2,
-    reviews: 1,
+    memberSince: '',
+    bookings: 0,
+    reviews: 0,
   };
 
-  constructor(private router: Router, private renterService: RenterService) {}
+
+  constructor(private router: Router, private renterService: RenterService) { }
   ngOnInit(): void {
     this.getProfile();
     this.loadSettings();
@@ -88,25 +89,37 @@ export class RenterProfileComponent {
     this.renterService.getProfile().subscribe({
       next: (data: User) => {
         this.user = data;
+        if (data.createdAt) {
+          const date = new Date(data.createdAt);
+          this.accountStatus.memberSince = date.toLocaleString('default', { month: 'long', year: 'numeric' });
+        }
         console.log('Profile updated successfully', this.user);
       },
       error: (error: String) => {
         console.log('Error getting user profile data: ', error);
       },
     });
+
+    this.renterService.getBookings().subscribe({
+      next: (bookings) => {
+        this.accountStatus.bookings = bookings.length;
+      },
+      error: (err) => console.error(err)
+    });
   }
 
   loadSettings(): void {
     this.renterService.getNotificationSettings().subscribe({
       next: (data) => {
-        this.settings = data;
+        this.settings = { ...this.settings, ...data };
       },
       error: (err) => {
         console.error('Error loading settings:', err);
-        alert(err.error?.message || 'Failed to load settings');
+        // alert(err.error?.message || 'Failed to load settings');
       },
     });
   }
+
 
   saveSettings(): void {
     this.renterService.updateNotificationSettings(this.settings).subscribe({

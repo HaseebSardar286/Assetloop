@@ -1,1 +1,102 @@
-<p>dispute-resolution works!</p>
+<div class="d-flex flex-column vh-100">
+    <app-header></app-header>
+    <div class="d-flex flex-grow-1">
+        <app-admin-sidebar></app-admin-sidebar>
+        <main class="flex-grow-1 bg-light">
+            <section class="dashboard-hero gradient-bg px-4 py-4 py-md-5 mb-0">
+                <div class="container-fluid">
+                    <div class="badge text-bg-light fw-semibold mb-2">Dispute Resolution</div>
+                    <h2 class="text-white fw-bold mb-1">Manage Disputes</h2>
+                    <p class="text-white-50 mb-0">View and resolve disputes raised by users.</p>
+                </div>
+            </section>
+
+            <div class="container-fluid py-4">
+                <div class="card glass-card shadow-sm border-0">
+                    <div class="card-header bg-white border-0 py-3">
+                        <h5 class="mb-0 fw-bold">Active Disputes</h5>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle mb-0">
+                                <thead class="bg-light">
+                                    <tr>
+                                        <th class="ps-4">Date</th>
+                                        <th>Raised By</th>
+                                        <th>Booking/Asset</th>
+                                        <th>Reason</th>
+                                        <th>Status</th>
+                                        <th class="text-end pe-4">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr *ngFor="let dispute of disputes">
+                                        <td class="ps-4">{{ dispute.createdAt | date:'shortDate' }}</td>
+                                        <td>
+                                            {{ dispute.raisedBy?.firstName }} {{ dispute.raisedBy?.lastName }}<br>
+                                            <small class="text-muted">{{ dispute.raisedBy?.email }}</small>
+                                        </td>
+                                        <td>
+                                            <strong>{{ dispute.booking?.asset?.name }}</strong><br>
+                                            <small class="text-muted">ID: {{ dispute.booking?._id | slice:0:6
+                                                }}...</small>
+                                        </td>
+                                        <td>{{ dispute.reason }}</td>
+                                        <td>
+                                            <span class="badge" [class.bg-warning]="dispute.status === 'OPEN'"
+                                                [class.bg-success]="dispute.status === 'RESOLVED'"
+                                                [class.bg-danger]="dispute.status === 'REJECTED'">
+                                                {{ dispute.status }}
+                                            </span>
+                                        </td>
+                                        <td class="text-end pe-4">
+                                            <button class="btn btn-sm btn-outline-primary me-2"
+                                                (click)="viewCondition(dispute.booking?._id, dispute.booking?.status)">
+                                                View Proofs
+                                            </button>
+                                            <ng-container *ngIf="dispute.status === 'OPEN'">
+                                                <button class="btn btn-sm btn-success me-1"
+                                                    (click)="resolveDispute(dispute._id, 'RESOLVED')">
+                                                    Resolve
+                                                </button>
+                                                <button class="btn btn-sm btn-danger"
+                                                    (click)="resolveDispute(dispute._id, 'REJECTED')">
+                                                    Reject
+                                                </button>
+                                            </ng-container>
+                                        </td>
+                                    </tr>
+                                    <tr *ngIf="disputes.length === 0">
+                                        <td colspan="6" class="text-center py-5 text-muted">No disputes found.</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+
+
+<!-- Modal for Condition -->
+<div class="modal-backdrop fade show" *ngIf="showConditionModal"></div>
+<div class="modal fade show d-block" *ngIf="showConditionModal" tabindex="-1">
+    <div class="modal-dialog modal-xl modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Asset Condition Proofs</h5>
+                <button type="button" class="btn-close" (click)="closeModal()"></button>
+            </div>
+            <div class="modal-body bg-dark">
+                <app-asset-condition *ngIf="selectedBookingId" [bookingId]="selectedBookingId" [userType]="'renter'"
+                    [bookingStatus]="selectedBookingStatus"></app-asset-condition>
+                <!-- userType 'renter' passed just to allow seeing 'after' images logic if needed, 
+               but for admin we mainly just want to see the component state. 
+               The component logic for 'upload' won't trigger since we are admin, 
+               but we should be able to see images. -->
+            </div>
+        </div>
+    </div>
+</div>

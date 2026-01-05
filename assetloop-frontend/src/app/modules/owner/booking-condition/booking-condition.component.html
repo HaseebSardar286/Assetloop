@@ -1,0 +1,35 @@
+<div class="d-flex flex-column vh-100">
+    <app-header></app-header>
+    <div class="d-flex flex-grow-1">
+        <app-owner-side-bar></app-owner-side-bar>
+        <main class="flex-grow-1 bg-light p-4 overflow-auto">
+            <button class="btn btn-link mb-3 text-dark text-decoration-none px-0" routerLink="/owner/rentals">
+                <fa-icon [icon]="faArrowLeft"></fa-icon> Back to Rentals
+            </button>
+
+            <h2 class="mb-4 fw-bold">Asset Condition Verification</h2>
+
+            <div *ngIf="loading" class="text-center py-5">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+            </div>
+
+            <div *ngIf="error" class="alert alert-danger">{{ error }}</div>
+
+            <div *ngIf="booking" class="bg-white rounded-4 shadow-sm p-4">
+                <div class="mb-4 border-bottom pb-3">
+                    <h5 class="mb-2">Booking: {{ booking.asset?.name || booking.name }}</h5>
+                    <p class="text-muted mb-0">
+                        Renter: {{ booking.renter?.firstName }} {{ booking.renter?.lastName }}
+                        <span class="mx-2">•</span>
+                        Status: <span class="badge bg-secondary">{{ booking.status | titlecase }}</span>
+                    </p>
+                </div>
+
+                <app-asset-condition [bookingId]="booking._id || booking.id" [userType]="'owner'"
+                    [bookingStatus]="booking.status"></app-asset-condition>
+            </div>
+        </main>
+    </div>
+</div>

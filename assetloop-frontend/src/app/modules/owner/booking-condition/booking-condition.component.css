@@ -1,0 +1,14 @@
+main {
+    margin-left: 230px;
+    flex-grow: 1;
+    min-height: calc(100vh - 60px);
+    margin-top: 70px;
+    padding: 0;
+    background: #f8f9fa;
+}
+
+@media (max-width: 992px) {
+    main {
+        margin-left: 0;
+    }
+}

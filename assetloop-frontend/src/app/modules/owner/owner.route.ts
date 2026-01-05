@@ -7,6 +7,8 @@ import { RentalRequestsComponent } from './rental-requests/rental-requests.compo
 import { OwnerWalletComponent } from './owner-wallet/owner-wallet.component';
 import { ChatComponent } from '../chat/components/chat/chat.component';
 import { AssetDetailsComponent } from '../renter/asset-details/asset-details.component';
+import { BookingConditionComponent } from './booking-condition/booking-condition.component';
+
 
 export const OWNER_ROUTES: Routes = [
   {
@@ -34,6 +36,12 @@ export const OWNER_ROUTES: Routes = [
     component: RentalRequestsComponent,
     data: { title: 'Rental Requests' },
   },
+  {
+    path: 'booking/:id/condition',
+    component: BookingConditionComponent,
+    data: { title: 'Asset Condition' },
+  },
+
   {
     path: 'create-asset',
     component: CreateAssetComponent,

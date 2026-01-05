@@ -10,7 +10,11 @@ const renterRoutes = require("./routes/renterRoutes");
 const adminRoutes = require("./routes/adminRoutes");
 const chatRoutes = require("./routes/chatRoutes");
 const paymentsRoutes = require("./routes/paymentsRoutes");
+const assetConditionRoutes = require("./routes/assetConditionRoutes");
+const disputeRoutes = require("./routes/disputeRoutes");
+
 const errorHandler = require("./middlewares/errorHandler");
+
 const connectionMiddleware = require("./middlewares/connectionMiddleware");
 
 // Handle unhandled promise rejections
@@ -66,8 +70,8 @@ const corsOptions = {
     callback(new Error("Not allowed by CORS"));
   },
   credentials: true,
-  methods: ["GET","POST","PUT","DELETE","OPTIONS","PATCH"],
-  allowedHeaders: ["Content-Type","Authorization","X-Requested-With"],
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
+  allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
 };
 
 app.use(cors(corsOptions));
@@ -131,6 +135,10 @@ app.use("/api/renter", renterRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/chat", chatRoutes);
 app.use("/api/payments", paymentsRoutes); // Payment routes (other than webhook)
+app.use("/api", assetConditionRoutes);
+app.use("/api/disputes", disputeRoutes);
+
+
 
 // Handle 404 routes
 app.use((req, res) => {

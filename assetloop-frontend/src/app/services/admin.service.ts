@@ -15,7 +15,7 @@ import { environment } from '../../environments/environment';
 export class AdminService {
   private apiUrl = `${environment.apiBaseUrl}/admin`;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   private getHeaders(): HttpHeaders {
     const token = localStorage.getItem('authToken');
@@ -189,4 +189,24 @@ export class AdminService {
       headers: this.getHeaders(),
     });
   }
+
+  getDisputes(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/disputes`, {
+      headers: this.getHeaders(),
+    });
+  }
+
+  resolveDispute(id: string, status: string, adminComments: string): Observable<any> {
+    return this.http.put(`${this.apiUrl}/disputes/${id}`,
+      { status, adminComments },
+      { headers: this.getHeaders() }
+    );
+  }
+
+  getAssetCondition(bookingId: string): Observable<any> {
+    return this.http.get(`${this.apiUrl}/bookings/${bookingId}/condition`, {
+      headers: this.getHeaders()
+    });
+  }
 }
+
