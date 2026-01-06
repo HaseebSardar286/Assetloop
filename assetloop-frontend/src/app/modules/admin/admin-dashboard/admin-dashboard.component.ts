@@ -64,10 +64,13 @@ export class AdminDashboardComponent implements OnInit {
   error: string | null = null;
 
   // Pagination
-  currentPage = 1;
+  currentPageUsers = 1;
+  currentPageAssets = 1;
+  currentPageBookings = 1;
+  currentPageReviews = 1;
   itemsPerPage = 5;
 
-  constructor(private adminService: AdminService) {}
+  constructor(private adminService: AdminService) { }
 
   ngOnInit(): void {
     this.loadDashboardData();
@@ -143,25 +146,25 @@ export class AdminDashboardComponent implements OnInit {
 
   // Pagination methods
   get paginatedBookings(): Booking[] {
-    const start = (this.currentPage - 1) * this.itemsPerPage;
+    const start = (this.currentPageBookings - 1) * this.itemsPerPage;
     const end = start + this.itemsPerPage;
     return this.bookings.slice(start, end);
   }
 
   get paginatedReviews(): Review[] {
-    const start = (this.currentPage - 1) * this.itemsPerPage;
+    const start = (this.currentPageReviews - 1) * this.itemsPerPage;
     const end = start + this.itemsPerPage;
     return this.reviews.slice(start, end);
   }
 
   get paginatedUsers(): User[] {
-    const start = (this.currentPage - 1) * this.itemsPerPage;
+    const start = (this.currentPageUsers - 1) * this.itemsPerPage;
     const end = start + this.itemsPerPage;
     return this.users.slice(start, end);
   }
 
   get paginatedAssets(): AssetResponse[] {
-    const start = (this.currentPage - 1) * this.itemsPerPage;
+    const start = (this.currentPageAssets - 1) * this.itemsPerPage;
     const end = start + this.itemsPerPage;
     return this.assets.slice(start, end);
   }
@@ -182,10 +185,27 @@ export class AdminDashboardComponent implements OnInit {
     return Math.ceil(this.assets.length / this.itemsPerPage);
   }
 
-  changePage(page: number): void {
+  changePageUsers(page: number): void {
+    if (page >= 1 && page <= this.totalPagesUsers) {
+      this.currentPageUsers = page;
+    }
+  }
+
+  changePageAssets(page: number): void {
     if (page >= 1 && page <= this.totalPagesAssets) {
-      // Use the highest page count as a reference
-      this.currentPage = page;
+      this.currentPageAssets = page;
+    }
+  }
+
+  changePageBookings(page: number): void {
+    if (page >= 1 && page <= this.totalPagesBookings) {
+      this.currentPageBookings = page;
+    }
+  }
+
+  changePageReviews(page: number): void {
+    if (page >= 1 && page <= this.totalPagesReviews) {
+      this.currentPageReviews = page;
     }
   }
 

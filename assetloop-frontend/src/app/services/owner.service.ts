@@ -46,6 +46,36 @@ export class OwnerService {
     });
   }
 
+  getAssetById(id: string): Observable<AssetResponse> {
+    return this.http.get<AssetResponse>(`${this.apiUrl}/assets/${id}`, {
+      headers: this.getHeaders(),
+    });
+  }
+
+  getAssetReviews(assetId: string): Observable<{
+    reviews: Array<{
+      rating: number;
+      comment?: string;
+      createdAt: string;
+      reviewer: string;
+    }>;
+    averageRating?: number;
+    totalReviews?: number;
+  }> {
+    return this.http.get<{
+      reviews: Array<{
+        rating: number;
+        comment?: string;
+        createdAt: string;
+        reviewer: string;
+      }>;
+      averageRating?: number;
+      totalReviews?: number;
+    }>(`${this.apiUrl}/assets/${assetId}/reviews`, {
+      headers: this.getHeaders(),
+    });
+  }
+
   updateAsset(
     id: string,
     data: Partial<AssetForm> | FormData

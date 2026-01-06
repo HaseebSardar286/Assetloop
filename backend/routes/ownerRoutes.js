@@ -1,6 +1,7 @@
 const express = require("express");
 const {
   createAsset,
+  getAssetById,
   getAssets,
   updateAsset,
   deleteAsset,
@@ -41,6 +42,8 @@ router.get("/users", getUsers);
 
 router.post("/create-asset", upload.array("images", 20), createAsset);
 router.get("/assets", getAssets);
+router.get("/assets/:id", getAssetById);
+router.get("/assets/:assetId/reviews", getAssetReviews);
 router.put("/assets/:id", upload.array("images", 20), updateAsset);
 router.put("/assets/:id/details", updateAsset);
 router.delete("/assets/:id", deleteAsset);

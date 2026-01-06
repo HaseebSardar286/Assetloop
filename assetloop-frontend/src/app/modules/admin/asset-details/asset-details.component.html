@@ -10,11 +10,7 @@
           <div class="card shadow-lg col-md-12">
             <div class="row g-0">
               <div class="mt-2 p-3">
-                <img
-                  [src]="asset.images?.[0] || '/images/default.jpg'"
-                  class="img-fluid rounded"
-                  [alt]="asset.name"
-                />
+                <img [src]="asset.images?.[0] || '/images/default.jpg'" class="img-fluid rounded" [alt]="asset.name" />
               </div>
               <div>
                 <div class="card-body">
@@ -33,7 +29,7 @@
                     <strong>Amenities:</strong>
                     <small class="text-muted">{{
                       asset.amenities?.join(", ")
-                    }}</small>
+                      }}</small>
                   </p>
                 </div>
               </div>
@@ -42,17 +38,13 @@
           <div class="card shadow-sm col-md-12 p-2 mt-3">
             <div class="card-body">
               <h5 class="card-title">Owner Details</h5>
-              <div *ngIf="reviews.length; else noReviews">
-                <div class="mb-2" *ngFor="let r of reviews">
-                  <div>
-                    <strong>{{ r.reviewer }}</strong> •
-                    <span>{{ r.createdAt | date : "mediumDate" }}</span>
-                  </div>
-                  <div>Rating: {{ r.rating }}/5</div>
-                  <div class="text-muted">{{ r.comment }}</div>
-                </div>
+              <div *ngIf="asset.owner; else noOwner">
+                <p class="mb-1"><strong>Name:</strong> {{ asset.owner.name || (asset.owner.firstName + ' ' +
+                  asset.owner.lastName) }}</p>
+                <p class="mb-1"><strong>Email:</strong> {{ asset.owner.email }}</p>
+                <p class="mb-1" *ngIf="asset.owner.contact"><strong>Contact:</strong> {{ asset.owner.contact }}</p>
               </div>
-              <ng-template #noReviews>
+              <ng-template #noOwner>
                 <div class="text-muted">No Owner Details Yet.</div>
               </ng-template>
             </div>

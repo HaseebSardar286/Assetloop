@@ -3,7 +3,9 @@ import { CommonModule } from '@angular/common';
 import { Router, ActivatedRoute, RouterModule } from '@angular/router';
 import { HeaderComponent } from '../../../components/header/header.component';
 import { RenterSideBarComponent } from '../renter-side-bar/renter-side-bar.component';
+import { OwnerSideBarComponent } from '../../owner/owner-side-bar/owner-side-bar.component';
 import { RenterService } from '../../../services/renter.service';
+import { OwnerService } from '../../../services/owner.service';
 import { ChatService } from '../../../services/chat.service';
 import { AuthService } from '../../../services/auth.service';
 import { map } from 'rxjs/operators';
@@ -23,6 +25,7 @@ import { SystemCurrencyPipe } from '../../../pipes/currency.pipe';
     RouterModule,
     HeaderComponent,
     RenterSideBarComponent,
+    OwnerSideBarComponent,
     FontAwesomeModule,
     SystemCurrencyPipe,
   ],
@@ -54,6 +57,7 @@ export class AssetDetailsComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private renterService: RenterService,
+    private ownerService: OwnerService,
     private chatService: ChatService,
     private authService: AuthService,
     private router: Router
@@ -69,16 +73,26 @@ export class AssetDetailsComponent implements OnInit {
     this.assetId = this.route.snapshot.paramMap.get('id');
     if (this.assetId) {
       this.loading = true;
-      this.loadFavorites();
+      if (this.isRenter) {
+        this.loadFavorites();
+      }
 
-      this.renterService.getAssetById(this.assetId).subscribe({
+      const fetchAsset$ = this.isRenter
+        ? this.renterService.getAssetById(this.assetId)
+        : this.ownerService.getAssetById(this.assetId);
+
+      fetchAsset$.subscribe({
         next: (asset: any) => {
           this.asset = asset;
           if (!this.asset) {
             this.error = 'Asset not found';
           }
           if (this.assetId) {
-            this.renterService.getAssetReviews(this.assetId).subscribe({
+            const reviews$ = this.isRenter
+              ? this.renterService.getAssetReviews(this.assetId)
+              : this.ownerService.getAssetReviews(this.assetId);
+
+            reviews$.subscribe({
               next: (r) => {
                 this.reviews = r.reviews || [];
                 this.averageRating = r.averageRating || 0;

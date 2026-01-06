@@ -90,11 +90,8 @@
                         {{ user.firstName }} {{ user?.middleName }} {{ user.lastName }}
                         <span class="badge bg-info ms-2">{{ user.role }}</span>
                       </h6>
-                      <button
-                        class="btn btn-icon btn-outline-primary"
-                        [routerLink]="['/admin/users/details', user._id]"
-                        aria-label="View user"
-                      >
+                      <button class="btn btn-icon btn-outline-primary" [routerLink]="['/admin/users/details', user._id]"
+                        aria-label="View user">
                         <fa-icon [icon]="faEye"></fa-icon>
                       </button>
                     </div>
@@ -109,20 +106,17 @@
             <p class="text-muted" *ngIf="paginatedUsers.length === 0">No users found.</p>
             <nav aria-label="Users pagination">
               <ul class="pagination justify-content-center mt-3">
-                <li class="page-item" [class.disabled]="currentPage === 1">
-                  <button class="page-link" (click)="changePage(currentPage - 1)" aria-label="Previous page">
+                <li class="page-item" [class.disabled]="currentPageUsers === 1">
+                  <button class="page-link" (click)="changePageUsers(currentPageUsers - 1)" aria-label="Previous page">
                     <fa-icon [icon]="faArrowLeft"></fa-icon>
                   </button>
                 </li>
-                <li
-                  class="page-item"
-                  *ngFor="let page of [].constructor(totalPagesUsers); let i = index"
-                  [class.active]="currentPage === i + 1"
-                >
-                  <button class="page-link" (click)="changePage(i + 1)">{{ i + 1 }}</button>
+                <li class="page-item" *ngFor="let page of [].constructor(totalPagesUsers); let i = index"
+                  [class.active]="currentPageUsers === i + 1">
+                  <button class="page-link" (click)="changePageUsers(i + 1)">{{ i + 1 }}</button>
                 </li>
-                <li class="page-item" [class.disabled]="currentPage === totalPagesUsers">
-                  <button class="page-link" (click)="changePage(currentPage + 1)" aria-label="Next page">
+                <li class="page-item" [class.disabled]="currentPageUsers === totalPagesUsers">
+                  <button class="page-link" (click)="changePageUsers(currentPageUsers + 1)" aria-label="Next page">
                     <fa-icon [icon]="faArrowRight"></fa-icon>
                   </button>
                 </li>
@@ -141,20 +135,13 @@
             <div class="row g-3" *ngIf="paginatedAssets.length > 0">
               <div class="col-md-6 col-lg-4" *ngFor="let asset of paginatedAssets">
                 <div class="card h-100 border-0 shadow-sm">
-                  <img
-                    [src]="asset.images[0]"
-                    class="card-img-top"
-                    alt="{{ asset.name }}"
-                    *ngIf="asset.images && asset.images.length > 0"
-                  />
+                  <img [src]="asset.images[0]" class="card-img-top" alt="{{ asset.name }}"
+                    *ngIf="asset.images && asset.images.length > 0" />
                   <div class="card-body">
                     <div class="d-flex justify-content-between align-items-start mb-1">
                       <h6 class="card-title mb-0">{{ asset.name }}</h6>
-                      <button
-                        class="btn btn-icon btn-outline-success"
-                        [routerLink]="['/admin/listings/details', asset._id]"
-                        aria-label="View asset"
-                      >
+                      <button class="btn btn-icon btn-outline-success"
+                        [routerLink]="['/admin/listings/details', asset._id]" aria-label="View asset">
                         <fa-icon [icon]="faEye"></fa-icon>
                       </button>
                     </div>
@@ -169,20 +156,18 @@
             <p class="text-muted" *ngIf="paginatedAssets.length === 0">No assets found.</p>
             <nav aria-label="Assets pagination">
               <ul class="pagination justify-content-center mt-3">
-                <li class="page-item" [class.disabled]="currentPage === 1">
-                  <button class="page-link" (click)="changePage(currentPage - 1)" aria-label="Previous page">
+                <li class="page-item" [class.disabled]="currentPageAssets === 1">
+                  <button class="page-link" (click)="changePageAssets(currentPageAssets - 1)"
+                    aria-label="Previous page">
                     <fa-icon [icon]="faArrowLeft"></fa-icon>
                   </button>
                 </li>
-                <li
-                  class="page-item"
-                  *ngFor="let page of [].constructor(totalPagesAssets); let i = index"
-                  [class.active]="currentPage === i + 1"
-                >
-                  <button class="page-link" (click)="changePage(i + 1)">{{ i + 1 }}</button>
+                <li class="page-item" *ngFor="let page of [].constructor(totalPagesAssets); let i = index"
+                  [class.active]="currentPageAssets === i + 1">
+                  <button class="page-link" (click)="changePageAssets(i + 1)">{{ i + 1 }}</button>
                 </li>
-                <li class="page-item" [class.disabled]="currentPage === totalPagesAssets">
-                  <button class="page-link" (click)="changePage(currentPage + 1)" aria-label="Next page">
+                <li class="page-item" [class.disabled]="currentPageAssets === totalPagesAssets">
+                  <button class="page-link" (click)="changePageAssets(currentPageAssets + 1)" aria-label="Next page">
                     <fa-icon [icon]="faArrowRight"></fa-icon>
                   </button>
                 </li>
@@ -204,12 +189,12 @@
                   <div class="card-body">
                     <div class="d-flex justify-content-between align-items-start mb-1">
                       <h6 class="card-title mb-0">{{ booking.name }}</h6>
-                      <button
+                      <!-- <button
                         class="btn btn-icon btn-outline-info"
                         aria-label="View booking"
                       >
                         <fa-icon [icon]="faEye"></fa-icon>
-                      </button>
+                      </button> -->
                     </div>
                     <p class="card-text small text-muted mb-1">{{ booking.address }}</p>
                     <p class="card-text small mb-1">
@@ -220,14 +205,11 @@
                     </p>
                     <p class="card-text small mb-0">
                       <strong>Status:</strong>
-                      <span
-                        class="badge"
-                        [ngClass]="{
+                      <span class="badge" [ngClass]="{
                           'bg-success': booking.status === 'confirmed',
                           'bg-warning': booking.status === 'pending',
                           'bg-danger': booking.status === 'cancelled'
-                        }"
-                      >
+                        }">
                         {{ booking.status }}
                       </span>
                     </p>
@@ -238,20 +220,19 @@
             <p class="text-muted" *ngIf="paginatedBookings.length === 0">No bookings found.</p>
             <nav aria-label="Bookings pagination">
               <ul class="pagination justify-content-center mt-3">
-                <li class="page-item" [class.disabled]="currentPage === 1">
-                  <button class="page-link" (click)="changePage(currentPage - 1)" aria-label="Previous page">
+                <li class="page-item" [class.disabled]="currentPageBookings === 1">
+                  <button class="page-link" (click)="changePageBookings(currentPageBookings - 1)"
+                    aria-label="Previous page">
                     <fa-icon [icon]="faArrowLeft"></fa-icon>
                   </button>
                 </li>
-                <li
-                  class="page-item"
-                  *ngFor="let page of [].constructor(totalPagesBookings); let i = index"
-                  [class.active]="currentPage === i + 1"
-                >
-                  <button class="page-link" (click)="changePage(i + 1)">{{ i + 1 }}</button>
+                <li class="page-item" *ngFor="let page of [].constructor(totalPagesBookings); let i = index"
+                  [class.active]="currentPageBookings === i + 1">
+                  <button class="page-link" (click)="changePageBookings(i + 1)">{{ i + 1 }}</button>
                 </li>
-                <li class="page-item" [class.disabled]="currentPage === totalPagesBookings">
-                  <button class="page-link" (click)="changePage(currentPage + 1)" aria-label="Next page">
+                <li class="page-item" [class.disabled]="currentPageBookings === totalPagesBookings">
+                  <button class="page-link" (click)="changePageBookings(currentPageBookings + 1)"
+                    aria-label="Next page">
                     <fa-icon [icon]="faArrowRight"></fa-icon>
                   </button>
                 </li>
@@ -273,22 +254,16 @@
                   <div class="card-body">
                     <div class="d-flex justify-content-between align-items-start mb-1">
                       <h6 class="card-title mb-0">{{ review.rental.name || "N/A" }}</h6>
-                      <div class="d-flex gap-2">
-                        <button
-                          class="btn btn-icon btn-outline-warning"
-                          [routerLink]="['/admin/reviews', review._id]"
-                          aria-label="View review"
-                        >
+                      <!-- <div class="d-flex gap-2">
+                        <button class="btn btn-icon btn-outline-warning" [routerLink]="['/admin/reviews', review._id]"
+                          aria-label="View review">
                           <fa-icon [icon]="faEye"></fa-icon>
                         </button>
-                        <button
-                          class="btn btn-icon btn-outline-danger"
-                          (click)="deleteReview(review._id)"
-                          aria-label="Delete review"
-                        >
+                        <button class="btn btn-icon btn-outline-danger" (click)="deleteReview(review._id)"
+                          aria-label="Delete review">
                           <fa-icon [icon]="faTrash"></fa-icon>
                         </button>
-                      </div>
+                      </div> -->
                     </div>
                     <p class="card-text small mb-1">
                       <strong>Renter:</strong> {{ review.renter.firstName }} {{ review.renter.lastName }}
@@ -307,20 +282,18 @@
             <p class="text-muted" *ngIf="paginatedReviews.length === 0">No reviews found.</p>
             <nav aria-label="Reviews pagination">
               <ul class="pagination justify-content-center mt-3">
-                <li class="page-item" [class.disabled]="currentPage === 1">
-                  <button class="page-link" (click)="changePage(currentPage - 1)" aria-label="Previous page">
+                <li class="page-item" [class.disabled]="currentPageReviews === 1">
+                  <button class="page-link" (click)="changePageReviews(currentPageReviews - 1)"
+                    aria-label="Previous page">
                     <fa-icon [icon]="faArrowLeft"></fa-icon>
                   </button>
                 </li>
-                <li
-                  class="page-item"
-                  *ngFor="let page of [].constructor(totalPagesReviews); let i = index"
-                  [class.active]="currentPage === i + 1"
-                >
-                  <button class="page-link" (click)="changePage(i + 1)">{{ i + 1 }}</button>
+                <li class="page-item" *ngFor="let page of [].constructor(totalPagesReviews); let i = index"
+                  [class.active]="currentPageReviews === i + 1">
+                  <button class="page-link" (click)="changePageReviews(i + 1)">{{ i + 1 }}</button>
                 </li>
-                <li class="page-item" [class.disabled]="currentPage === totalPagesReviews">
-                  <button class="page-link" (click)="changePage(currentPage + 1)" aria-label="Next page">
+                <li class="page-item" [class.disabled]="currentPageReviews === totalPagesReviews">
+                  <button class="page-link" (click)="changePageReviews(currentPageReviews + 1)" aria-label="Next page">
                     <fa-icon [icon]="faArrowRight"></fa-icon>
                   </button>
                 </li>

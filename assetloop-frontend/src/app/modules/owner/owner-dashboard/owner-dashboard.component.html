@@ -1,10 +1,7 @@
 <div class="d-flex flex-column vh-100">
   <app-header (logout)="onLogout()"></app-header>
   <div class="d-flex flex-grow-1">
-    <app-owner-side-bar
-      (logout)="onLogout()"
-      (navigate)="onNavigate($event)"
-    ></app-owner-side-bar>
+    <app-owner-side-bar (logout)="onLogout()" (navigate)="onNavigate($event)"></app-owner-side-bar>
     <main class="flex-grow-1 bg-light">
       <section class="dashboard-hero gradient-bg px-4 py-4 py-md-5">
         <div class="container-fluid d-flex flex-wrap justify-content-between align-items-start gap-3">
@@ -84,10 +81,7 @@
               </div>
               <div class="card-body">
                 <div class="list-group gap-2">
-                  <div
-                    class="list-group-item booking-item"
-                    *ngFor="let booking of activeBookings"
-                  >
+                  <div class="list-group-item booking-item" *ngFor="let booking of activeBookings">
                     <div class="d-flex justify-content-between align-items-start">
                       <div>
                         <div class="fw-semibold">{{ booking.name }}</div>
@@ -120,35 +114,23 @@
               <div class="card-header">Quick actions</div>
               <div class="card-body d-flex flex-wrap gap-2">
                 <!-- Manage assets -> owner assets/listings page -->
-                <button
-                  class="btn btn-icon-lg btn-outline-primary"
-                  aria-label="Manage assets"
-                  [routerLink]="['/owner/assets']"
-                >
+                <button class="btn btn-icon-lg btn-outline-primary" aria-label="Manage assets"
+                  [routerLink]="['/owner/assets']">
                   <fa-icon [icon]="faScrewdriverWrench"></fa-icon>
                 </button>
                 <!-- View earnings -> owner wallet/earnings page -->
-                <button
-                  class="btn btn-icon-lg btn-outline-success"
-                  aria-label="View earnings"
-                  [routerLink]="['/owner/wallet']"
-                >
+                <button class="btn btn-icon-lg btn-outline-success" aria-label="View earnings"
+                  [routerLink]="['/owner/wallet']">
                   <fa-icon [icon]="faChartLine"></fa-icon>
                 </button>
                 <!-- Check reviews -> owner profile (shows account status & reviews count) -->
-                <button
-                  class="btn btn-icon-lg btn-outline-info"
-                  aria-label="Check reviews"
-                  [routerLink]="['/owner/chat']"
-                >
+                <button class="btn btn-icon-lg btn-outline-info" aria-label="Check reviews"
+                  [routerLink]="['/owner/profile']">
                   <fa-icon [icon]="faComments"></fa-icon>
                 </button>
                 <!-- Resolve disputes -> rental requests (where owner handles booking issues) -->
-                <button
-                  class="btn btn-icon-lg btn-outline-warning"
-                  aria-label="Resolve disputes"
-                  [routerLink]="['/owner/rentals']"
-                >
+                <button class="btn btn-icon-lg btn-outline-warning" aria-label="Resolve disputes"
+                  [routerLink]="['/owner/rentals']">
                   <fa-icon [icon]="faArrowUpRightFromSquare"></fa-icon>
                 </button>
               </div>

@@ -97,7 +97,7 @@ export class ReviewComponent implements OnInit {
           this.success = true;
           this.loading = false;
           setTimeout(() => {
-            this.router.navigate(['/renter/my-bookings']);
+            this.router.navigate(['/renter/booking-details', this.bookingId]);
           }, 1200);
         },
         error: (err) => {
@@ -109,7 +109,11 @@ export class ReviewComponent implements OnInit {
   }
 
   cancel(): void {
-    this.router.navigate(['/renter/my-bookings']);
+    if (this.bookingId) {
+      this.router.navigate(['/renter/booking-details', this.bookingId]);
+    } else {
+      this.router.navigate(['/renter/booking-history']);
+    }
   }
 
   onLogout(): void {
