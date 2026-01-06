@@ -1,8 +1,6 @@
 <div class="home-landing">
   <header class="home-header border-bottom">
-    <div
-      class="container d-flex align-items-center justify-content-between py-3 gap-3 flex-wrap"
-    >
+    <div class="container d-flex align-items-center justify-content-between py-3 gap-3 flex-wrap">
       <div class="d-flex align-items-center gap-3">
         <a class="brand-logo" routerLink="/">AssetLoop</a>
         <a class="btn btn-outline-primary btn-sm" routerLink="/auth/login">
@@ -11,26 +9,14 @@
         </a>
       </div>
       <div class="d-flex align-items-center gap-2 flex-wrap">
-        <button
-          type="button"
-          class="btn btn-link nav-link-btn"
-          (click)="scrollToSection('asset-list')"
-        >
+        <button type="button" class="btn btn-link nav-link-btn" (click)="scrollToSection('asset-list')">
           <fa-icon [icon]="faSearch" class="me-2"></fa-icon>
           Browse listings
         </button>
-        <button
-          type="button"
-          class="btn btn-link nav-link-btn"
-          (click)="scrollToSection('how-it-works')"
-        >
+        <button type="button" class="btn btn-link nav-link-btn" (click)="scrollToSection('how-it-works')">
           How it works
         </button>
-        <button
-          type="button"
-          class="btn btn-link nav-link-btn"
-          (click)="clearFilters(); scrollToSection('asset-list')"
-        >
+        <button type="button" class="btn btn-link nav-link-btn" (click)="clearFilters(); scrollToSection('asset-list')">
           Reset filters
         </button>
         <a class="btn btn-primary btn-sm" routerLink="/auth/register">
@@ -56,18 +42,10 @@
             in minutes.
           </p>
           <div class="d-flex flex-wrap gap-3 mb-4">
-            <button
-              type="button"
-              class="btn btn-light btn-lg px-4"
-              (click)="scrollToSection('asset-list')"
-            >
+            <button type="button" class="btn btn-light btn-lg px-4" (click)="scrollToSection('asset-list')">
               Browse marketplace
             </button>
-            <button
-              type="button"
-              class="btn btn-outline-light btn-lg px-4"
-              (click)="scrollToSection('how-it-works')"
-            >
+            <button type="button" class="btn btn-outline-light btn-lg px-4" (click)="scrollToSection('how-it-works')">
               See how it works
             </button>
           </div>
@@ -128,10 +106,7 @@
               </div>
             </div>
             <div class="mt-4 text-center">
-              <a
-                class="btn btn-primary w-100 btn-lg"
-                routerLink="/auth/register"
-              >
+              <a class="btn btn-primary w-100 btn-lg" routerLink="/auth/register">
                 Get Started Today
               </a>
               <p class="text-muted small mt-3 mb-0">
@@ -164,21 +139,14 @@
           Jump straight into the most popular asset types.
         </p>
       </div>
-      <button
-        type="button"
-        class="btn btn-outline-secondary btn-sm"
-        (click)="clearFilters(); scrollToSection('asset-list')"
-      >
+      <button type="button" class="btn btn-outline-secondary btn-sm"
+        (click)="clearFilters(); scrollToSection('asset-list')">
         View everything
       </button>
     </div>
     <div class="row g-3">
       <div class="col-6 col-md-3">
-        <button
-          type="button"
-          class="category-card"
-          (click)="setCategory('car')"
-        >
+        <button type="button" class="category-card" (click)="setCategory('car')">
           <div class="icon-circle bg-primary-subtle text-primary">
             <fa-icon [icon]="faCar"></fa-icon>
           </div>
@@ -189,11 +157,7 @@
         </button>
       </div>
       <div class="col-6 col-md-3">
-        <button
-          type="button"
-          class="category-card"
-          (click)="setCategory('apartment')"
-        >
+        <button type="button" class="category-card" (click)="setCategory('apartment')">
           <div class="icon-circle bg-info-subtle text-info">
             <fa-icon [icon]="faBuilding"></fa-icon>
           </div>
@@ -204,11 +168,7 @@
         </button>
       </div>
       <div class="col-6 col-md-3">
-        <button
-          type="button"
-          class="category-card"
-          (click)="setCategory('house')"
-        >
+        <button type="button" class="category-card" (click)="setCategory('house')">
           <div class="icon-circle bg-warning-subtle text-warning">
             <fa-icon [icon]="faHouse"></fa-icon>
           </div>
@@ -219,11 +179,7 @@
         </button>
       </div>
       <div class="col-6 col-md-3">
-        <button
-          type="button"
-          class="category-card"
-          (click)="setCategory('tool')"
-        >
+        <button type="button" class="category-card" (click)="setCategory('tool')">
           <div class="icon-circle bg-success-subtle text-success">
             <fa-icon [icon]="faWrench"></fa-icon>
           </div>
@@ -288,16 +244,8 @@
         </p>
       </div>
       <div class="d-flex gap-2 align-items-center flex-wrap">
-        <form
-          [formGroup]="searchForm"
-          class="filters d-flex gap-2 flex-wrap align-items-center"
-        >
-          <input
-            type="text"
-            class="form-control"
-            placeholder="Location"
-            formControlName="location"
-          />
+        <form [formGroup]="searchForm" class="filters d-flex gap-2 flex-wrap align-items-center">
+          <input type="text" class="form-control" placeholder="Location" formControlName="location" />
           <select class="form-select" formControlName="category">
             <option value="All Categories">All Categories</option>
             <option value="car">Car</option>
@@ -306,18 +254,8 @@
             <option value="tool">Tool</option>
             <option value="electronics">Electronics</option>
           </select>
-          <input
-            type="number"
-            class="form-control"
-            placeholder="Min Price"
-            formControlName="minPrice"
-          />
-          <input
-            type="number"
-            class="form-control"
-            placeholder="Max Price"
-            formControlName="maxPrice"
-          />
+          <input type="number" class="form-control" placeholder="Min Price" formControlName="minPrice" />
+          <input type="number" class="form-control" placeholder="Max Price" formControlName="maxPrice" />
           <select class="form-select" formControlName="availability">
             <option value="all">All</option>
             <option value="available">Available</option>
@@ -331,11 +269,7 @@
           <button type="button" class="btn btn-primary" (click)="applyFilters()">
             Apply
           </button>
-          <button
-            type="button"
-            class="btn btn-outline-secondary"
-            (click)="clearFilters()"
-          >
+          <button type="button" class="btn btn-outline-secondary" (click)="clearFilters()">
             Reset
           </button>
         </form>
@@ -350,14 +284,9 @@
     <!-- Assets Grid -->
     <div id="asset-list" class="row g-3">
       <div class="col-md-3" *ngFor="let asset of displayedAssets">
-        <app-product-item
-          [asset]="asset"
-          [isFavourite]="false"
-          (viewListing)="viewDetails($event)"
-          (addToCart)="onBookNow($event)"
-          (removeFavourite)="removeFavourite($event)"
-          (share)="share($event)"
-        ></app-product-item>
+        <app-product-item [asset]="asset" [isFavourite]="isAssetFavourite(asset._id)"
+          (viewListing)="viewDetails($event)" (addToCart)="onBookNow($event)"
+          (removeFavourite)="toggleFavourite($event)" (share)="share($event)"></app-product-item>
       </div>
       <div class="col-12" *ngIf="!displayedAssets.length && !error">
         <div class="empty-state text-center p-5 border rounded-4">
@@ -366,11 +295,7 @@
             Try adjusting price, category, or clearing your search to see more
             options.
           </p>
-          <button
-            type="button"
-            class="btn btn-outline-primary"
-            (click)="clearFilters(); scrollToSection('asset-list')"
-          >
+          <button type="button" class="btn btn-outline-primary" (click)="clearFilters(); scrollToSection('asset-list')">
             Clear filters
           </button>
         </div>
@@ -378,33 +303,19 @@
     </div>
 
     <!-- Pagination -->
-    <div
-      class="d-flex justify-content-center align-items-center gap-2 pt-4"
-      *ngIf="pagination.totalPages > 1"
-    >
-      <button
-        class="btn btn-outline-secondary"
-        [disabled]="pagination.page === 1"
-        (click)="changePage(pagination.page - 1)"
-      >
+    <div class="d-flex justify-content-center align-items-center gap-2 pt-4" *ngIf="pagination.totalPages > 1">
+      <button class="btn btn-outline-secondary" [disabled]="pagination.page === 1"
+        (click)="changePage(pagination.page - 1)">
         &lt;
       </button>
-      <span
-        *ngFor="let page of [].constructor(pagination.totalPages); let i = index"
-      >
-        <button
-          class="btn btn-outline-secondary"
-          [class.active]="pagination.page === i + 1"
-          (click)="changePage(i + 1)"
-        >
+      <span *ngFor="let page of [].constructor(pagination.totalPages); let i = index">
+        <button class="btn btn-outline-secondary" [class.active]="pagination.page === i + 1"
+          (click)="changePage(i + 1)">
           {{ i + 1 }}
         </button>
       </span>
-      <button
-        class="btn btn-outline-secondary"
-        [disabled]="pagination.page === pagination.totalPages"
-        (click)="changePage(pagination.page + 1)"
-      >
+      <button class="btn btn-outline-secondary" [disabled]="pagination.page === pagination.totalPages"
+        (click)="changePage(pagination.page + 1)">
         &gt;
       </button>
     </div>
@@ -420,40 +331,16 @@
             and renters for seamless transactions.
           </p>
           <div class="d-flex gap-3">
-            <a
-              href="#"
-              class="social-link"
-              aria-label="Facebook"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
+            <a href="#" class="social-link" aria-label="Facebook" target="_blank" rel="noopener noreferrer">
               <fa-icon [icon]="faFacebook"></fa-icon>
             </a>
-            <a
-              href="#"
-              class="social-link"
-              aria-label="Twitter"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
+            <a href="#" class="social-link" aria-label="Twitter" target="_blank" rel="noopener noreferrer">
               <fa-icon [icon]="faTwitter"></fa-icon>
             </a>
-            <a
-              href="#"
-              class="social-link"
-              aria-label="Instagram"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
+            <a href="#" class="social-link" aria-label="Instagram" target="_blank" rel="noopener noreferrer">
               <fa-icon [icon]="faInstagram"></fa-icon>
             </a>
-            <a
-              href="#"
-              class="social-link"
-              aria-label="LinkedIn"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
+            <a href="#" class="social-link" aria-label="LinkedIn" target="_blank" rel="noopener noreferrer">
               <fa-icon [icon]="faLinkedin"></fa-icon>
             </a>
           </div>
@@ -462,9 +349,7 @@
           <h6 class="fw-semibold mb-3">For Renters</h6>
           <ul class="list-unstyled footer-links">
             <li>
-              <a href="#" (click)="scrollToSection('asset-list'); $event.preventDefault()"
-                >Browse Assets</a
-              >
+              <a href="#" (click)="scrollToSection('asset-list'); $event.preventDefault()">Browse Assets</a>
             </li>
             <li><a href="#" (click)="scrollToSection('how-it-works'); $event.preventDefault()">How It Works</a></li>
             <li><a routerLink="/auth/register">Sign Up</a></li>

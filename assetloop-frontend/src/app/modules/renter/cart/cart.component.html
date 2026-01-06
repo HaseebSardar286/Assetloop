@@ -42,11 +42,8 @@
                   <tr>
                     <td>
                       <div class="d-flex align-items-center gap-2">
-                        <img
-                          [src]="item.imageUrl || '/images/download.jpg'"
-                          alt="{{ item.name }}"
-                          class="rounded thumb"
-                        />
+                        <img [src]="item.imageUrl || '/images/download.jpg'" alt="{{ item.name }}"
+                          class="rounded thumb" />
                         <div>
                           <div class="fw-semibold">{{ item.name }}</div>
                           <small class="text-muted">{{ item.address }}</small>
@@ -55,21 +52,12 @@
                     </td>
                     <td>PKR{{ item.pricePerDay }}</td>
                     <td>
-                      <input
-                        type="number"
-                        class="form-control form-control-sm"
-                        [value]="item.quantity"
-                        min="1"
-                        (change)="updateQuantityInput(item, $event)"
-                      />
+                      <input type="number" class="form-control form-control-sm" [value]="item.quantity" min="1"
+                        (change)="updateQuantityInput(item, $event)" />
                     </td>
                     <td>PKR{{ lineTotal(item) | number : "1.0-2" }}</td>
                     <td class="text-end">
-                      <button
-                        class="btn btn-icon btn-outline-danger"
-                        (click)="remove(item)"
-                        aria-label="Remove item"
-                      >
+                      <button class="btn btn-icon btn-outline-danger" (click)="remove(item)" aria-label="Remove item">
                         <fa-icon [icon]="faTrash"></fa-icon>
                       </button>
                     </td>
@@ -78,47 +66,31 @@
                     <td colspan="5">
                       <div class="row g-2 align-items-center">
                         <div class="col-auto">
-                          <small class="text-muted"
-                            >Select dates for {{ item.name }}:</small
-                          >
+                          <small class="text-muted">Select dates for {{ item.name }}:</small>
                         </div>
                         <div class="col-auto">
-                          <input
-                            type="date"
-                            class="form-control form-control-sm"
-                            [value]="
+                          <input type="date" class="form-control form-control-sm" [min]="todayDate" [value]="
                               (datesByItem[item.id] &&
                                 datesByItem[item.id].startDate) ||
                               ''
-                            "
-                            (change)="setStartDate(item.id, $event)"
-                          />
+                            " (change)="setStartDate(item.id, $event)" />
                         </div>
                         <div class="col-auto">to</div>
                         <div class="col-auto">
-                          <input
-                            type="date"
-                            class="form-control form-control-sm"
-                            [value]="
+                          <input type="date" class="form-control form-control-sm"
+                            [min]="(datesByItem[item.id] && datesByItem[item.id].startDate) || todayDate" [value]="
                               (datesByItem[item.id] &&
                                 datesByItem[item.id].endDate) ||
                               ''
-                            "
-                            (change)="setEndDate(item.id, $event)"
-                          />
+                            " (change)="setEndDate(item.id, $event)" />
                         </div>
                         <div class="col">
-                          <input
-                            type="text"
-                            class="form-control form-control-sm"
-                            placeholder="Notes (optional)"
+                          <input type="text" class="form-control form-control-sm" placeholder="Notes (optional)"
                             [value]="
                               (datesByItem[item.id] &&
                                 datesByItem[item.id].notes) ||
                               ''
-                            "
-                            (input)="setNotes(item.id, $event)"
-                          />
+                            " (input)="setNotes(item.id, $event)" />
                         </div>
                       </div>
                     </td>

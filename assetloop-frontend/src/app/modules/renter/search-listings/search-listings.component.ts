@@ -62,13 +62,49 @@ export class SearchListingsComponent implements OnInit {
     });
   }
 
+  favoritesSet: Set<string> = new Set();
+
   ngOnInit(): void {
     this.loadAssets();
+    this.loadFavorites();
     this.searchForm.get('category')?.valueChanges.subscribe(() => this.applyFilters());
     this.searchForm.get('keywords')?.valueChanges.subscribe(() => this.applyFilters());
     this.searchForm.get('minPrice')?.valueChanges.subscribe(() => this.applyFilters());
     this.searchForm.get('maxPrice')?.valueChanges.subscribe(() => this.applyFilters());
     this.searchForm.get('availability')?.valueChanges.subscribe(() => this.applyFilters());
+  }
+
+  loadFavorites(): void {
+    this.renterService.getFavourites().subscribe({
+      next: (favs: any[]) => {
+        // Handle different possible ID fields (id, _id, assetId)
+        this.favoritesSet = new Set(favs.map(f => f.id || f._id || f.assetId));
+      },
+      error: (err) => console.error('Failed to load favorites', err)
+    });
+  }
+
+  isAssetFavourite(assetId: string): boolean {
+    return this.favoritesSet.has(assetId);
+  }
+
+  toggleFavourite(assetId: string): void {
+    if (this.favoritesSet.has(assetId)) {
+      this.renterService.removeFromFavourites(assetId).subscribe({
+        next: () => {
+          this.favoritesSet.delete(assetId);
+          // Force change detection or wait for angular to detect set change if using pipe (but here we use method)
+        },
+        error: (err) => alert(err?.error?.message || 'Failed to remove from favourites')
+      });
+    } else {
+      this.renterService.addToFavourites(assetId).subscribe({
+        next: () => {
+          this.favoritesSet.add(assetId);
+        },
+        error: (err) => alert(err?.error?.message || 'Failed to add to favourites')
+      });
+    }
   }
 
   loadAssets(): void {
@@ -176,11 +212,7 @@ export class SearchListingsComponent implements OnInit {
   }
 
   addToFavourites(assetId: string): void {
-    this.renterService.addToFavourites(assetId).subscribe({
-      next: () => alert('Added to favourites'),
-      error: (err) =>
-        alert(err?.error?.message || 'Failed to add to favourites'),
-    });
+    this.toggleFavourite(assetId);
   }
 
   addToCart(asset: AssetResponse): void {

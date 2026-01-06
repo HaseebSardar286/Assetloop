@@ -26,11 +26,8 @@
             <div class="row g-0">
               <div class="col-lg-6">
                 <div class="image-pane">
-                  <img
-                    [src]="asset.images?.[0] || '/images/default.jpg'"
-                    class="img-fluid w-100 h-100 object-fit-cover"
-                    [alt]="asset.name"
-                  />
+                  <img [src]="asset.images?.[0] || '/images/default.jpg'" class="img-fluid w-100 h-100 object-fit-cover"
+                    [alt]="asset.name" />
                   <div class="category-chip text-uppercase">
                     {{ asset.category }}
                   </div>
@@ -62,27 +59,17 @@
                     </span>
                   </p>
                   <div class="d-flex flex-wrap gap-2 mt-3" *ngIf="isRenter">
-                    <button
-                      class="btn btn-outline-danger btn-icon"
-                      (click)="addToFavourites()"
+                    <button class="btn btn-icon" [class.btn-outline-danger]="isAssetFavourite(asset._id)"
+                      [class.btn-outline-secondary]="!isAssetFavourite(asset._id)" (click)="toggleFavourite()"
                       [disabled]="loading"
-                      aria-label="Add to favourites"
-                    >
+                      [attr.aria-label]="isAssetFavourite(asset._id) ? 'Remove from favourites' : 'Add to favourites'">
                       <fa-icon [icon]="faHeart"></fa-icon>
                     </button>
-                    <button
-                      class="btn btn-outline-primary btn-icon"
-                      (click)="addToCart()"
-                      aria-label="Add to cart"
-                    >
+                    <button class="btn btn-outline-primary btn-icon" (click)="addToCart()" aria-label="Add to cart">
                       <fa-icon [icon]="faShoppingCart"></fa-icon>
                     </button>
-                    <button
-                      class="btn btn-outline-success btn-icon"
-                      (click)="startChat()"
-                      [disabled]="loading"
-                      aria-label="Message owner"
-                    >
+                    <button class="btn btn-outline-success btn-icon" (click)="startChat()" [disabled]="loading"
+                      aria-label="Message owner">
                       <fa-icon [icon]="faComments"></fa-icon>
                     </button>
                   </div>

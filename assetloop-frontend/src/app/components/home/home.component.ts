@@ -107,7 +107,51 @@ export class HomeComponent {
 
   ngOnInit(): void {
     this.loadAssets();
+    this.loadFavorites();
   }
+
+  favoritesSet: Set<string> = new Set();
+
+  loadFavorites(): void {
+    // Check if token exists before trying to fetch
+    const token = typeof localStorage !== 'undefined' ? (localStorage.getItem('authToken') || localStorage.getItem('token')) : null;
+    if (!token) return;
+
+    this.renterService.getFavourites().subscribe({
+      next: (favs: any[]) => {
+        this.favoritesSet = new Set(favs.map(f => f.id || f._id || f.assetId));
+      },
+      error: () => {
+        // Silent error for home page if not authorized etc
+      }
+    });
+  }
+
+  isAssetFavourite(assetId: string): boolean {
+    return this.favoritesSet.has(assetId);
+  }
+
+  toggleFavourite(assetId: string): void {
+    // Check if logged in
+    const token = typeof localStorage !== 'undefined' ? (localStorage.getItem('authToken') || localStorage.getItem('token')) : null;
+    if (!token) {
+      this.router.navigate(['/auth/login']);
+      return;
+    }
+
+    if (this.favoritesSet.has(assetId)) {
+      this.renterService.removeFromFavourites(assetId).subscribe({
+        next: () => this.favoritesSet.delete(assetId),
+        error: (err) => alert(err?.error?.message || 'Failed to remove from favourites')
+      });
+    } else {
+      this.renterService.addToFavourites(assetId).subscribe({
+        next: () => this.favoritesSet.add(assetId),
+        error: (err) => alert(err?.error?.message || 'Failed to add to favourites')
+      });
+    }
+  }
+
 
   loadAssets(): void {
     this.renterService.getAllAssets().subscribe({

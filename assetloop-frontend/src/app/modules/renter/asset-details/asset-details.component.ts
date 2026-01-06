@@ -63,10 +63,14 @@ export class AssetDetailsComponent implements OnInit {
     this.isRenter = userRole === 'renter';
   }
 
+  favoritesSet: Set<string> = new Set();
+
   ngOnInit(): void {
     this.assetId = this.route.snapshot.paramMap.get('id');
     if (this.assetId) {
       this.loading = true;
+      this.loadFavorites();
+
       this.renterService.getAssetById(this.assetId).subscribe({
         next: (asset: any) => {
           this.asset = asset;
@@ -80,7 +84,7 @@ export class AssetDetailsComponent implements OnInit {
                 this.averageRating = r.averageRating || 0;
                 this.totalReviews = r.totalReviews || 0;
               },
-              error: () => {},
+              error: () => { },
             });
           }
           this.loading = false;
@@ -93,19 +97,48 @@ export class AssetDetailsComponent implements OnInit {
     }
   }
 
-  addToFavourites(): void {
+  loadFavorites(): void {
+    this.renterService.getFavourites().subscribe({
+      next: (favs: any[]) => {
+        this.favoritesSet = new Set(favs.map(f => f.id || f._id || f.assetId));
+      },
+      error: (err) => console.error('Failed to load favorites', err)
+    });
+  }
+
+  isAssetFavourite(assetId: string): boolean {
+    return this.favoritesSet.has(assetId);
+  }
+
+  toggleFavourite(): void {
     if (!this.assetId) return;
     this.loading = true;
-    this.renterService.addToFavourites(this.assetId).subscribe({
-      next: () => {
-        this.loading = false;
-        alert('Added to favourites');
-      },
-      error: (err) => {
-        this.loading = false;
-        this.error = err?.error?.message || 'Failed to add to favourites';
-      },
-    });
+
+    if (this.favoritesSet.has(this.assetId)) {
+      this.renterService.removeFromFavourites(this.assetId).subscribe({
+        next: () => {
+          this.loading = false;
+          this.favoritesSet.delete(this.assetId!);
+          // alert('Removed from favourites'); 
+        },
+        error: (err) => {
+          this.loading = false;
+          this.error = err?.error?.message || 'Failed to remove from favourites';
+        }
+      });
+    } else {
+      this.renterService.addToFavourites(this.assetId).subscribe({
+        next: () => {
+          this.loading = false;
+          this.favoritesSet.add(this.assetId!);
+          // alert('Added to favourites');
+        },
+        error: (err) => {
+          this.loading = false;
+          this.error = err?.error?.message || 'Failed to add to favourites';
+        },
+      });
+    }
   }
 
   addToCart(): void {
@@ -148,8 +181,8 @@ export class AssetDetailsComponent implements OnInit {
       next: (response) => {
         // Navigate to appropriate chat route based on user role
         const chatRoute = userRole === 'owner' ? '/owner/chat' : '/renter/chat';
-        this.router.navigate([chatRoute], { 
-          queryParams: { conversationId: response.conversation._id } 
+        this.router.navigate([chatRoute], {
+          queryParams: { conversationId: response.conversation._id }
         });
       },
       error: (err) => {

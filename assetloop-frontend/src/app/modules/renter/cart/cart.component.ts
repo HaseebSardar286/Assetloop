@@ -44,11 +44,19 @@ export class CartComponent implements OnInit, OnDestroy {
     private renterService: RenterService,
     private router: Router,
     private authService: AuthService
-  ) {}
+  ) { }
+
+  todayDate: string = new Date().toISOString().split('T')[0];
 
   ngOnInit(): void {
     this.sub = this.renterService.getCart().subscribe((items) => {
       this.items = items || [];
+      // Initialize dates
+      this.items.forEach(item => {
+        if (!this.datesByItem[item.id]) {
+          this.datesByItem[item.id] = { startDate: this.todayDate };
+        }
+      });
     });
   }
 
@@ -101,18 +109,34 @@ export class CartComponent implements OnInit, OnDestroy {
     }
 
     // Validate dates for all items
+    const today = new Date(this.todayDate);
+    today.setHours(0, 0, 0, 0);
+
     const invalid = this.items.find((it) => {
       const d = this.datesByItem[it.id] || {};
+      const start = d.startDate ? new Date(d.startDate) : null;
+      if (start) start.setHours(0, 0, 0, 0);
+
       return (
         !d.startDate ||
         !d.endDate ||
-        new Date(d.endDate!) <= new Date(d.startDate!)
+        new Date(d.endDate!) <= new Date(d.startDate!) ||
+        (start && start < today)
       );
     });
+
     if (invalid) {
-      alert(
-        'Please select valid start and end dates for all items (end after start).'
-      );
+      const d = this.datesByItem[invalid.id] || {};
+      const start = d.startDate ? new Date(d.startDate) : null;
+      if (start) start.setHours(0, 0, 0, 0);
+
+      if (start && start < today) {
+        alert(`Start date for "${invalid.name}" cannot be in the past.`);
+      } else {
+        alert(
+          'Please select valid start and end dates for all items. End date must be after start date.'
+        );
+      }
       return;
     }
 

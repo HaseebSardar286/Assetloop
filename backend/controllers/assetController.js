@@ -26,20 +26,20 @@ exports.createAsset = async (req, res) => {
     // Check maintenance mode
     const settings = await SystemSettings.findOne({ _id: "system-settings" });
     if (settings?.maintenanceMode) {
-      return res.status(503).json({ 
-        message: "System is under maintenance. Please try again later." 
+      return res.status(503).json({
+        message: "System is under maintenance. Please try again later."
       });
     }
 
     // Check listing limit
-    if (settings?.maxListingsPerUser) {
-      const userAssetCount = await Asset.countDocuments({ owner: req.user.id });
-      if (userAssetCount >= settings.maxListingsPerUser) {
-        return res.status(403).json({ 
-          message: `You have reached the maximum limit of ${settings.maxListingsPerUser} listings per user.` 
-        });
-      }
-    }
+    // if (settings?.maxListingsPerUser) {
+    //   const userAssetCount = await Asset.countDocuments({ owner: req.user.id });
+    //   if (userAssetCount >= settings.maxListingsPerUser) {
+    //     return res.status(403).json({ 
+    //       message: `You have reached the maximum limit of ${settings.maxListingsPerUser} listings per user.` 
+    //     });
+    //   }
+    // }
 
     // Validate file types if settings exist
     if (settings?.allowedFileTypes && req.files) {
@@ -49,8 +49,8 @@ exports.createAsset = async (req, res) => {
         return !ext || !allowedTypes.includes(ext);
       });
       if (invalidFiles.length > 0) {
-        return res.status(400).json({ 
-          message: `Invalid file types. Allowed types: ${settings.allowedFileTypes}` 
+        return res.status(400).json({
+          message: `Invalid file types. Allowed types: ${settings.allowedFileTypes}`
         });
       }
     }
@@ -122,7 +122,7 @@ exports.createAsset = async (req, res) => {
     );
 
     await Promise.all(
-      filePaths.map((filePath) => fs.unlink(filePath).catch(() => {}))
+      filePaths.map((filePath) => fs.unlink(filePath).catch(() => { }))
     );
 
     const asset = new Asset({
@@ -214,7 +214,7 @@ exports.getAllAssets = async (req, res) => {
     const assets = await Asset.find(filter)
       .populate("owner", "firstName lastName email")
       .lean();
-    
+
     const response = assets.map((asset) => {
       // Handle owner data safely
       let ownerData = null;
@@ -254,11 +254,11 @@ exports.getAllAssets = async (req, res) => {
         updatedAt: asset.updatedAt ? (asset.updatedAt.toISOString ? asset.updatedAt.toISOString() : asset.updatedAt) : new Date().toISOString(),
       };
     });
-    
+
     res.status(200).json({ assets: response });
   } catch (error) {
     console.error("Error in getAllAssets:", error);
-    res.status(500).json({ 
+    res.status(500).json({
       message: error.message || "Internal server error",
       ...(process.env.NODE_ENV === 'development' && { stack: error.stack })
     });
@@ -345,7 +345,7 @@ exports.updateAsset = async (req, res) => {
         )
       );
       await Promise.all(
-        filePaths.map((filePath) => fs.unlink(filePath).catch(() => {}))
+        filePaths.map((filePath) => fs.unlink(filePath).catch(() => { }))
       );
     }
 
@@ -420,9 +420,8 @@ exports.getAssetReviews = async (req, res) => {
         rating: b.review.rating,
         comment: b.review.comment,
         createdAt: b.review.createdAt,
-        reviewer: `${b.renter?.firstName || ""} ${
-          b.renter?.lastName || ""
-        }`.trim(),
+        reviewer: `${b.renter?.firstName || ""} ${b.renter?.lastName || ""
+          }`.trim(),
       }));
 
     // Calculate average rating
@@ -430,7 +429,7 @@ exports.getAssetReviews = async (req, res) => {
       ? reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length
       : 0;
 
-    res.status(200).json({ 
+    res.status(200).json({
       reviews,
       averageRating: Math.round(averageRating * 10) / 10, // Round to 1 decimal
       totalReviews: reviews.length
