@@ -32,6 +32,7 @@ import {
 } from '@fortawesome/free-brands-svg-icons';
 import { AssetResponse } from '../../interfaces/asset';
 import { RenterService } from '../../services/renter.service';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-home',
@@ -91,7 +92,8 @@ export class HomeComponent {
   constructor(
     private fb: FormBuilder,
     private router: Router,
-    private renterService: RenterService
+    private renterService: RenterService,
+    private authService: AuthService
   ) {
     this.searchForm = this.fb.group({
       keywords: [''],
@@ -113,9 +115,10 @@ export class HomeComponent {
   favoritesSet: Set<string> = new Set();
 
   loadFavorites(): void {
-    // Check if token exists before trying to fetch
-    const token = typeof localStorage !== 'undefined' ? (localStorage.getItem('authToken') || localStorage.getItem('token')) : null;
-    if (!token) return;
+    // Only load favorites if user is authenticated AND is a renter
+    if (!this.authService.isAuthenticated() || this.authService.getUserRole() !== 'renter') {
+      return;
+    }
 
     this.renterService.getFavourites().subscribe({
       next: (favs: any[]) => {
